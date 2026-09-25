@@ -29,14 +29,13 @@ button:focus-visible, a:focus-visible { outline: 2px solid #8edec8; outline-offs
 .scene-goodbye .section-number { color: #436c62; }
 
 .scene-welcome { z-index: 2; height: 150svh; overflow: visible; pointer-events: none; }
-.welcome-content { position: sticky; inset: auto; top: 0; height: 100svh; display: grid; place-items: center; }
-.welcome-grid { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.welcome-content { position: fixed; inset: 0; height: 100svh; display: grid; place-items: center; overflow: clip; background: transparent; }
+.welcome-grid { position: absolute; inset: 0; overflow: hidden; pointer-events: none; background: #101419; }
 .welcome-grid-far, .welcome-grid-near, .welcome-grid-vignette { position: absolute; inset: 0; transform-origin: center; }
 .welcome-grid-far { background-image: linear-gradient(#6380762b 1px, transparent 1px), linear-gradient(90deg, #6380762b 1px, transparent 1px); background-size: 58px 58px; }
 .welcome-grid-near { opacity: 0; background-image: radial-gradient(circle, #526862 1px, transparent 1.5px); background-size: 24px 24px; }
 .welcome-grid-vignette { background: radial-gradient(circle, transparent 15%, #101419 70%); }
-.welcome-title-layer { position: fixed; inset: 0; z-index: 2; display: grid; place-items: center; text-align: center; }
-.welcome-body { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding-top: clamp(8rem, 16vw, 15rem); }
+.welcome-title-layer { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; text-align: center; }
 .display-title { margin: 0; font-size: clamp(4rem, 13vw, 12rem); font-weight: 650; letter-spacing: -.085em; line-height: .95; }
 .scene-subtitle { margin: 0; color: #a9b9b8; font-size: clamp(.9rem, 1.7vw, 1.3rem); letter-spacing: .04em; }
 .scroll-cue { position: absolute; bottom: 8vh; display: flex; gap: 1rem; align-items: center; color: #8edec8; font-size: .7rem; font-weight: 700; letter-spacing: .2em; }
@@ -82,7 +81,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid #8edec8; outline-offs
   .scene-body { width: min(100% - 2.5rem, 1400px); }
   .scene-title { font-size: clamp(3rem, 12vw, 5rem); }
   .display-title { font-size: clamp(3rem, 16vw, 6rem); }
-  .welcome-body { padding-top: 6rem; }
   .composer-layout { padding-top: 1rem; padding-bottom: 1rem; gap: .5rem; }
   .composer-heading { align-items: flex-start; flex-direction: column; gap: .25rem; }
   .composer-hint { text-align: left; }

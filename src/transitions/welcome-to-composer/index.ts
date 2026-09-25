@@ -5,10 +5,12 @@ export const welcomeToComposer: TransitionFactory = ({ from, to, reducedMotion }
   const timeline = gsap.timeline({ paused: true, defaults: { ease: 'none' } })
   const support = from.querySelector('[data-enter-grid-support]')
   const title = from.querySelector('[data-enter-grid-title]')
+  const backdrop = from.querySelector('[data-enter-grid-backdrop]')
   const heading = to.querySelector('[data-enter-grid-heading]')
   const canvas = to.querySelector('[data-enter-grid-canvas]')
 
-  if (support) timeline.to(support, { autoAlpha: 0, yPercent: reducedMotion ? 0 : -12, duration: 0.24 }, 0.02)
+  if (support) timeline.to(support, { autoAlpha: 0, duration: 0.24 }, 0.02)
+  if (backdrop) timeline.to(backdrop, { autoAlpha: 0, duration: 0.38 }, 0.6)
   if (canvas) timeline.fromTo(canvas, { autoAlpha: 0 }, { autoAlpha: 1, duration: reducedMotion ? 0.4 : 0.38 }, 0.5)
   if (heading) timeline.fromTo(heading, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.22 }, 0.76)
 
@@ -20,7 +22,7 @@ export const welcomeToComposer: TransitionFactory = ({ from, to, reducedMotion }
     const vignette = from.querySelector('[data-enter-grid-vignette]')
     if (title) {
       timeline.to(title, { scale: 8, duration: 0.62 }, 0.22)
-      timeline.to(title, { yPercent: -850, autoAlpha: 0, duration: 0.18 }, 0.82)
+      timeline.to(title, { scale: 12, autoAlpha: 0, duration: 0.16 }, 0.84)
     }
     if (farGrid) timeline.to(farGrid, { scale: 1.06, autoAlpha: 0, duration: 0.56 }, 0.3)
     if (nearGrid) timeline.fromTo(nearGrid, { autoAlpha: 0 }, { autoAlpha: 0.45, duration: 0.46 }, 0.3)

@@ -5,6 +5,7 @@ import { welcomeToComposer } from './index'
 function fixture() {
   const support = { autoAlpha: 1, yPercent: 0 }
   const title = { autoAlpha: 1, yPercent: 0, scale: 1 }
+  const backdrop = { autoAlpha: 1 }
   const far = { autoAlpha: 1, scale: 1 }
   const near = { autoAlpha: 0, scale: 1 }
   const vignette = { autoAlpha: 1 }
@@ -13,6 +14,7 @@ function fixture() {
   const fromTargets: Record<string, object> = {
     '[data-enter-grid-support]': support,
     '[data-enter-grid-title]': title,
+    '[data-enter-grid-backdrop]': backdrop,
     '[data-enter-grid-far]': far,
     '[data-enter-grid-near]': near,
     '[data-enter-grid-vignette]': vignette,
@@ -29,7 +31,7 @@ function fixture() {
     autoAlpha: 1,
     querySelector: (selector: string) => toTargets[selector] ?? null,
   }
-  return { from: fromState as unknown as HTMLElement, to: toState as unknown as HTMLElement, fromState, toState, support, title, far, near, heading, canvas }
+  return { from: fromState as unknown as HTMLElement, to: toState as unknown as HTMLElement, fromState, toState, support, title, backdrop, far, near, heading, canvas }
 }
 
 afterEach(() => gsap.globalTimeline.clear())
@@ -48,9 +50,11 @@ describe('Enter the Grid timeline', () => {
     expect(elements.title.scale).toBeGreaterThan(5)
     expect(elements.title.autoAlpha).toBe(1)
     expect(elements.canvas.autoAlpha).toBeGreaterThan(0)
+    expect(elements.backdrop.autoAlpha).toBeLessThan(1)
 
     timeline.progress(1)
     expect(elements.title.autoAlpha).toBe(0)
+    expect(elements.backdrop.autoAlpha).toBe(0)
     expect(elements.near.scale).toBe(1)
     expect(elements.toState.autoAlpha).toBe(1)
     expect(elements.heading.autoAlpha).toBe(1)
@@ -60,6 +64,7 @@ describe('Enter the Grid timeline', () => {
     expect(elements.support.autoAlpha).toBe(1)
     expect(elements.title.autoAlpha).toBe(1)
     expect(elements.title.scale).toBe(1)
+    expect(elements.backdrop.autoAlpha).toBe(1)
     expect(elements.fromState.autoAlpha).toBe(1)
     expect(elements.toState.autoAlpha).toBe(1)
     expect(elements.far.scale).toBe(1)
@@ -78,5 +83,6 @@ describe('Enter the Grid timeline', () => {
     expect(elements.near.scale).toBe(1)
     expect(elements.canvas.autoAlpha).toBe(1)
     expect(elements.heading.autoAlpha).toBe(1)
+    expect(elements.backdrop.autoAlpha).toBe(0)
   })
 })
