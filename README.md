@@ -1,6 +1,6 @@
-# CHRONICLE — Skeleton MVP + Enter the Grid
+# CHRONICLE — Skeleton MVP + Enter the Grid V1
 
-This project has a working seven-scene Skeleton MVP and its first production transition: **Enter the Grid** (Welcome → Stack Composer). The other scene boundaries remain placeholders. The final visual direction, character animation, 3D portal, and real destination URLs are future work.
+This project has a working seven-scene Skeleton MVP and the V1 production pass of **Enter the Grid** (Welcome → Stack Composer). The other scene boundaries remain placeholders. The final visual direction, character animation, 3D portal, and real destination URLs are future work.
 
 ## Run
 
@@ -32,7 +32,7 @@ The seven scene components stay mounted during navigation. Composer nodes and ed
 
 - Native scrolling moves forward and backward through Welcome, Stack Composer, Currently, Profile, Space, Destinations, and Goodbye.
 - The Scene Director registers one ScrollTrigger per scene and a separate scrubbed transition per boundary. Animation progress stays in GSAP and a DOM progress property; only the active scene is written to Zustand.
-- Enter the Grid gives Welcome 150svh of scroll distance and keeps its viewport content sticky for the first part. Its transition factory fades the copy, enlarges the distant grid, reveals a 24px node grid shared visually with the Composer, then reveals the Composer heading and canvas. The Composer's scene root stays opaque so its outgoing placeholder does not compete for the same opacity. ScrollTrigger scrubs the same timeline in both directions. The `data-enter-grid-*` attributes are local animation hooks; the director and `TransitionFactory` contract are unchanged.
+- Enter the Grid gives Welcome 150svh of scroll distance. Supporting copy leaves first; the fixed foreground CHRONICLE title then scales beyond the viewport while the Composer canvas appears behind its cropped letterforms. The title exits as the node canvas takes over. The grid changes only slightly to connect the two scenes visually. Scene 02 uses a small peripheral label and hint with a nearly full-viewport React Flow canvas. ScrollTrigger scrubs one timeline in both directions, with a fade-based reduced-motion path. The `data-enter-grid-*` attributes are local animation hooks; the director and `TransitionFactory` contract are unchanged.
 - Connect technology nodes in the composer. Vue + ESP32 makes **ESP32 Monitor**; React + TypeScript makes **Blueprint Editor**; other pairs make **Experimental Concept**. Direction does not affect the composition key.
 - Select an edge and press Delete or Backspace to remove it and its result. Dragging nodes and results changes their positions.
 - Restart scrolls back to Scene 01. Reduced-motion preference simplifies transition movement and disables smooth restart.
@@ -44,7 +44,7 @@ Character art and the five-character push, physics text, 3D/shader portals, fina
 ## Suggested next development order
 
 1. Define final content and visual system for each scene, including real destination URLs.
-2. Develop final Scene 01–02 presentation while keeping Scene Director and composition rules stable.
+2. Review Enter the Grid V1 in context, then tune timing, scale, text placement, grid subtlety, and node spacing in a separate V2 pass.
 3. Replace the remaining transition placeholders one module at a time, starting with AI Push.
 4. Add character assets and final Currently/Profile content.
 5. Implement the portal and space visuals in their isolated modules, then complete accessibility and device testing.

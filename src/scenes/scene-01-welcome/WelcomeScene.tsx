@@ -6,8 +6,10 @@ export function WelcomeScene() {
         <div className="welcome-grid-near" data-enter-grid-near />
         <div className="welcome-grid-vignette" data-enter-grid-vignette />
       </div>
-      <div className="scene-body welcome-body" data-enter-grid-copy>
+      <div className="welcome-title-layer" data-enter-grid-title>
         <h1 className="display-title">CHRONICLE</h1>
+      </div>
+      <div className="scene-body welcome-body" data-enter-grid-support>
         <p className="scene-subtitle">Developer · Builder · Explorer</p>
         <p className="scroll-cue">SCROLL TO ENTER <span aria-hidden="true">↓</span></p>
       </div>
