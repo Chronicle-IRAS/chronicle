@@ -26,7 +26,7 @@ Cross-cutting requirements:
   - as scroll progresses, the entire typography group scales continuously toward the viewer; this is not a subtle scale but a large push-through,
   - the Welcome background stays fixed in the viewport and blends away during the handoff; it must not slide with the document,
   - the title grows until it exceeds the viewport, its letterforms are cropped by the frame edges, and the visitor finally sees a huge letterform fragment instead of the whole word,
-  - the Stack Composer canvas becomes visible behind the oversized title and gradually takes over the frame,
+  - the Stack Composer canvas is already aligned with the viewport when it becomes visible behind the receding oversized title; it reveals in place rather than sliding upward into the frame,
   - the title passes beyond the frame and Stack Composer fully owns the screen.
 - No blank frame: `LOCKED` the title must not disappear into an empty frame followed by a cut to Scene 02. The intended overlap is an oversized CHRONICLE in the foreground while Scene 02 becomes visible behind it.
 - Grid role: `LOCKED` the faint blueprint / node grid from Scene 01 persists as a **spatial continuity** device, never as the transition actor. During the transition it may subtly scale, slightly change spacing, become a little clearer, and blend toward the Scene 02 canvas grid; in Scene 02 the React Flow canvas / grid becomes the real workspace. The visitor should feel that Welcome and Stack Composer belong to one grid world, while the visual advance comes from the CHRONICLE typography scaling.

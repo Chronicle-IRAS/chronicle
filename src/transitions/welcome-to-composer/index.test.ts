@@ -10,7 +10,7 @@ function fixture() {
   const near = { autoAlpha: 0, scale: 1 }
   const vignette = { autoAlpha: 1 }
   const heading = { autoAlpha: 1 }
-  const canvas = { autoAlpha: 1 }
+  const canvas = { autoAlpha: 1, scale: 1, filter: 'none' }
   const fromTargets: Record<string, object> = {
     '[data-enter-grid-support]': support,
     '[data-enter-grid-title]': title,
@@ -46,7 +46,7 @@ describe('Enter the Grid timeline', () => {
     expect(elements.title.autoAlpha).toBe(1)
     expect(elements.title.scale).toBeGreaterThan(1)
 
-    timeline.progress(0.72)
+    timeline.progress(0.8)
     expect(elements.title.scale).toBeGreaterThan(5)
     expect(elements.title.autoAlpha).toBe(1)
     expect(elements.canvas.autoAlpha).toBeGreaterThan(0)
@@ -59,6 +59,7 @@ describe('Enter the Grid timeline', () => {
     expect(elements.toState.autoAlpha).toBe(1)
     expect(elements.heading.autoAlpha).toBe(1)
     expect(elements.canvas.autoAlpha).toBe(1)
+    expect(elements.canvas.scale).toBe(1)
 
     timeline.progress(0)
     expect(elements.support.autoAlpha).toBe(1)
@@ -82,6 +83,8 @@ describe('Enter the Grid timeline', () => {
     expect(elements.far.scale).toBe(1)
     expect(elements.near.scale).toBe(1)
     expect(elements.canvas.autoAlpha).toBe(1)
+    expect(elements.canvas.scale).toBe(1)
+    expect(elements.canvas.filter).toBe('none')
     expect(elements.heading.autoAlpha).toBe(1)
     expect(elements.backdrop.autoAlpha).toBe(0)
   })

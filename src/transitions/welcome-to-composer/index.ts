@@ -11,8 +11,13 @@ export const welcomeToComposer: TransitionFactory = ({ from, to, reducedMotion }
 
   if (support) timeline.to(support, { autoAlpha: 0, duration: 0.24 }, 0.02)
   if (backdrop) timeline.to(backdrop, { autoAlpha: 0, duration: 0.38 }, 0.6)
-  if (canvas) timeline.fromTo(canvas, { autoAlpha: 0 }, { autoAlpha: 1, duration: reducedMotion ? 0.4 : 0.38 }, 0.5)
-  if (heading) timeline.fromTo(heading, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.22 }, 0.76)
+  if (canvas) timeline.fromTo(
+    canvas,
+    { autoAlpha: 0, scale: reducedMotion ? 1 : 0.97, filter: reducedMotion ? 'none' : 'blur(3px)' },
+    { autoAlpha: 1, scale: 1, filter: reducedMotion ? 'none' : 'blur(0px)', duration: 0.28 },
+    0.72,
+  )
+  if (heading) timeline.fromTo(heading, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.12 }, 0.88)
 
   if (reducedMotion) {
     if (title) timeline.to(title, { autoAlpha: 0, scale: 1.08, duration: 0.42 }, 0.46)

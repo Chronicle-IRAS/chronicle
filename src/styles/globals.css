@@ -57,7 +57,9 @@ button:focus-visible, a:focus-visible { outline: 2px solid #8edec8; outline-offs
 .restart-button { display: flex; align-items: center; gap: 2rem; margin-top: 3.5rem; padding: .9rem 1.25rem; border: 1px solid #17232a; background: transparent; color: inherit; cursor: pointer; font-size: .8rem; font-weight: 700; letter-spacing: .16em; transition: background .2s, color .2s; }
 .restart-button:hover { background: #17232a; color: #e9ece8; }
 
-.composer-content { background: #121b20; background-image: radial-gradient(circle, #303a41 1px, transparent 1.5px); background-size: 24px 24px; }
+.scene-composer { display: flow-root; overflow: visible; }
+/* Reach the viewport before revealing, then release at Scene 02's own scroll boundary. */
+.composer-content { position: sticky; inset: auto; top: 0; height: 100svh; margin-top: -100svh; overflow: clip; background: #121b20; background-image: radial-gradient(circle, #303a41 1px, transparent 1.5px); background-size: 24px 24px; }
 .composer-reveal { width: 100%; min-height: 0; }
 .composer-layout { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: .75rem; padding-top: clamp(1.25rem, 3vw, 2.5rem); padding-bottom: clamp(1.25rem, 3vw, 2.5rem); }
 .composer-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 1.5rem; }
