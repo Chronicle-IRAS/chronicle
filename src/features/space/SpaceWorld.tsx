@@ -14,14 +14,16 @@ uniform float uTime;
 varying float vLight;
 varying float vTint;
 void main() {
-  float depth = mod(aPosition.z - uDepth + 3200.0, 1600.0) + 80.0;
-  float drift = uTurn + sin(uTime * 0.07) * 0.012;
+  float flight = mod(uTime * 48.0, 1600.0);
+  float depth = mod(aPosition.z - uDepth - flight + 4800.0, 1600.0) + 80.0;
+  float drift = uTurn + sin(uTime * 0.12) * 0.045;
   float c = cos(drift); float s = sin(drift);
-  vec2 p = mat2(c, -s, s, c) * aPosition.xy;
+  vec2 sway = vec2(sin(uTime * 0.18) * 22.0, cos(uTime * 0.13) * 16.0 - 16.0);
+  vec2 p = mat2(c, -s, s, c) * (aPosition.xy + sway);
   gl_Position = vec4(p.x / depth / uAspect, p.y / depth, 0.0, 1.0);
-  gl_PointSize = clamp(480.0 * aStyle.x / depth, 1.0, 4.5) * uPixelRatio;
+  gl_PointSize = clamp(600.0 * aStyle.x / depth, 1.0, 6.0) * uPixelRatio;
   vLight = smoothstep(80.0, 160.0, depth) * (0.45 + 0.55 * (1.0 - depth / 1680.0));
-  vLight *= 0.8 + 0.2 * sin(uTime * 0.6 + aPosition.z * 0.03);
+  vLight *= 0.72 + 0.28 * sin(uTime * 1.4 + aPosition.z * 0.03);
   vTint = aStyle.y;
 }`
 const fragment = `
@@ -117,5 +119,5 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
     initialize()
     return () => { dispose(); canvas.removeEventListener('webglcontextlost', lost); canvas.removeEventListener('webglcontextrestored', initialize) }
   }, [camera, reducedMotion])
-  return <div className="space-world" data-space-world aria-hidden="true"><div className="space-nebula" /><div className="stars" /><canvas ref={canvasRef} /></div>
+  return <div className="space-world" data-space-world aria-hidden="true"><div className="space-nebula" /><div className="stars" /><canvas ref={canvasRef} /><div className="space-meteors"><i /><i /><i /></div></div>
 }

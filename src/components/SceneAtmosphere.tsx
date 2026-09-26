@@ -6,6 +6,8 @@ export function SceneAtmosphere() {
     <div className="ambient-haze ambient-haze-a" /><div className="ambient-haze ambient-haze-b" />
     <div className="ambient-orbit ambient-orbit-a" /><div className="ambient-orbit ambient-orbit-b" />
     <div className="ambient-trace" />
+    <div className="ambient-wave ambient-wave-a" /><div className="ambient-wave ambient-wave-b" />
+    <div className="ambient-streaks">{Array.from({ length: 6 }, (_, i) => <i key={i} style={{ '--i': i } as CSSProperties} />)}</div>
     {Array.from({ length: 32 }, (_, i) => <i className="ambient-mote" key={i} style={{ '--i': i, left: `${(i * 37 + 7) % 100}%`, top: `${(i * 23 + 13) % 100}%` } as CSSProperties} />)}
   </div>
 }

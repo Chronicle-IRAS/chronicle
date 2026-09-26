@@ -23,8 +23,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid #8edec8; outline-offs
 .muted-note { color: #93a1a6; font-size: .8rem; line-height: 1.5; }
 .scene-currently { background: #162028; }
 .scene-currently .scene-content { background: #162028; }
-.scene-profile .scene-content { background: transparent; color: #17232a; }
-.scene-profile .section-number { color: #436c62; }
+.scene-profile .scene-content { background: transparent; color: #ecf0ef; }
+.scene-profile .section-number { color: #8edec8; }
 .scene-goodbye .scene-content { background: #e9ece8; color: #17232a; }
 .scene-goodbye .section-number { color: #436c62; }
 
@@ -109,9 +109,9 @@ button:focus-visible, a:focus-visible { outline: 2px solid #8edec8; outline-offs
 .impact-letter { display: inline-block; }
 .impact-actor { position: absolute; width: clamp(140px, 23vw, 300px); aspect-ratio: 1; left: 44%; top: 34%; visibility: hidden; opacity: 0; z-index: 3; pointer-events: none; }
 .impact-ripple { position: absolute; width: 90px; height: 90px; border-radius: 50%; border: 1px solid #b9d3dc; left: 51%; top: 55%; opacity: 0; visibility: hidden; pointer-events: none; }
-.page-sheet { position: absolute; inset: 0; background: #e9ece8; --portal-radius: 0vmax; mask-image: radial-gradient(circle at 70% 60%, transparent 0 var(--portal-radius), #000 calc(var(--portal-radius) + 1px)); }
-.profile-list dt { color: #436c62; }
-.profile-list dd { color: #6a7678; }
+.page-sheet { position: absolute; inset: 0; background: #162028; --portal-radius: 0vmax; mask-image: radial-gradient(circle at 70% 60%, transparent 0 var(--portal-radius), #000 calc(var(--portal-radius) + 1px)); }
+.profile-list dt { color: #9aafae; }
+.profile-list dd { color: #ecf0ef; }
 .portal-mouth { position: absolute; left: 70%; top: 60%; width: 160px; height: 160px; margin: -80px; border-radius: 50%; visibility: hidden; opacity: 0; z-index: 2; pointer-events: none; box-shadow: 0 0 0 1px #536777, 0 0 30px 12px #16263370, inset 0 0 30px #060b14; background: radial-gradient(circle, transparent 36%, #0b172466 62%, #61767c50 73%, transparent 75%); }
 .portal-mouth i { position: absolute; inset: -12%; border: 1px solid #758da75c; border-radius: 50%; transform: rotateX(35deg); }
 .portal-mouth i:nth-child(2) { inset: 14%; transform: rotateY(45deg); border-color: #bdcce365; }
@@ -149,7 +149,7 @@ a.destination:hover .planet, a.destination:focus-visible .planet { scale: 1.12; 
 .restart-veil { position: fixed; inset: 0; z-index: 100; background: #101419; pointer-events: auto; }
 @media (max-width: 700px) {
   .scene-body.content-column { padding-top: 3rem; padding-bottom: 3rem; }
-  .scene-currently .scene-title { font-size: clamp(2.5rem, 11vw, 5rem); }
+  .scene-currently .scene-title, .scene-profile .scene-title { font-size: clamp(2.5rem, 11vw, 5rem); }
   .text-list { max-width: 90%; }
   .future-orbits { grid-template-columns: 1fr; gap: 1.3rem; }
   .destination-orbits { inset: 24% 0 5%; }
@@ -168,7 +168,7 @@ a.destination:hover .planet, a.destination:focus-visible .planet { scale: 1.12; 
 
 /* Ambient motion is layered inside each scene so it follows the existing handoff. */
 .scene-atmosphere { --ambient-color: 142, 222, 200; position: absolute; inset: 0; z-index: 0; overflow: clip; pointer-events: none; }
-.scene-profile .scene-atmosphere, .scene-goodbye .scene-atmosphere { --ambient-color: 60, 104, 100; }
+.scene-goodbye .scene-atmosphere { --ambient-color: 60, 104, 100; }
 .scene-profile .scene-atmosphere { mask-image: radial-gradient(circle at 70% 60%, transparent 0 var(--portal-radius, 0vmax), #000 calc(var(--portal-radius, 0vmax) + 2px)); }
 .scene-space .scene-atmosphere, .scene-destinations .scene-atmosphere { --ambient-color: 155, 183, 255; }
 .ambient-pointer { position: absolute; left: calc(50% - 40vmax); top: calc(50% - 40vmax); width: 80vmax; height: 80vmax; border-radius: 50%; background: radial-gradient(circle, rgba(var(--ambient-color), .09), transparent 65%); transform: translate3d(calc((var(--ambient-x, 50) - 50) * .5vw), calc((var(--ambient-y, 50) - 50) * .5vh), 0); }
@@ -186,7 +186,6 @@ a.destination:hover .planet, a.destination:focus-visible .planet { scale: 1.12; 
 @keyframes ambient-haze { from { transform: translate3d(-3%, 2%, 0) scale(.9); opacity: .4; } to { transform: translate3d(15%, -10%, 0) scale(1.2); opacity: 1; } }
 @keyframes ambient-orbit { to { transform: rotate(360deg); } }
 @keyframes ambient-trace { 0%, 15% { transform: translateX(0) skewX(-12deg); opacity: 0; } 30% { opacity: 1; } 80%, 100% { transform: translateX(600%) skewX(-12deg); opacity: 0; } }
-@keyframes ambient-mote { 0% { transform: translate3d(0, 8px, 0); opacity: .15; } 50% { opacity: .8; } 100% { transform: translate3d(18px, -34px, 0); opacity: .25; } }
 .scroll-cue span { animation: cue-drift 2s ease-in-out infinite; }
 @keyframes cue-drift { 50% { transform: translateY(7px); } }
 .text-list > div { position: relative; }
@@ -194,7 +193,7 @@ a.destination:hover .planet, a.destination:focus-visible .planet { scale: 1.12; 
 .text-list > div:nth-child(2)::after { animation-delay: -2s; }
 .text-list > div:nth-child(3)::after { animation-delay: -4s; }
 .text-list > div:nth-child(4)::after { animation-delay: -6s; }
-.profile-list > div::after { background: linear-gradient(90deg, transparent, #436c62, transparent); }
+.profile-list > div::after { background: linear-gradient(90deg, transparent, #8edec8, transparent); }
 @keyframes line-travel { 0%, 15% { transform: translateX(0); opacity: 0; } 50% { opacity: .8; } 85%, 100% { transform: translateX(300%); opacity: 0; } }
 .composer-canvas { position: relative; overflow: hidden; }
 .composer-canvas::after { content: ''; position: absolute; z-index: 3; inset: 0; pointer-events: none; background: linear-gradient(115deg, transparent 35%, #8edec809 48%, transparent 60%); background-size: 250% 100%; animation: canvas-light 14s ease-in-out infinite; }
@@ -202,7 +201,6 @@ a.destination:hover .planet, a.destination:focus-visible .planet { scale: 1.12; 
 .flow-node { animation: node-breathe 5s ease-in-out infinite; transition: border-color .2s, box-shadow .2s; }
 .flow-node:hover, .react-flow__node.selected .flow-node { border-color: #effff9; box-shadow: 0 0 0 1px #b1e9da66, 0 10px 35px #8edec826; }
 .react-flow__node:nth-child(2n) .flow-node { animation-delay: -2s; }
-@keyframes node-breathe { 0%, 100% { box-shadow: 0 8px 24px #0005; } 50% { box-shadow: 0 8px 26px #0005, 0 0 18px #8edec814; } }
 .react-flow__edge-path { animation: edge-breathe 3s ease-in-out infinite; }
 @keyframes edge-breathe { 50% { stroke-opacity: .45; } }
 .result-node { animation: result-arrive .65s ease-out, node-breathe 5s ease-in-out infinite .65s; }
@@ -213,7 +211,6 @@ a.destination:hover .planet, a.destination:focus-visible .planet { scale: 1.12; 
 @keyframes orbit-signal { 50% { opacity: .25; transform: scale(.5); } }
 .planet { animation: planet-float 7s ease-in-out infinite; }
 .destination:nth-child(2n) .planet { animation-delay: -3s; animation-duration: 9s; }
-@keyframes planet-float { 50% { transform: translateY(-12px) rotate(4deg); } }
 .planet-2::after { animation: planet-ring 15s ease-in-out infinite alternate; }
 @keyframes planet-ring { to { transform: rotate(-12deg) scaleY(.8); } }
 .space-nebula { animation: nebula-drift 28s ease-in-out infinite alternate; }
@@ -229,4 +226,49 @@ a.destination:hover .planet, a.destination:focus-visible .planet { scale: 1.12; 
 @media (prefers-reduced-motion: reduce) {
   .scene-atmosphere *, .scroll-cue span, .text-list > div::after, .composer-canvas::after, .flow-node, .react-flow__edge-path, .future-orbits li::before, .planet, .planet::after, .space-nebula, .goodbye-notes li, .restart-button span { animation: none !important; }
   .flow-node { transition: none; }
+}
+
+/* Continuous motion remains separate from scroll-owned transforms and graph geometry. */
+.ambient-pointer { background: radial-gradient(circle, rgba(var(--ambient-color), .16), transparent 65%); }
+.ambient-haze { background: radial-gradient(ellipse, rgba(var(--ambient-color), .2), transparent 65%); animation-duration: 9s; }
+.ambient-haze-b { animation-duration: 13s; }
+.ambient-orbit { border-color: rgba(var(--ambient-color), .22); animation-duration: 18s; }
+.ambient-orbit-b { animation-duration: 25s; }
+.ambient-orbit::before { width: 8px; height: 8px; box-shadow: 0 0 22px rgba(var(--ambient-color), .7); }
+.ambient-trace { background: linear-gradient(100deg, transparent, rgba(var(--ambient-color), .1), transparent); animation-duration: 8s; }
+.ambient-mote { width: 4px; height: 4px; background: rgba(var(--ambient-color), .8); animation-duration: calc(4s + var(--i) * .16s); }
+@keyframes ambient-mote { 0% { transform: translate3d(-16px, 28px, 0); opacity: .2; } 50% { opacity: .95; } 100% { transform: translate3d(42px, -72px, 0); opacity: .35; } }
+.ambient-wave { position: absolute; width: 55vmax; height: 55vmax; border: 1px solid rgba(var(--ambient-color), .35); border-radius: 50%; animation: ambient-wave 8s ease-out infinite; }
+.ambient-wave-a { left: -32vmax; top: 12%; }
+.ambient-wave-b { right: -34vmax; bottom: -18vmax; animation-delay: -4s; }
+@keyframes ambient-wave { from { transform: scale(.55); opacity: .65; } to { transform: scale(1.7); opacity: 0; } }
+.ambient-streaks { position: absolute; inset: 0; overflow: hidden; }
+.ambient-streaks i { position: absolute; top: calc(12% + var(--i) * 15%); left: -20%; width: clamp(80px, 15vw, 230px); height: 1px; background: linear-gradient(90deg, transparent, rgba(var(--ambient-color), .65)); animation: ambient-streak 9s linear infinite; animation-delay: calc(var(--i) * -1.5s); }
+@keyframes ambient-streak { 0% { transform: translateX(0); opacity: 0; } 8%, 32% { opacity: .6; } 42%, 100% { transform: translateX(140vw); opacity: 0; } }
+.display-title, .scene-title { animation: title-light 5s ease-in-out infinite; }
+@keyframes title-light { 0%, 100% { text-shadow: 0 0 0 transparent; } 50% { text-shadow: 0 0 28px #8edec838; } }
+.scene-goodbye .scene-title { animation-name: title-light-dark; }
+@keyframes title-light-dark { 50% { text-shadow: 0 4px 25px #436c6240; } }
+.text-list > div::after { height: 2px; animation-duration: 4s; box-shadow: 0 0 12px #8edec850; }
+.composer-canvas::after { background-image: linear-gradient(115deg, transparent 35%, #8edec819 48%, transparent 60%); animation-duration: 7s; }
+@keyframes node-breathe { 0%, 100% { box-shadow: 0 8px 24px #0005; } 50% { box-shadow: 0 8px 26px #0005, 0 0 22px #8edec843; } }
+.future-orbits li::before { box-shadow: 0 0 15px #9bb7ff90; }
+.planet { animation-duration: 5s; }
+@keyframes planet-float { 50% { transform: translateY(-22px) rotate(7deg); } }
+.space-nebula { background: radial-gradient(ellipse at 72% 39%, #476ba452, transparent 55%), radial-gradient(ellipse at 24% 73%, #8066a33b, transparent 48%); animation-duration: 12s; }
+.space-meteors { position: absolute; inset: 0; overflow: hidden; }
+.space-meteors i { position: absolute; top: 14%; left: 70%; width: 180px; height: 2px; background: linear-gradient(90deg, transparent, #bcd3ff); transform: rotate(-28deg); opacity: 0; animation: meteor-flight 8s linear infinite; }
+.space-meteors i:nth-child(2) { top: 45%; left: 95%; animation-delay: -3s; animation-duration: 11s; }
+.space-meteors i:nth-child(3) { top: 8%; left: 38%; animation-delay: -6s; animation-duration: 13s; }
+@keyframes meteor-flight { 0%, 4% { transform: translate3d(0, 0, 0) rotate(-28deg); opacity: 0; } 7% { opacity: .8; } 18%, 100% { transform: translate3d(-65vw, 35vw, 0) rotate(-28deg); opacity: 0; } }
+.space-world:has(canvas[data-renderer="fallback"]) .stars { animation: fallback-flight 14s linear infinite; }
+@keyframes fallback-flight { to { background-position: 240px 480px; } }
+.scene:not([data-active="true"]) .display-title, .scene:not([data-active="true"]) .scene-title { animation-play-state: paused; }
+@media (max-width: 700px) {
+  .ambient-streaks i:nth-child(n+4) { display: none; }
+  .space-meteors i { width: 95px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .display-title, .scene-title, .space-meteors i, .space-world .stars { animation: none !important; }
+  .space-meteors { display: none; }
 }

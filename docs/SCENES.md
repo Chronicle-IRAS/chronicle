@@ -52,7 +52,7 @@ Scene map (stable identifiers):
 - Tone: `LOCKED` quiet, simple, text-led, giving the visitor a rhythm break.
 - Content direction: `DIRECTION` who I am, what I'm building, what I'm exploring, what I'm learning.
 - Content status: `TBD` the current Skeleton copy is placeholder.
-- Visual chapter: `DIRECTION` Scene 03 and Scene 04 belong to the same visual chapter and should share a language.
+- Visual chapter: `LOCKED` by user request, Scene 03 and Scene 04 share one theme. Current implementation uses the same deep blue background, mint accents, text colors, and typography.
 - Boundary to Scene 04: see `docs/TRANSITIONS.md` (03 → 04).
 
 ## Scene 04 — PROFILE / MORE ABOUT ME
@@ -72,6 +72,7 @@ Scene map (stable identifiers):
 - Candidate topics: `DIRECTION` AI agents, developer tools, full stack, open source, embedded systems, visual programming. `TBD` the final set.
 - Not: `LOCKED` not a contact page. The portal traversal before it must have narrative meaning.
 - Spatial continuity: `DIRECTION` Scenes 05 and 06 share one continuous space.
+- Ambient motion: `LOCKED` by user request, the starfield moves continuously without scrolling. Scroll camera travel adds to the time-driven motion; reduced-motion preferences keep the field static.
 - Boundary to Scene 06: see `docs/TRANSITIONS.md` (05 → 06).
 
 ## Scene 06 — DESTINATIONS

@@ -46,7 +46,7 @@ Composer recipes are unchanged: Vue + ESP32 → **ESP32 Monitor**, React + TypeS
 
 The blueprint viewport is fixed: user wheel/pinch/double-click zoom, background panning, automatic drag panning, and viewport controls are disabled. Only nodes and edges are editable. Initial fitting and resizing adapt the layout to the display; adding a result does not refit or move the viewport. Wheel scrolling continues the journey.
 
-Each scene now has layered animated haze, orbital points, drifting particles, light sweeps, and a pointer-responsive light field. Text rows have moving accents; composer nodes and edges pulse and results arrive with a short highlight. Space adds continuous shader twinkling and gentle drift, nebula motion, floating planets and moving rings. Inactive scene effects pause, and all added motion becomes static with reduced-motion preferences.
+Scenes 03 and 04 share the same deep blue background, mint accents, typography, and text-row treatment. Each scene has visible moving haze, orbital points, expanding waves, drifting particles, crossing light trails, and a pointer-responsive light field. Headings breathe with light; text rows have moving accents; composer nodes and edges pulse without moving the fixed viewport. Space continuously travels through the seeded starfield using shader time, even when scrolling stops, with independent twinkling, lateral drift, meteors, nebula motion, floating planets and moving rings. Inactive scene effects pause, and all added motion becomes static with reduced-motion preferences.
 
 ## Content configuration
 
