@@ -1,18 +1,18 @@
-const destinations = ['Blog', 'GitHub', 'Resume', 'Email', 'Source']
+import { siteContent } from '../../data/siteContent'
 
 export function DestinationsScene() {
-  return (
-    <div className="scene-content space-content" data-scene-content>
-      <div className="stars" aria-hidden="true" />
-      <div className="scene-body content-column">
-        <p className="section-number">06 / DESTINATIONS</p>
-        <h2 className="scene-title">DESTINATIONS</h2>
-        <ul className="word-list destinations-list">
-          {destinations.map((item) => <li key={item}><span>{item}</span><span aria-hidden="true">↗</span></li>)}
-        </ul>
-        <p className="muted-note">Links will be connected in a later phase.</p>
-        <div className="portal-exit-circle" aria-hidden="true" />
-      </div>
+  return <div className="scene-content space-content destination-content" data-scene-content>
+    <div className="scene-body content-column">
+      <p className="section-number">06 / DESTINATIONS</p>
+      <h2 className="destination-heading">Choose an orbit.</h2>
+      <nav className="destination-orbits" aria-label="External destinations">
+        {siteContent.destinations.map(({ label, href }, i) => {
+          const content = <><span className={`planet planet-${i}`} aria-hidden="true" /><span className="planet-label">{label}<small>{href ? 'OPEN ↗' : 'NOT CONNECTED'}</small></span></>
+          return href
+            ? <a className={`destination destination-${i}`} key={label} href={href} target={href.startsWith('mailto:') ? undefined : '_blank'} rel="noopener noreferrer">{content}</a>
+            : <button className={`destination destination-${i}`} key={label} type="button" disabled aria-label={`${label}: address not configured`}>{content}</button>
+        })}
+      </nav>
     </div>
-  )
+  </div>
 }

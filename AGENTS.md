@@ -42,6 +42,7 @@ Role-specific permissions live in `docs/` — see [Agent-Specific Rules](#agent-
 - A scene must not query or mutate another scene's DOM, and must not communicate through implicit globals.
 - The cross-module contract is: `sceneRegistry` order, the `[data-scene-id]` / `[data-scene-content]` attributes, and the transition factories. Renaming or reordering those is an architecture change, not a styling change.
 - One scene directory = one exported `XxxScene` component (`WelcomeScene` … `GoodbyeScene`), mounted once by the director and kept mounted for the whole journey.
+- Full Journey V1 uses fixed viewport content with section-owned scroll distance. The director sets non-active sections inert / aria-hidden. `features/space/` owns the single native WebGL canvas and mutable camera ref, connected to the existing transition timelines by the director.
 - Scene ↔ transition coupling goes through `TransitionFactory` in `src/transitions/types.ts`: `({ from, to, reducedMotion }) => gsap.timeline`. One folder per boundary, one `index.ts` entry file.
 - Keep transition animation decoupled from scene business logic.
 
@@ -52,6 +53,7 @@ Role-specific permissions live in `docs/` — see [Agent-Specific Rules](#agent-
 - Result nodes are derived, never stored: `deriveResultNodes(techNodes, edges, resultPositions)`. Node types are `'tech' | 'project' | 'concept'`; results are draggable, non-connectable, and disappear when their edge is deleted.
 - Recipe and kind decisions live in the engine's `recipes` map. Do not scatter them through JSX, `onConnect`, or `useEffect`.
 - Derivation stays in the `useMemo` in `StackComposer.tsx`; positions of results stay in `resultPositions` in the store.
+- Result `measured` dimensions are retained as presentation metadata in `resultMeasurements`; never store derived recipe results. Dropping React Flow dimension changes can leave result nodes permanently hidden.
 
 ## Asset Rules
 

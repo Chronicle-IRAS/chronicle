@@ -1,4 +1,5 @@
 import { StackComposer } from '../../features/stack-composer/components/StackComposer'
+import { CharacterCast } from '../../components/CharacterCast'
 
 export function ComposerScene() {
   return (
@@ -10,6 +11,7 @@ export function ComposerScene() {
         </div>
         <div className="composer-reveal" data-enter-grid-canvas><StackComposer /></div>
       </div>
+      <CharacterCast />
     </div>
   )
 }

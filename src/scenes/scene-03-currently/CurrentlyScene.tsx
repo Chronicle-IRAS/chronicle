@@ -1,15 +1,14 @@
+import { ImpactActor } from '../../components/CharacterCast'
+import { siteContent } from '../../data/siteContent'
+
 export function CurrentlyScene() {
-  return (
-    <div className="scene-content" data-scene-content>
-      <div className="scene-body content-column">
-        <p className="section-number">03 / CURRENTLY</p>
-        <h2 className="scene-title">CURRENTLY</h2>
-        <dl className="text-list">
-          <div><dt>Building</dt><dd>Blueprint Editor</dd></div>
-          <div><dt>Exploring</dt><dd>AI Agents</dd></div>
-          <div><dt>Learning</dt><dd>...</dd></div>
-        </dl>
-      </div>
+  return <div className="scene-content" data-scene-content>
+    <div className="scene-body content-column">
+      <p className="section-number">03 / CURRENTLY</p>
+      <h2 className="scene-title" aria-label="CURRENTLY"><span aria-hidden="true">{'CURRENTLY'.split('').map((letter, i) => <span className="impact-letter" data-impact-piece key={i}>{letter}</span>)}</span></h2>
+      <dl className="text-list">{siteContent.currently.map(({ label, value }) => <div data-impact-piece key={label}><dt>{label}</dt><dd>{value || '—'}</dd></div>)}</dl>
     </div>
-  )
+    <ImpactActor />
+    <div className="impact-ripple" data-impact-ripple aria-hidden="true" />
+  </div>
 }

@@ -1,12 +1,11 @@
+import { siteContent } from '../../data/siteContent'
+
 export function SpaceScene() {
-  return (
-    <div className="scene-content space-content" data-scene-content>
-      <div className="stars" aria-hidden="true" />
-      <div className="scene-body content-column">
-        <p className="section-number">05 / WHAT'S NEXT</p>
-        <h2 className="scene-title">WHAT'S NEXT</h2>
-        <ul className="word-list"><li>AI Agents</li><li>Developer Tools</li><li>Open Source</li><li>Embedded Systems</li></ul>
-      </div>
+  return <div className="scene-content space-content" data-scene-content>
+    <div className="scene-body content-column">
+      <p className="section-number">05 / WHAT'S NEXT</p>
+      <h2 className="scene-title">WHAT'S NEXT</h2>
+      <ul className="future-orbits">{siteContent.future.map((topic, i) => <li key={topic}><span className="orbit-index">0{i + 1}</span><span>{topic}</span></li>)}</ul>
     </div>
-  )
+  </div>
 }

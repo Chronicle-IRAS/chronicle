@@ -1,6 +1,6 @@
-# CHRONICLE — Skeleton MVP + Enter the Grid V1
+# CHRONICLE — Full Journey V1
 
-This project has a working seven-scene Skeleton MVP and the V1 production pass of **Enter the Grid** (Welcome → Stack Composer). The other scene boundaries remain placeholders. The final visual direction, character animation, 3D portal, and real destination URLs are future work.
+A working seven-scene interactive narrative, from Welcome through Goodbye and Restart. All six scroll boundaries now have a V1 implementation. Personal profile fields and destination URLs remain empty by user request; visual decisions marked TBD in the design documents remain reviewable.
 
 ## Run
 
@@ -9,44 +9,57 @@ npm install
 npm run dev
 ```
 
-Check the project with `npm run typecheck`, `npm test`, and `npm run build`.
+Verify with `npm run typecheck`, `npm test`, and `npm run build`.
 
-## Structure and ownership
+## Journey
+
+| Scene / boundary | Implemented behavior |
+| --- | --- |
+| 01 Welcome → 02 Composer | Welcome copy scales together beyond the frame; scroll cue fades. Composer reveals in place. Existing restrained Welcome ambience is retained. |
+| 02 Composer → 03 Currently | DeepSeek and Grok exert force before the workspace moves. Gemini hops, Claude strolls with a book, GPT quietly observes. The persistent graph slides away with the page. |
+| 03 Currently → 04 Profile | DeepSeek switches FALL → PRE_IMPACT → IMPACT → RECOVER → RUN poses. A separate deterministic impulse layer scatters letterforms and text rows, then restores them on reverse. |
+| 04 Profile → 05 Space | A masked hole punctures the page. Rings expose depth, text draws inward, and the camera advances through the starfield. |
+| 05 Space → 06 Destinations | One continuous 3D point cloud moves gently while future topics give way to destination planets. |
+| 06 Destinations → 07 Goodbye | The camera retreats and the space viewport contracts into a hole, revealing the quiet page world. |
+| Restart | Goodbye converges beneath a short closing veil, returns to the beginning, removes the scene hash, and focuses CHRONICLE. Graph state survives. |
+
+All scene boundaries use native document scrolling, GSAP ScrollTrigger, and one reversible timeline. No wheel accumulation or per-frame React/Zustand state is used.
+
+## Ownership
 
 | Path | Responsibility |
 | --- | --- |
-| `src/app/` | Scene order, DOM ownership, ScrollTrigger registration, active scene and progress, transition wiring. `App.tsx` only composes the director. |
-| `src/scenes/` | Content for each of the seven scenes. Scenes do not listen to scrolling. |
-| `src/transitions/` | One replaceable, scroll-scrubbed animation per scene boundary, plus restart navigation. |
-| `src/features/stack-composer/engine/` | Pure, direction-independent composition rules and result derivation. |
-| `src/features/stack-composer/store/` | Zustand state for node positions, edges, and result positions. |
-| `src/features/stack-composer/components/` | React Flow canvas and three node types. |
-| `src/stores/` | Low-frequency current-scene and reduced-motion state. |
-| `src/hooks/` | `prefers-reduced-motion` subscription. |
-| `src/assets/characters/` | Character asset registry and future asset slots. |
-| `src/styles/` | Global styling and placeholder scene treatments. |
+| `src/app/` | Fixed viewport stage, seven persistent scenes, scroll ranges, accessibility and interaction gates, transition lifecycle. |
+| `src/scenes/` | Scene content and local animation hooks; no scroll listeners. |
+| `src/transitions/` | Character, text, portal, content handoffs, and restart choreography. The existing TransitionFactory contract remains unchanged. |
+| `src/features/stack-composer/` | Pure unordered composition engine, graph state, React Flow nodes and controls. |
+| `src/features/text-impact/` | Progress-sampled ballistic text impulses, independent of character poses and reversible without numerical integration. |
+| `src/features/space/` | One native WebGL canvas and point buffer, seeded stars, camera choreography. One draw call per changed visible frame. |
+| `src/components/CharacterCast.tsx` | Registry-driven ensemble and impact pose layers. |
+| `src/assets/characters/registry.ts` | Production pose URLs resolved from existing `image/` source assets. |
+| `src/data/siteContent.ts` | Currently/Profile content, future topics, destination URLs, and Goodbye labels. |
+| `src/stores/` | Low-frequency active scene, reduced motion, and composer readiness. |
 
-The seven scene components stay mounted during navigation. Composer nodes and edges are also held in Zustand, so returning to Scene 02 retains the graph. Result nodes are derived from current edges; deleting an edge removes its result. Result nodes are draggable and have no connection handles.
+Scene 01 has 150svh of scroll distance; scenes 02–06 have 180svh; Goodbye has 100svh. Content remains fixed to the viewport and scenes remain mounted. Non-active scenes are inert and hidden from assistive technology. Composer becomes editable only after Welcome completes, and locks again when the workspace starts moving away or on reverse entry.
 
-## Current behavior
+Composer recipes are unchanged: Vue + ESP32 → **ESP32 Monitor**, React + TypeScript → **Blueprint Editor**, unknown pairs → **Experimental Concept**. Results are derived, draggable, and non-connectable. Node measurements are retained as presentation metadata so new results become visible; removing an edge still removes its result.
 
-- Native scrolling moves forward and backward through Welcome, Stack Composer, Currently, Profile, Space, Destinations, and Goodbye.
-- The Scene Director registers one ScrollTrigger per scene and a separate scrubbed transition per boundary. Animation progress stays in GSAP and a DOM progress property; only low-frequency active-scene and interaction-readiness changes are written to Zustand.
-- Composer interaction stays locked until the Welcome transition reaches its end. The director updates the low-frequency `sceneStore.composerReady` flag only when crossing that boundary. The canvas also requires Scene 02 to be active; inert content and React Flow interaction options block pointer, zoom, keyboard, selection, and graph edits while locked. Reverse navigation locks it again without clearing graph state.
-- Welcome has a faint breathing light wash and three pulsing grid points. These decorative layers fade with its background and stay still under reduced-motion preferences.
-- Enter the Grid gives Welcome 150svh of scroll distance. Only SCROLL TO ENTER fades early; CHRONICLE and its subtitle scale together beyond the viewport. The Welcome background stays fixed and fades during the handoff. The Composer workspace reaches the viewport before its late reveal, so it appears in place as the typography recedes, with a slight focus and scale effect. It releases into normal scrolling at Scene 02's own boundary. The grid changes only slightly to connect the two scenes visually. Scene 02 uses a small peripheral label and hint with a nearly full-viewport React Flow canvas. ScrollTrigger scrubs one timeline in both directions, with a fade-based reduced-motion path. The `data-enter-grid-*` attributes are local animation hooks; the director and `TransitionFactory` contract are unchanged.
-- Connect technology nodes in the composer. Vue + ESP32 makes **ESP32 Monitor**; React + TypeScript makes **Blueprint Editor**; other pairs make **Experimental Concept**. Direction does not affect the composition key.
-- Select an edge and press Delete or Backspace to remove it and its result. Dragging nodes and results changes their positions.
-- Restart scrolls back to Scene 01. Reduced-motion preference simplifies transition movement and disables smooth restart.
+## Content configuration
 
-## Deferred
+Edit `src/data/siteContent.ts` to add real profile text or destination URLs. Empty profile values render as an em dash. Empty destination URLs render disabled planets with NOT CONNECTED; no fake URLs or personal claims are supplied. Email can use a `mailto:` URL.
 
-Character art and the five-character push, physics text, 3D/shader portals, final starfield/planet UI, real profile content, destination URLs, and final responsive art direction remain outside this Skeleton MVP. No backend, database, Three.js, R3F, Matter.js, Pretext, Lenis, or Framer Motion is included.
+## Accessibility and fallback
 
-## Suggested next development order
+- Reduced motion uses fades rather than giant spatial motion, ensemble movement, falling characters, scattering, or camera traversal.
+- Restart transfers focus to the Welcome heading; repeated clicks are guarded.
+- WebGL unavailable or lost: CSS stars remain visible. Restoring the context recreates the renderer.
+- The renderer caps pixel ratio, pauses while hidden, and skips unchanged frames. GSAP context cleanup restores scene transforms and text impulses.
+- Desktop and mobile layouts preserve the seven-scene order and readable text.
 
-1. Define final content and visual system for each scene, including real destination URLs.
-2. Review Enter the Grid V1 in context, then tune timing, scale, text placement, grid subtlety, and node spacing in a separate V2 pass.
-3. Replace the remaining transition placeholders one module at a time, starting with AI Push.
-4. Add character assets and final Currently/Profile content.
-5. Implement the portal and space visuals in their isolated modules, then complete accessibility and device testing.
+## Verification
+
+Type checking, 14 unit tests, and production build pass. In-app browser checks cover desktop 1280×800 and mobile 390×844: opening, character push, impact, portal entry, continuous space, disabled destinations, exit, restart, reverse navigation, graph connection/drag/state retention, and resize. Reduced-motion timelines are covered by unit tests; OS media preference and WebGL context loss have not been exercised in the browser.
+
+## Remaining review items
+
+Final palette, typography, precise timing, portal/starfield art direction, and character asset delivery optimization remain design/performance review items. Original PNG poses are large. Vite also reports the existing main bundle size warning. No new dependencies, backend, database, remote Git repository, deployment, push, or merge were introduced.

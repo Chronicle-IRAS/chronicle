@@ -13,6 +13,17 @@ Cross-cutting requirements:
 - `LOCKED` A boundary must not destroy scene state — in particular the Scene 02 graph must survive a push-out and a return.
 - `LOCKED` Reduced-motion preferences must be respected by every boundary.
 
+## Current implementation — Full Journey V1
+
+All six boundaries now run on a fixed viewport stage. The original transition factory contract is preserved. This is a reviewable implementation of the direction below, not a decision that locks remaining TBD visuals.
+
+- Ensemble and impact poses use the existing production PNGs through the character registry. Push holds for a friction beat; roles have separate motion tracks.
+- Impact text uses a separate deterministic ballistic sampler, responding at the impact point. No physics or text-layout dependency has been added; the same progress restores all pieces on reverse.
+- Portal entry uses a page mask and nested depth rings to expose the shared star world. Native WebGL point projection supplies 3D camera travel; exit shrinks the same world back into a hole.
+- Space continuation retains one seeded point cloud, canvas, and camera ref across both space scenes. It does not create a new renderer at scene boundaries.
+- Restart gathers the outro beneath a closing veil, returns to Welcome, and restores keyboard focus without clearing graph state.
+- Reduced motion bypasses spatial travel, character action, and scattering in favor of fades. Personal information and destination URLs remain empty by user request.
+
 ---
 
 ## 01 → 02 — ENTER THE GRID (Welcome → Stack Composer)
