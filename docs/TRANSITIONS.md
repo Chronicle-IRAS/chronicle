@@ -66,6 +66,7 @@ All six boundaries now run on a fixed viewport stage. The original transition fa
 - Reveal: `LOCKED` by the latest user request, the chapter background remains continuous after the impact. Profile's label, heading, and rows float slowly upward in sequence; the page itself stays fixed.
 
 - Casting: `LOCKED` DeepSeek is the sole lead again.
+- Pacing: `LOCKED` by user request, the falling approach and descent have an extended scroll interval. Pre-impact, impact, recovery, and run-off stay synchronized with text impulses after the longer descent.
 - Beats: `DIRECTION`
   1. a faint premonition,
   2. DeepSeek falls in from the top of the page, using fall / pre-impact poses,
@@ -96,7 +97,7 @@ All six boundaries now run on a fixed viewport stage. The original transition fa
 
 ## 05 → 06 — SPACE CONTINUATION (Space → Destinations)
 
-- Camera: `LOCKED` by user request, travel through the shared starfield with forward movement, lateral pan, and turning. Future text recedes out of the camera view while planets approach from the side; the star world stays continuous.
+- Camera: `LOCKED` by the latest user request, travel forward through the shared starfield. Future copy grows past the camera; stars stretch into radial trails while accelerating; planets approach from depth as the camera slows. The same star world remains visible throughout.
 
 - Concept: `LOCKED` Scene 05 and Scene 06 belong to one space world, so no strong transition is wanted here.
 - Beats: `DIRECTION`

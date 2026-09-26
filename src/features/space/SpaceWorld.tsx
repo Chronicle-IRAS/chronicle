@@ -9,11 +9,14 @@ attribute vec2 aStyle;
 uniform float uDepth;
 uniform float uTurn;
 uniform float uPan;
+uniform float uWarp;
 uniform float uAspect;
 uniform float uPixelRatio;
 uniform float uTime;
 varying float vLight;
 varying float vTint;
+varying float vStretch;
+varying vec2 vAxis;
 void main() {
   float flight = mod(uTime * 48.0, 1600.0);
   float depth = mod(aPosition.z - uDepth - flight + 4800.0, 1600.0) + 80.0;
@@ -21,8 +24,11 @@ void main() {
   float c = cos(drift); float s = sin(drift);
   vec2 sway = vec2(sin(uTime * 0.18) * 22.0, cos(uTime * 0.13) * 16.0 - 16.0);
   vec2 p = mat2(c, -s, s, c) * (aPosition.xy - vec2(uPan, 0.0) + sway);
-  gl_Position = vec4(p.x / depth / uAspect, p.y / depth, 0.0, 1.0);
-  gl_PointSize = clamp(600.0 * aStyle.x / depth, 1.0, 6.0) * uPixelRatio;
+  vec2 projected = vec2(p.x / depth / uAspect, p.y / depth);
+  gl_Position = vec4(projected, 0.0, 1.0);
+  vAxis = normalize(vec2(projected.x * uAspect, -projected.y) + vec2(0.0001));
+  vStretch = 1.0 + uWarp * 7.0 * (1.0 - depth / 1680.0);
+  gl_PointSize = clamp(600.0 * aStyle.x / depth, 1.0, 6.0) * vStretch * uPixelRatio;
   vLight = smoothstep(80.0, 160.0, depth) * (0.45 + 0.55 * (1.0 - depth / 1680.0));
   vLight *= 0.72 + 0.28 * sin(uTime * 1.4 + aPosition.z * 0.03);
   vTint = aStyle.y;
@@ -31,8 +37,11 @@ const fragment = `
 precision mediump float;
 varying float vLight;
 varying float vTint;
+varying float vStretch;
+varying vec2 vAxis;
 void main() {
-  float d = length(gl_PointCoord - vec2(0.5));
+  vec2 q = gl_PointCoord - vec2(0.5);
+  float d = length(vec2(dot(q, vAxis), dot(q, vec2(-vAxis.y, vAxis.x)) * vStretch));
   float light = (1.0 - smoothstep(0.0, 0.5, d)) * vLight;
   gl_FragColor = vec4(mix(vec3(0.65, 0.76, 1.0), vec3(1.0, 0.91, 0.76), vTint), light);
 }`
@@ -81,6 +90,7 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
       const depth = gl.getUniformLocation(program, 'uDepth')
       const turn = gl.getUniformLocation(program, 'uTurn')
       const pan = gl.getUniformLocation(program, 'uPan')
+      const warp = gl.getUniformLocation(program, 'uWarp')
       const aspect = gl.getUniformLocation(program, 'uAspect')
       const ratio = gl.getUniformLocation(program, 'uPixelRatio')
       const time = gl.getUniformLocation(program, 'uTime')
@@ -97,18 +107,20 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
       let lastDepth = NaN
       let lastTurn = NaN
       let lastPan = NaN
+      let lastWarp = NaN
       let lastFrame = -1
       const draw = (elapsed: number) => {
         if (gl.isContextLost() || document.hidden || camera.visible === 0) return
-        if (reducedMotion && !dirty && lastDepth === camera.depth && lastTurn === camera.turn && lastPan === camera.pan) return
+        if (reducedMotion && !dirty && lastDepth === camera.depth && lastTurn === camera.turn && lastPan === camera.pan && lastWarp === camera.warp) return
         if (!dirty && elapsed - lastFrame < 1 / 30) return
         lastFrame = elapsed
-        lastDepth = camera.depth; lastTurn = camera.turn; lastPan = camera.pan; dirty = false
+        lastDepth = camera.depth; lastTurn = camera.turn; lastPan = camera.pan; lastWarp = camera.warp; dirty = false
         gl.clearColor(0, 0, 0, 0)
         gl.clear(gl.COLOR_BUFFER_BIT)
         gl.uniform1f(depth, camera.depth)
         gl.uniform1f(turn, camera.turn)
         gl.uniform1f(pan, camera.pan)
+        gl.uniform1f(warp, camera.warp)
         gl.uniform1f(time, reducedMotion ? 0 : elapsed)
         gl.drawArrays(gl.POINTS, 0, count)
       }

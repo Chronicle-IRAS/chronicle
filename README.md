@@ -17,9 +17,9 @@ Verify with `npm run typecheck`, `npm test`, and `npm run build`.
 | --- | --- |
 | 01 Welcome → 02 Composer | Welcome copy scales together beyond the frame; scroll cue fades. Composer reveals in place. Existing restrained Welcome ambience is retained. |
 | 02 Composer → 03 Currently | After an extended editing interval, DeepSeek and Grok push at the left edge of the full-screen board. Gemini hops, Claude strolls with a book, GPT observes. The ensemble follows the moving edge; graph state persists. |
-| 03 Currently → 04 Profile | DeepSeek's impact scatters letterforms and text rows. The shared chapter background stays fixed while Profile copy slowly floats up in sequence. |
+| 03 Currently → 04 Profile | DeepSeek has an extended visible descent, followed by impact, recovery and a run-off. The background stays fixed while Profile copy slowly floats up in sequence. |
 | 04 Profile → 05 Space | A scroll threshold launches a complete 0.95s portal traversal. Input is locked until the camera reaches Space, then the scroll position advances to Scene 05. |
-| 05 Space → 06 Destinations | The shared camera advances, pans sideways, and turns. Future copy recedes while destination planets approach in the same star world. |
+| 05 Space → 06 Destinations | Forward space traversal: future copy passes the camera, stars stretch radially during acceleration, open space fills the frame, then planets approach from depth as the camera decelerates. |
 | 06 Destinations → 07 Goodbye | An automatic 0.95s retreat closes the portal and lands at Goodbye. Both portal crossings also complete automatically when returning. |
 | Restart | Goodbye converges beneath a short closing veil, returns to the beginning, removes the scene hash, and focuses CHRONICLE. Graph state survives. |
 
@@ -40,7 +40,7 @@ All boundaries use native scrolling, GSAP ScrollTrigger, and one reversible time
 | `src/data/siteContent.ts` | Currently/Profile content, future topics, destination URLs, and Goodbye labels. |
 | `src/stores/` | Low-frequency active scene, reduced motion, and composer readiness. |
 
-Scene timing lives in `src/app/sceneRegistry.ts`: Welcome has 200svh, Composer 500svh, scenes 03–06 300svh each, and Goodbye 100svh. The journey totals 20 viewport heights. Each scene has a dedicated hold before its outgoing transition: Composer reserves the first 65% (325svh) for editing with all push characters hidden. Content remains fixed and scenes remain mounted. Non-active scenes are inert and hidden from assistive technology. Composer becomes editable after Welcome completes, and locks when its outgoing transition starts.
+Scene timing lives in `src/app/sceneRegistry.ts`: Welcome has 200svh, Composer 500svh, Currently 400svh, scenes 04–06 300svh each, and Goodbye 100svh. The journey totals 21 viewport heights. Currently's additional distance gives the descent and impact more room. Each scene has a dedicated hold before its outgoing transition: Composer reserves the first 65% (325svh) for editing with all push characters hidden. Content remains fixed and scenes remain mounted. Non-active scenes are inert and hidden from assistive technology. Composer becomes editable after Welcome completes, and locks when its outgoing transition starts.
 
 Composer recipes are unchanged: Vue + ESP32 → **ESP32 Monitor**, React + TypeScript → **Blueprint Editor**, unknown pairs → **Experimental Concept**. Results are derived, draggable, and non-connectable. Node measurements are retained as presentation metadata so new results become visible; removing an edge still removes its result.
 
@@ -64,7 +64,7 @@ Edit `src/data/siteContent.ts` to add real profile text or destination URLs. Emp
 
 ## Verification
 
-Type checking, 17 unit tests, and production build pass. In-app browser checks cover desktop 1280×800 and mobile 390×844: opening, character push, impact, portal entry, continuous space, disabled destinations, exit, restart, reverse navigation, graph connection/drag/state retention, and resize. Reduced-motion timelines are covered by unit tests; OS media preference and WebGL context loss have not been exercised in the browser.
+Type checking, 18 unit tests, and production build pass. In-app browser checks cover desktop 1280×800 and mobile 390×844: opening, character push, impact, portal entry, continuous space, disabled destinations, exit, restart, reverse navigation, graph connection/drag/state retention, and resize. Reduced-motion timelines are covered by unit tests; OS media preference and WebGL context loss have not been exercised in the browser.
 
 ## Remaining review items
 

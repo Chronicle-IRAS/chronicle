@@ -26,7 +26,7 @@ type SceneDefinition = {
 export const sceneRegistry: readonly SceneDefinition[] = [
   { id: 'welcome', Component: WelcomeScene, transitionToNext: welcomeToComposer, scrollScreens: 2, holdFraction: 0.15 },
   { id: 'composer', Component: ComposerScene, transitionToNext: aiPush, scrollScreens: 5, holdFraction: 0.65 },
-  { id: 'currently', Component: CurrentlyScene, transitionToNext: dsImpact, scrollScreens: 3, holdFraction: 0.45 },
+  { id: 'currently', Component: CurrentlyScene, transitionToNext: dsImpact, scrollScreens: 4, holdFraction: 0.45 },
   { id: 'profile', Component: ProfileScene, transitionToNext: portalEnter, scrollScreens: 3, holdFraction: 0.45 },
   { id: 'space', Component: SpaceScene, transitionToNext: spaceTransition, scrollScreens: 3, holdFraction: 0.5 },
   { id: 'destinations', Component: DestinationsScene, transitionToNext: portalExit, scrollScreens: 3, holdFraction: 0.5 },

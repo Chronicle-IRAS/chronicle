@@ -12,7 +12,7 @@ import { useAmbientPointer } from '../hooks/useAmbientPointer'
 export function SceneDirector() {
   const rootRef = useRef<HTMLElement>(null)
   const progressRef = useRef(new Map<SceneId, number>())
-  const camera = useRef<SpaceCamera>({ depth: 0, turn: 0, pan: 0, visible: 0 })
+  const camera = useRef<SpaceCamera>({ depth: 0, turn: 0, pan: 0, warp: 0, visible: 0 })
   const reducedMotion = useReducedMotion()
   useAmbientPointer(rootRef, reducedMotion)
   const setCurrentScene = useSceneStore((state) => state.setCurrentScene)
@@ -34,6 +34,7 @@ export function SceneDirector() {
       camera.current.depth = 0
       camera.current.turn = 0
       camera.current.pan = 0
+      camera.current.warp = 0
       camera.current.visible = 0
       let activeScene: SceneId | undefined
       let interactive = false

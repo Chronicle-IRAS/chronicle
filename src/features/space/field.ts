@@ -1,4 +1,4 @@
-export type SpaceCamera = { depth: number; turn: number; pan: number; visible: number }
+export type SpaceCamera = { depth: number; turn: number; pan: number; warp: number; visible: number }
 
 export function createStarField(count: number, seed = 1207): Float32Array {
   const stars = new Float32Array(count * 5)
