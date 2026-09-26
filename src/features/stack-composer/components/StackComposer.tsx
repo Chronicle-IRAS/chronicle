@@ -17,12 +17,13 @@ export function StackComposer() {
   const techNodes = useComposerStore((state) => state.techNodes)
   const edges = useComposerStore((state) => state.edges)
   const resultPositions = useComposerStore((state) => state.resultPositions)
+  const resultMeasurements = useComposerStore((state) => state.resultMeasurements)
   const onNodesChange = useComposerStore((state) => state.onNodesChange)
   const onEdgesChange = useComposerStore((state) => state.onEdgesChange)
   const connect = useComposerStore((state) => state.connect)
   const nodes: ComposerNode[] = useMemo(
-    () => [...techNodes, ...deriveResultNodes(techNodes, edges, resultPositions)],
-    [techNodes, edges, resultPositions],
+    () => [...techNodes, ...deriveResultNodes(techNodes, edges, resultPositions).map((node) => ({ ...node, measured: resultMeasurements[node.id] }))],
+    [techNodes, edges, resultPositions, resultMeasurements],
   )
   const isValidConnection = (connection: Connection | Edge) =>
     connection.source !== connection.target &&
