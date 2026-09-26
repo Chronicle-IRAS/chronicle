@@ -56,11 +56,14 @@ All six boundaries now run on a fixed viewport stage. The original transition fa
   - Claude — casual participant. Holds a book, reads, walks slowly, trails the group. Present without really putting in work.
   - GPT — light support. Calm, stable, quiet, reliable, companion-like; supports, follows, observes. Never straining like DeepSeek or Grok.
 - Ensemble rule: `LOCKED` this must read as group comedy, not five identical sprites performing the same motion.
+- Timing and contact: `LOCKED` by user request, Composer has an extended editing interval with the ensemble fully hidden. The push begins at the left edge of the full-screen board; characters follow that edge instead of standing inside the canvas.
 - Physics feel: `DIRECTION` when scrolling starts, the characters visibly exert force first and Scene 02 does not move immediately — a beat of static friction / inertia — then the page is pushed away.
 - Reversal: `LOCKED` scrolling up restores the previous state as naturally as possible, and the Scene 02 React Flow state is still present on return.
 - Character detail: see `docs/CHARACTERS.md`.
 
 ## 03 → 04 — DEEPSEEK IMPACT (Currently → Profile)
+
+- Reveal: `LOCKED` by user request, Profile appears in place after the impact. Its page and text do not slide upward into the viewport.
 
 - Casting: `LOCKED` DeepSeek is the sole lead again.
 - Beats: `DIRECTION`

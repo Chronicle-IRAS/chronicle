@@ -1,4 +1,4 @@
-import { Background, ReactFlow } from '@xyflow/react'
+import { Background, BackgroundVariant, ReactFlow } from '@xyflow/react'
 import type { Connection, Edge, NodeTypes, ReactFlowInstance } from '@xyflow/react'
 import { useEffect, useMemo, useRef } from 'react'
 import { useSceneStore } from '../../../stores/sceneStore'
@@ -67,7 +67,7 @@ export function StackComposer() {
         disableKeyboardA11y={!interactive}
         deleteKeyCode={interactive ? ['Backspace', 'Delete'] : null}
       >
-        <Background gap={24} size={1} color="#303a41" />
+        <Background variant={BackgroundVariant.Lines} gap={58} size={1} color="#6380762b" />
       </ReactFlow>
     </div>
   )

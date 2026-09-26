@@ -16,8 +16,8 @@ Verify with `npm run typecheck`, `npm test`, and `npm run build`.
 | Scene / boundary | Implemented behavior |
 | --- | --- |
 | 01 Welcome → 02 Composer | Welcome copy scales together beyond the frame; scroll cue fades. Composer reveals in place. Existing restrained Welcome ambience is retained. |
-| 02 Composer → 03 Currently | DeepSeek and Grok exert force before the workspace moves. Gemini hops, Claude strolls with a book, GPT quietly observes. The persistent graph slides away with the page. |
-| 03 Currently → 04 Profile | DeepSeek switches FALL → PRE_IMPACT → IMPACT → RECOVER → RUN poses. A separate deterministic impulse layer scatters letterforms and text rows, then restores them on reverse. |
+| 02 Composer → 03 Currently | After an extended editing interval, DeepSeek and Grok push at the left edge of the full-screen board. Gemini hops, Claude strolls with a book, GPT observes. The ensemble follows the moving edge; graph state persists. |
+| 03 Currently → 04 Profile | DeepSeek switches FALL → PRE_IMPACT → IMPACT → RECOVER → RUN poses. A separate deterministic impulse layer scatters letterforms and text rows. Profile fades into place with no vertical slide; everything reverses. |
 | 04 Profile → 05 Space | A masked hole punctures the page. Rings expose depth, text draws inward, and the camera advances through the starfield. |
 | 05 Space → 06 Destinations | One continuous 3D point cloud moves gently while future topics give way to destination planets. |
 | 06 Destinations → 07 Goodbye | The camera retreats and the space viewport contracts into a hole, revealing the quiet page world. |
@@ -40,15 +40,17 @@ All scene boundaries use native document scrolling, GSAP ScrollTrigger, and one 
 | `src/data/siteContent.ts` | Currently/Profile content, future topics, destination URLs, and Goodbye labels. |
 | `src/stores/` | Low-frequency active scene, reduced motion, and composer readiness. |
 
-Scene 01 has 150svh of scroll distance; scenes 02–06 have 180svh; Goodbye has 100svh. Content remains fixed to the viewport and scenes remain mounted. Non-active scenes are inert and hidden from assistive technology. Composer becomes editable only after Welcome completes, and locks again when the workspace starts moving away or on reverse entry.
+Scene timing lives in `src/app/sceneRegistry.ts`: Welcome has 200svh, Composer 500svh, scenes 03–06 300svh each, and Goodbye 100svh. The journey totals 20 viewport heights. Each scene has a dedicated hold before its outgoing transition: Composer reserves the first 65% (325svh) for editing with all push characters hidden. Content remains fixed and scenes remain mounted. Non-active scenes are inert and hidden from assistive technology. Composer becomes editable after Welcome completes, and locks when its outgoing transition starts.
 
 Composer recipes are unchanged: Vue + ESP32 → **ESP32 Monitor**, React + TypeScript → **Blueprint Editor**, unknown pairs → **Experimental Concept**. Results are derived, draggable, and non-connectable. Node measurements are retained as presentation metadata so new results become visible; removing an edge still removes its result.
 
-The blueprint viewport is fixed: user wheel/pinch/double-click zoom, background panning, automatic drag panning, and viewport controls are disabled. Only nodes and edges are editable. Initial fitting and resizing adapt the layout to the display; adding a result does not refit or move the viewport. Wheel scrolling continues the journey.
+The blueprint fills the entire viewport and shares Welcome's background and grid. User wheel/pinch/double-click zoom, background panning, automatic drag panning, and viewport controls are disabled. Only nodes and edges are editable. Initial fitting and resizing adapt the layout to the display; adding a result does not refit or move the viewport. Wheel scrolling continues the journey. Node ornaments rotate, sweep, pulse, and charge independently of node geometry and connection handles.
 
 Scenes 03 and 04 share the same deep blue background, mint accents, typography, and text-row treatment. Each scene has visible moving haze, orbital points, expanding waves, drifting particles, crossing light trails, and a pointer-responsive light field. Headings breathe with light; text rows have moving accents; composer nodes and edges pulse without moving the fixed viewport. Space continuously travels through the seeded starfield using shader time, even when scrolling stops, with independent twinkling, lateral drift, meteors, nebula motion, floating planets and moving rings. Inactive scene effects pause, and all added motion becomes static with reduced-motion preferences.
 
 ## Content configuration
+
+Narrow screens start with a two-column, three-row graph to keep node labels readable. This layout is chosen only when the store initializes; later resizing or scene transitions preserve edited node positions.
 
 Edit `src/data/siteContent.ts` to add real profile text or destination URLs. Empty profile values render as an em dash. Empty destination URLs render disabled planets with NOT CONNECTED; no fake URLs or personal claims are supplied. Email can use a `mailto:` URL.
 
@@ -62,7 +64,7 @@ Edit `src/data/siteContent.ts` to add real profile text or destination URLs. Emp
 
 ## Verification
 
-Type checking, 14 unit tests, and production build pass. In-app browser checks cover desktop 1280×800 and mobile 390×844: opening, character push, impact, portal entry, continuous space, disabled destinations, exit, restart, reverse navigation, graph connection/drag/state retention, and resize. Reduced-motion timelines are covered by unit tests; OS media preference and WebGL context loss have not been exercised in the browser.
+Type checking, 16 unit tests, and production build pass. In-app browser checks cover desktop 1280×800 and mobile 390×844: opening, character push, impact, portal entry, continuous space, disabled destinations, exit, restart, reverse navigation, graph connection/drag/state retention, and resize. Reduced-motion timelines are covered by unit tests; OS media preference and WebGL context loss have not been exercised in the browser.
 
 ## Remaining review items
 

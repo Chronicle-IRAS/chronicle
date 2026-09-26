@@ -36,7 +36,5 @@ export const dsImpact: TransitionFactory = ({ from, to, reducedMotion }) => {
   }
   timeline.fromTo(from, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.24 }, reducedMotion ? 0.3 : 0.76)
   timeline.fromTo(to, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 }, reducedMotion ? 0.3 : 0.65)
-  const body = to.querySelector('.scene-body')
-  if (body) timeline.fromTo(body, { y: reducedMotion ? 0 : 24 }, { y: 0, duration: 0.3 }, 0.65)
   return timeline
 }

@@ -3,9 +3,10 @@ import type { TransitionFactory } from '../types'
 
 export const aiPush: TransitionFactory = ({ from, to, reducedMotion }) => {
   const timeline = gsap.timeline({ paused: true, defaults: { ease: 'none', immediateRender: false } })
+  const board = from.querySelector('[data-composer-board]') ?? from
+  const cast = from.querySelector('.character-cast')
   timeline.fromTo(to, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.25 }, 0.1)
   if (!reducedMotion) {
-    const cast = from.querySelector('.character-cast')
     const ds = from.querySelector('[data-cast="deepseek"]')
     const grok = from.querySelector('[data-cast="grok"]')
     const gemini = from.querySelector('[data-cast="gemini"]')
@@ -28,7 +29,8 @@ export const aiPush: TransitionFactory = ({ from, to, reducedMotion }) => {
     if (gpt) timeline.fromTo(gpt, { x: -160, y: -5 }, { x: 0, y: 0, duration: 0.42 }, 0.12)
   }
   // Friction beat: the page holds until the cast has visibly exerted force.
-  timeline.fromTo(from, { xPercent: 0, autoAlpha: 1 }, { xPercent: reducedMotion ? 0 : 105, autoAlpha: reducedMotion ? 0 : 1, duration: 0.65, ease: 'power2.in' }, 0.3)
+  timeline.fromTo(board, { xPercent: 0, autoAlpha: 1 }, { xPercent: reducedMotion ? 0 : 105, autoAlpha: reducedMotion ? 0 : 1, duration: 0.65, ease: 'power2.in' }, 0.3)
+  if (cast && !reducedMotion) timeline.fromTo(cast, { xPercent: 0 }, { xPercent: 105, duration: 0.65, ease: 'power2.in' }, 0.3)
   timeline.to(from, { autoAlpha: 0, duration: 0.05 }, 0.95)
   return timeline
 }

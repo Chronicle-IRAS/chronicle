@@ -1,7 +1,7 @@
 import { addEdge, applyEdgeChanges, applyNodeChanges } from '@xyflow/react'
 import type { Connection, EdgeChange, NodeChange, XYPosition } from '@xyflow/react'
 import { create } from 'zustand'
-import { initialTechNodes } from '../data/initialNodes'
+import { createInitialTechNodes } from '../data/initialNodes'
 import { normalizeComposition } from '../engine/composition'
 import type { ComposerEdge, ComposerNode, TechNode } from '../types'
 
@@ -16,7 +16,7 @@ type ComposerState = {
 }
 
 export const useComposerStore = create<ComposerState>((set) => ({
-  techNodes: initialTechNodes,
+  techNodes: createInitialTechNodes(typeof window === 'undefined' ? 1280 : window.innerWidth),
   edges: [],
   resultPositions: {},
   resultMeasurements: {},

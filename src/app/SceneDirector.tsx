@@ -47,7 +47,7 @@ export function SceneDirector() {
           })
           setCurrentScene(id)
         }
-        const ready = id === 'composer' && window.scrollY >= sections[1].offsetTop && window.scrollY <= sections[1].offsetTop + sections[1].offsetHeight * 0.3
+        const ready = id === 'composer' && window.scrollY >= sections[1].offsetTop && window.scrollY <= sections[1].offsetTop + sections[1].offsetHeight * sceneRegistry[1].holdFraction
         if (ready !== interactive) { interactive = ready; setComposerReady(ready) }
       }
       sections.forEach((section, index) => {
@@ -72,9 +72,10 @@ export function SceneDirector() {
         if (world) addSpaceMotion(animation, id, world, camera.current, reducedMotion)
         ScrollTrigger.create({
           trigger: section,
-          start: 'top top',
+          start: () => section.offsetTop + section.offsetHeight * sceneRegistry[index].holdFraction,
           end: 'bottom top',
           animation,
+          // Each scene gets a reading/editing interval before its outgoing action.
           scrub: true,
           onToggle: (self) => { section.dataset.transitioning = String(self.isActive) },
           onUpdate: (self) => {
@@ -96,8 +97,8 @@ export function SceneDirector() {
   return (
     <main ref={rootRef} id="journey">
       <SpaceWorld camera={camera.current} reducedMotion={reducedMotion} />
-      {sceneRegistry.map(({ id, Component }, index) => (
-        <section className={`scene scene-${id}`} style={{ zIndex: 10 - index }} data-scene-id={id} id={id} key={id} aria-label={`Scene ${String(index + 1).padStart(2, '0')}: ${id}`}>
+      {sceneRegistry.map(({ id, Component, scrollScreens }, index) => (
+        <section className={`scene scene-${id}`} style={{ zIndex: 10 - index, height: `${scrollScreens * 100}svh` }} data-scene-id={id} id={id} key={id} aria-label={`Scene ${String(index + 1).padStart(2, '0')}: ${id}`}>
           <Component />
         </section>
       ))}
