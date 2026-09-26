@@ -31,7 +31,7 @@ Role-specific permissions live in `docs/` — see [Agent-Specific Rules](#agent-
 
 - Never put per-frame animation values (x, y, rotation, scale, opacity, scroll progress, shader uniforms) into React state or Zustand.
 - The established pattern is `src/app/SceneDirector.tsx`: per-frame values live in GSAP timelines, a `useRef` map, and DOM custom properties (`--scene-progress`, `--transition-progress`) plus `data-active` / `data-transitioning`. Follow it.
-- Zustand holds low-frequency shared state only: `sceneStore` (currentScene, reducedMotion) and `composerStore` (graph data, result positions).
+- Zustand holds low-frequency shared state only: `sceneStore` (currentScene, reducedMotion, composerReady interaction gate) and `composerStore` (graph data, result positions).
 - Prefer progress-driven GSAP + ScrollTrigger animation that plays forward and backward via `scrub`. Never hand-roll wheel-delta accumulation to drive scenes.
 - Respect `prefers-reduced-motion`: transition factories receive `reducedMotion` in `TransitionElements` and must simplify. `sceneStore.reducedMotion` mirrors the media query.
 - Never make React re-render per frame.

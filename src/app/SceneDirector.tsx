@@ -11,6 +11,7 @@ export function SceneDirector() {
   const reducedMotion = useReducedMotion()
   const setCurrentScene = useSceneStore((state) => state.setCurrentScene)
   const setReducedMotion = useSceneStore((state) => state.setReducedMotion)
+  const setComposerReady = useSceneStore((state) => state.setComposerReady)
 
   useEffect(() => setReducedMotion(reducedMotion), [reducedMotion, setReducedMotion])
 
@@ -47,6 +48,14 @@ export function SceneDirector() {
         const toContent = next.querySelector<HTMLElement>('[data-scene-content]')
         if (!fromContent || !toContent) return
         const animation = factory({ from: fromContent, to: toContent, reducedMotion })
+        let composerReady = false
+        const syncInteraction = (progress: number) => {
+          if (id !== 'welcome') return
+          const ready = progress === 1
+          if (ready === composerReady) return
+          composerReady = ready
+          setComposerReady(ready)
+        }
         ScrollTrigger.create({
           trigger: section,
           start: 'top top',
@@ -54,7 +63,11 @@ export function SceneDirector() {
           animation,
           scrub: true,
           onToggle: (self) => { section.dataset.transitioning = String(self.isActive) },
-          onUpdate: (self) => { section.style.setProperty('--transition-progress', String(self.progress)) },
+          onUpdate: (self) => {
+            section.style.setProperty('--transition-progress', String(self.progress))
+            syncInteraction(self.progress)
+          },
+          onRefresh: (self) => { syncInteraction(self.progress) },
         })
       })
     }, root)
@@ -62,8 +75,9 @@ export function SceneDirector() {
     return () => {
       context.revert()
       progressRef.current.clear()
+      setComposerReady(false)
     }
-  }, [reducedMotion, setCurrentScene])
+  }, [reducedMotion, setCurrentScene, setComposerReady])
 
   return (
     <main ref={rootRef} id="journey">
