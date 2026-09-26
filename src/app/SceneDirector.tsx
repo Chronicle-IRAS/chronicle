@@ -8,6 +8,7 @@ import { SpaceWorld } from '../features/space/SpaceWorld'
 import type { SpaceCamera } from '../features/space/field'
 import { addSpaceMotion } from '../features/space/addSpaceMotion'
 import { useAmbientPointer } from '../hooks/useAmbientPointer'
+import { lockJourneyInput } from '../lib/lockJourneyInput'
 
 export function SceneDirector() {
   const rootRef = useRef<HTMLElement>(null)
@@ -40,19 +41,13 @@ export function SceneDirector() {
       let interactive = false
       let traversing = false
       let flight: gsap.core.Tween | undefined
-      let restoreOverflow = ''
-      const scrollKeys = new Set(['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '])
-      const blockScroll = (event: Event) => event.preventDefault()
-      const blockKeys = (event: KeyboardEvent) => { if (scrollKeys.has(event.key)) event.preventDefault() }
+      let releaseInput = () => {}
       const unlock = () => {
         if (!traversing) return
         traversing = false
-        document.documentElement.style.overflow = restoreOverflow
-        root.removeAttribute('aria-busy')
-        delete root.dataset.traversing
-        window.removeEventListener('wheel', blockScroll)
-        window.removeEventListener('touchmove', blockScroll)
-        window.removeEventListener('keydown', blockKeys)
+        releaseInput()
+        delete root.dataset.transitionFrom
+        delete root.dataset.transitionDirection
       }
       cancelTraversal = () => { flight?.kill(); unlock() }
       const syncActive = () => {
@@ -71,24 +66,24 @@ export function SceneDirector() {
         const ready = id === 'composer' && window.scrollY >= sections[1].offsetTop && window.scrollY <= sections[1].offsetTop + sections[1].offsetHeight * sceneRegistry[1].holdFraction
         if (ready !== interactive) { interactive = ready; setComposerReady(ready) }
       }
-      const traverse = (animation: gsap.core.Timeline, forward: boolean, index: number, start: number) => {
+      const traverse = (animation: gsap.core.Timeline, forward: boolean, index: number) => {
         if (traversing) return
         traversing = true
-        restoreOverflow = document.documentElement.style.overflow
-        document.documentElement.style.overflow = 'hidden'
-        root.dataset.traversing = 'true'
-        root.setAttribute('aria-busy', 'true')
-        window.addEventListener('wheel', blockScroll, { passive: false })
-        window.addEventListener('touchmove', blockScroll, { passive: false })
-        window.addEventListener('keydown', blockKeys)
+        releaseInput = lockJourneyInput(root)
+        root.dataset.transitionFrom = sceneRegistry[index].id
+        root.dataset.transitionDirection = forward ? 'forward' : 'backward'
+        sections[index].dataset.transitioning = 'true'
+        interactive = false
+        setComposerReady(false)
         animation.progress(forward ? 0 : 1)
         flight = animation.tweenTo(forward ? animation.duration() : 0, {
-          duration: reducedMotion ? 0.28 : 0.95,
-          ease: 'power2.inOut',
+          duration: reducedMotion ? 0.35 : sceneRegistry[index].transitionSeconds,
+          ease: 'none',
           onUpdate: () => { sections[index].style.setProperty('--transition-progress', String(animation.progress())) },
           onComplete: () => {
             unlock()
-            window.scrollTo(0, forward ? sections[index + 1].offsetTop + 2 : start - 2)
+            sections[index].dataset.transitioning = 'false'
+            window.scrollTo(0, forward ? sections[index + 1].offsetTop + 2 : sections[index].offsetTop + sections[index].offsetHeight * sceneRegistry[index].holdFraction - 2)
             ScrollTrigger.update()
             syncActive()
           },
@@ -114,38 +109,23 @@ export function SceneDirector() {
         if (!fromContent || !toContent) return
         const animation = factory({ from: fromContent, to: toContent, reducedMotion })
         if (world) addSpaceMotion(animation, id, world, camera.current, reducedMotion)
-        if (id === 'profile' || id === 'destinations') {
-          // Portal crossings play to an endpoint once triggered, including on return.
-          ScrollTrigger.create({
-            trigger: section,
-            start: () => section.offsetTop + section.offsetHeight * sceneRegistry[index].holdFraction,
-            end: 'bottom top',
-            onEnter: (self) => {
-              if (traversing) return
-              if (window.scrollY >= self.end) animation.progress(1)
-              else traverse(animation, true, index, self.start)
-            },
-            onEnterBack: (self) => {
-              if (traversing) return
-              if (window.scrollY <= self.start) animation.progress(0)
-              else traverse(animation, false, index, self.start)
-            },
-            onLeave: () => { if (!traversing) animation.progress(1) },
-            onLeaveBack: () => { if (!traversing) animation.progress(0) },
-          })
-          return
-        }
+        // Every boundary plays to an endpoint once triggered, including on return.
         ScrollTrigger.create({
           trigger: section,
           start: () => section.offsetTop + section.offsetHeight * sceneRegistry[index].holdFraction,
           end: 'bottom top',
-          animation,
-          // Each scene gets a reading/editing interval before its outgoing action.
-          scrub: true,
-          onToggle: (self) => { section.dataset.transitioning = String(self.isActive) },
-          onUpdate: (self) => {
-            section.style.setProperty('--transition-progress', String(self.progress))
+          onEnter: (self) => {
+            if (traversing) return
+            if (window.scrollY >= self.end) animation.progress(1)
+            else traverse(animation, true, index)
           },
+          onEnterBack: (self) => {
+            if (traversing) return
+            if (window.scrollY <= self.start) animation.progress(0)
+            else traverse(animation, false, index)
+          },
+          onLeave: () => { if (!traversing) animation.progress(1) },
+          onLeaveBack: () => { if (!traversing) animation.progress(0) },
         })
       })
       ScrollTrigger.create({ start: 0, end: 'max', onUpdate: syncActive, onRefresh: syncActive })

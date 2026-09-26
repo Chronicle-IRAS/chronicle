@@ -8,7 +8,7 @@ Status tags: `LOCKED` (decided, do not change unilaterally) · `DIRECTION` (stro
 
 Cross-cutting requirements:
 
-- `LOCKED` Boundaries 01 → 02, 02 → 03, 03 → 04, and 05 → 06 are scroll-scrubbed and reversible. By user request, 04 → 05 and 06 → 07 trigger on scrolling, then automatically play a complete portal crossing with input temporarily locked. Reverse crossings also play to completion.
+- `LOCKED` By the latest user request, every boundary triggers on scrolling, then plays its complete animation automatically with input temporarily locked. Reverse crossings also play fully to completion. Stopping or reversing wheel/touch/key input must not stop an animation halfway.
 - `LOCKED` 07 → 01 is an explicit Restart action rather than a scroll-driven boundary. It follows its own closing-animation contract.
 - `LOCKED` A boundary must not destroy scene state — in particular the Scene 02 graph must survive a push-out and a return.
 - `LOCKED` Reduced-motion preferences must be respected by every boundary.
@@ -43,7 +43,7 @@ All six boundaries now run on a fixed viewport stage. The original transition fa
 - Grid role: `LOCKED` the faint blueprint / node grid from Scene 01 persists as a **spatial continuity** device, never as the transition actor. During the transition it may subtly scale, slightly change spacing, become a little clearer, and blend toward the Scene 02 canvas grid; in Scene 02 the React Flow canvas / grid becomes the real workspace. The visitor should feel that Welcome and Stack Composer belong to one grid world, while the visual advance comes from the CHRONICLE typography scaling.
 - Rhythm (design intent, no fixed percentages): early — the scroll cue fades; middle — CHRONICLE and its subtitle enlarge together and the grid continuity strengthens; late — the typography exceeds the viewport, Scene 02 becomes visible behind it, oversized letterforms move beyond the frame, Stack Composer takes over.
 - Reverse: `LOCKED` scrolling up plays the same process backwards — Stack Composer → the huge letterforms return into the viewport → CHRONICLE and its subtitle scale back down → the scroll cue returns → the complete Welcome state.
-- Requirements: `LOCKED` scroll-driven, scrubbed, reversible.
+- Requirements: `LOCKED` scroll-triggered, automatically completed, reversible through a full return animation.
 - Avoid: `LOCKED` the grid becoming an exaggerated main zoom effect; a simple Scene 01 fade-out / Scene 02 fade-in; hard cuts; a black frame in between; a flashy sci-fi tunnel; heavy motion blur; exaggerated glow; cyberpunk treatment. The transition stays quiet, restrained, cinematic, and spatial.
 
 ## 02 → 03 — AI ENSEMBLE PUSH (Stack Composer → Currently)
@@ -57,6 +57,7 @@ All six boundaries now run on a fixed viewport stage. The original transition fa
   - GPT — light support. Calm, stable, quiet, reliable, companion-like; supports, follows, observes. Never straining like DeepSeek or Grok.
 - Ensemble rule: `LOCKED` this must read as group comedy, not five identical sprites performing the same motion.
 - Timing and contact: `LOCKED` by user request, Composer has an extended editing interval with the ensemble fully hidden. The push begins at the left edge of the full-screen board; characters follow that edge instead of standing inside the canvas.
+- Return: `LOCKED` Scene 03 → Scene 02 fully plays the reverse ensemble action, bringing the board and characters back together. Composer is editable only after the pull finishes.
 - Physics feel: `DIRECTION` when scrolling starts, the characters visibly exert force first and Scene 02 does not move immediately — a beat of static friction / inertia — then the page is pushed away.
 - Reversal: `LOCKED` scrolling up restores the previous state as naturally as possible, and the Scene 02 React Flow state is still present on return.
 - Character detail: see `docs/CHARACTERS.md`.

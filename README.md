@@ -18,12 +18,12 @@ Verify with `npm run typecheck`, `npm test`, and `npm run build`.
 | 01 Welcome → 02 Composer | Welcome copy scales together beyond the frame; scroll cue fades. Composer reveals in place. Existing restrained Welcome ambience is retained. |
 | 02 Composer → 03 Currently | After an extended editing interval, DeepSeek and Grok push at the left edge of the full-screen board. Gemini hops, Claude strolls with a book, GPT observes. The ensemble follows the moving edge; graph state persists. |
 | 03 Currently → 04 Profile | DeepSeek has an extended visible descent, followed by impact, recovery and a run-off. The background stays fixed while Profile copy slowly floats up in sequence. |
-| 04 Profile → 05 Space | A scroll threshold launches a complete 0.95s portal traversal. Input is locked until the camera reaches Space, then the scroll position advances to Scene 05. |
+| 04 Profile → 05 Space | A scroll threshold launches a complete 1.25s portal traversal. Input is locked until the camera reaches Space, then the scroll position advances to Scene 05. |
 | 05 Space → 06 Destinations | Forward space traversal: future copy passes the camera, stars stretch radially during acceleration, open space fills the frame, then planets approach from depth as the camera decelerates. |
-| 06 Destinations → 07 Goodbye | An automatic 0.95s retreat closes the portal and lands at Goodbye. Both portal crossings also complete automatically when returning. |
+| 06 Destinations → 07 Goodbye | An automatic 1.25s retreat closes the portal and lands at Goodbye. Both portal crossings also complete automatically when returning. |
 | Restart | Goodbye converges beneath a short closing veil, returns to the beginning, removes the scene hash, and focuses CHRONICLE. Graph state survives. |
 
-All boundaries use native scrolling, GSAP ScrollTrigger, and one reversible timeline. Four boundaries remain scrubbed. Portal entry and exit use scroll thresholds to launch time-driven playback (0.95s, or a 0.28s reduced-motion fade), temporarily lock scroll/pointer input, then position the document at the destination. Cleanup kills an active traversal and restores input and overflow. No wheel accumulation or per-frame React/Zustand state is used.
+Every boundary uses a native scroll threshold, GSAP ScrollTrigger, and one reversible timeline. Once triggered, playback runs to completion independently of scroll input. Durations live in `sceneRegistry.ts`: Welcome 2.2s, ensemble push/pull 2.6s, DeepSeek impact and floating Profile 4.6s, portal entry/exit 1.25s each, and space traversal 2.4s. Reduced motion uses 0.35s simplified boundaries. Main content is temporarily inert; wheel, touch scroll and scroll keys are blocked. On arrival the document moves to the destination's reading/editing interval and input returns. Reverse playback finishes fully too, including the ensemble pulling the blueprint back from Scene 03. Restart uses the same input lock and a roughly 1.6s closing veil. Cleanup kills active playback and restores input and overflow. No wheel accumulation or per-frame React/Zustand state is used.
 
 ## Ownership
 
@@ -64,7 +64,7 @@ Edit `src/data/siteContent.ts` to add real profile text or destination URLs. Emp
 
 ## Verification
 
-Type checking, 18 unit tests, and production build pass. In-app browser checks cover desktop 1280×800 and mobile 390×844: opening, character push, impact, portal entry, continuous space, disabled destinations, exit, restart, reverse navigation, graph connection/drag/state retention, and resize. Reduced-motion timelines are covered by unit tests; OS media preference and WebGL context loss have not been exercised in the browser.
+Type checking, 19 unit tests, and production build pass. In-app browser checks cover desktop 1280×800 and mobile 390×844: opening, character push, impact, portal entry, continuous space, disabled destinations, exit, restart, reverse navigation, graph connection/drag/state retention, and resize. Reduced-motion timelines are covered by unit tests; OS media preference and WebGL context loss have not been exercised in the browser.
 
 ## Remaining review items
 

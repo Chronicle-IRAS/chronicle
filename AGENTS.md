@@ -6,7 +6,7 @@ Role-specific permissions live in `docs/` — see [Agent-Specific Rules](#agent-
 ## Project Overview
 
 - CHRONICLE (`chronicle-skeleton`): a high-interaction personal website built with React + TypeScript, Vite, Tailwind CSS, Zustand, GSAP (+ ScrollTrigger), and `@xyflow/react`. `package.json` and the lockfile are the authority for exact versions.
-- The site is one scroll journey: seven scenes (`src/scenes/scene-01-welcome` … `scene-07-goodbye`) with one scroll-scrubbed transition per boundary (`src/transitions/*`).
+- The site is one scroll journey: seven scenes (`src/scenes/scene-01-welcome` … `scene-07-goodbye`) with one scroll-triggered, automatically completed transition per boundary (`src/transitions/*`).
 - The current stage and phase scope are recorded in `README.md`. Never assume which optional libraries are installed — inspect `package.json` and the lockfile. Deferred technologies (3D / R3F, physics, smooth scroll, motion libraries) must not be introduced unless the current task or the project phase explicitly permits them.
 - Module ownership (also in `README.md`): `src/app/` scene order, DOM ownership, ScrollTrigger wiring; `src/scenes/` content; `src/transitions/` one animation per boundary; `src/features/stack-composer/` engine + store + React Flow components; `src/stores/` low-frequency state; `src/hooks/`; `src/assets/characters/`; `src/styles/`.
 
@@ -32,7 +32,7 @@ Role-specific permissions live in `docs/` — see [Agent-Specific Rules](#agent-
 - Never put per-frame animation values (x, y, rotation, scale, opacity, scroll progress, shader uniforms) into React state or Zustand.
 - The established pattern is `src/app/SceneDirector.tsx`: per-frame values live in GSAP timelines, a `useRef` map, and DOM custom properties (`--scene-progress`, `--transition-progress`) plus `data-active` / `data-transitioning`. Follow it.
 - Zustand holds low-frequency shared state only: `sceneStore` (currentScene, reducedMotion, composerReady interaction gate) and `composerStore` (graph data, result positions).
-- Prefer progress-driven GSAP + ScrollTrigger animation that plays forward and backward via `scrub`. Never hand-roll wheel-delta accumulation to drive scenes.
+- ScrollTrigger starts each boundary; the director plays its GSAP timeline to completion forward or backward with input locked during playback. Keep durations in `sceneRegistry` and easing inside transition factories. Never hand-roll wheel-delta accumulation to drive scenes.
 - Respect `prefers-reduced-motion`: transition factories receive `reducedMotion` in `TransitionElements` and must simplify. `sceneStore.reducedMotion` mirrors the media query.
 - Never make React re-render per frame.
 

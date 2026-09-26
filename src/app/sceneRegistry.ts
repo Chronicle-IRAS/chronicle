@@ -21,14 +21,15 @@ type SceneDefinition = {
   transitionToNext?: TransitionFactory
   scrollScreens: number
   holdFraction: number
+  transitionSeconds: number
 }
 
 export const sceneRegistry: readonly SceneDefinition[] = [
-  { id: 'welcome', Component: WelcomeScene, transitionToNext: welcomeToComposer, scrollScreens: 2, holdFraction: 0.15 },
-  { id: 'composer', Component: ComposerScene, transitionToNext: aiPush, scrollScreens: 5, holdFraction: 0.65 },
-  { id: 'currently', Component: CurrentlyScene, transitionToNext: dsImpact, scrollScreens: 4, holdFraction: 0.45 },
-  { id: 'profile', Component: ProfileScene, transitionToNext: portalEnter, scrollScreens: 3, holdFraction: 0.45 },
-  { id: 'space', Component: SpaceScene, transitionToNext: spaceTransition, scrollScreens: 3, holdFraction: 0.5 },
-  { id: 'destinations', Component: DestinationsScene, transitionToNext: portalExit, scrollScreens: 3, holdFraction: 0.5 },
-  { id: 'goodbye', Component: GoodbyeScene, scrollScreens: 1, holdFraction: 0 },
+  { id: 'welcome', Component: WelcomeScene, transitionToNext: welcomeToComposer, scrollScreens: 2, holdFraction: 0.15, transitionSeconds: 2.2 },
+  { id: 'composer', Component: ComposerScene, transitionToNext: aiPush, scrollScreens: 5, holdFraction: 0.65, transitionSeconds: 2.6 },
+  { id: 'currently', Component: CurrentlyScene, transitionToNext: dsImpact, scrollScreens: 4, holdFraction: 0.45, transitionSeconds: 4.6 },
+  { id: 'profile', Component: ProfileScene, transitionToNext: portalEnter, scrollScreens: 3, holdFraction: 0.45, transitionSeconds: 1.25 },
+  { id: 'space', Component: SpaceScene, transitionToNext: spaceTransition, scrollScreens: 3, holdFraction: 0.5, transitionSeconds: 2.4 },
+  { id: 'destinations', Component: DestinationsScene, transitionToNext: portalExit, scrollScreens: 3, holdFraction: 0.5, transitionSeconds: 1.25 },
+  { id: 'goodbye', Component: GoodbyeScene, scrollScreens: 1, holdFraction: 0, transitionSeconds: 0 },
 ]

@@ -31,6 +31,7 @@ export const aiPush: TransitionFactory = ({ from, to, reducedMotion }) => {
   // Friction beat: the page holds until the cast has visibly exerted force.
   timeline.fromTo(board, { xPercent: 0, autoAlpha: 1 }, { xPercent: reducedMotion ? 0 : 105, autoAlpha: reducedMotion ? 0 : 1, duration: 0.65, ease: 'power2.in' }, 0.3)
   if (cast && !reducedMotion) timeline.fromTo(cast, { xPercent: 0 }, { xPercent: 105, duration: 0.65, ease: 'power2.in' }, 0.3)
-  timeline.to(from, { autoAlpha: 0, duration: 0.05 }, 0.95)
+  // Explicit endpoints keep the board visible when restoring it from Scene 03.
+  timeline.fromTo(from, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.05 }, 0.95)
   return timeline
 }
