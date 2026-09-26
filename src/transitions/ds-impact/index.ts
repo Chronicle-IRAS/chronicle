@@ -34,7 +34,18 @@ export const dsImpact: TransitionFactory = ({ from, to, reducedMotion }) => {
       timeline.to(body, { x: 0, duration: 0.025 }, 0.42)
     }
   }
-  timeline.fromTo(from, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.24 }, reducedMotion ? 0.3 : 0.76)
-  timeline.fromTo(to, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 }, reducedMotion ? 0.3 : 0.65)
+  if (reducedMotion) {
+    timeline.fromTo(from, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.3 }, 0.3)
+    timeline.fromTo(to, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 }, 0.3)
+  } else {
+    // Keep the shared chapter behind the impact; only Profile's copy floats up.
+    timeline.to(from, { backgroundColor: 'transparent', duration: 0.16 }, 0.58)
+    const body = from.querySelector('.scene-body')
+    if (body) timeline.to(body, { autoAlpha: 0, duration: 0.2 }, 0.58)
+    timeline.fromTo(to, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, 0.58)
+    const copy = to.querySelectorAll('.section-number, .scene-title, .text-list > div')
+    if (copy.length) timeline.fromTo(copy, { y: 44, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.62, stagger: 0.075, ease: 'power2.out' }, 0.62)
+    timeline.fromTo(from, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.12 }, 0.93)
+  }
   return timeline
 }

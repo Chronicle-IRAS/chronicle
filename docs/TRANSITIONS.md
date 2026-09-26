@@ -8,7 +8,7 @@ Status tags: `LOCKED` (decided, do not change unilaterally) · `DIRECTION` (stro
 
 Cross-cutting requirements:
 
-- `LOCKED` All scene-to-scene boundaries from 01 → 02 through 06 → 07 are scroll-driven, scrubbed, and reversible.
+- `LOCKED` Boundaries 01 → 02, 02 → 03, 03 → 04, and 05 → 06 are scroll-scrubbed and reversible. By user request, 04 → 05 and 06 → 07 trigger on scrolling, then automatically play a complete portal crossing with input temporarily locked. Reverse crossings also play to completion.
 - `LOCKED` 07 → 01 is an explicit Restart action rather than a scroll-driven boundary. It follows its own closing-animation contract.
 - `LOCKED` A boundary must not destroy scene state — in particular the Scene 02 graph must survive a push-out and a return.
 - `LOCKED` Reduced-motion preferences must be respected by every boundary.
@@ -63,7 +63,7 @@ All six boundaries now run on a fixed viewport stage. The original transition fa
 
 ## 03 → 04 — DEEPSEEK IMPACT (Currently → Profile)
 
-- Reveal: `LOCKED` by user request, Profile appears in place after the impact. Its page and text do not slide upward into the viewport.
+- Reveal: `LOCKED` by the latest user request, the chapter background remains continuous after the impact. Profile's label, heading, and rows float slowly upward in sequence; the page itself stays fixed.
 
 - Casting: `LOCKED` DeepSeek is the sole lead again.
 - Beats: `DIRECTION`
@@ -81,18 +81,22 @@ All six boundaries now run on a fixed viewport stage. The original transition fa
 
 ## 04 → 05 — PORTAL ENTER (Profile → Space)
 
+- Playback: `LOCKED` by user request, crossing the scroll threshold launches a short, automatic traversal. Scrolling, touch scrolling, and scroll keys cannot pause or reverse it halfway. Completion advances to Scene 05; returning plays the full reverse traversal.
+
 - Concept: `LOCKED` the 2D world → 3D world transition; the key portal crossing.
 - Beats: `DIRECTION`
   - a depression / hole / portal appears in the Scene 04 page,
   - it must not read as a black circle simply scaling up — the page itself should read as punctured,
   - the page deforms near the hole, text may be pulled toward the center, and depth is visible,
   - starfield / particles begin to appear inside,
-  - continuing to scroll enlarges the hole and moves the viewpoint in,
+  - once triggered, the hole expands and the viewpoint enters automatically,
   - a tunnel / depth traversal,
   - Scene 05 is fully reached.
 - Open: `TBD` exact portal appearance (see `docs/VISUAL_DIRECTION.md`).
 
 ## 05 → 06 — SPACE CONTINUATION (Space → Destinations)
+
+- Camera: `LOCKED` by user request, travel through the shared starfield with forward movement, lateral pan, and turning. Future text recedes out of the camera view while planets approach from the side; the star world stays continuous.
 
 - Concept: `LOCKED` Scene 05 and Scene 06 belong to one space world, so no strong transition is wanted here.
 - Beats: `DIRECTION`
@@ -102,6 +106,8 @@ All six boundaries now run on a fixed viewport stage. The original transition fa
   - spatial continuity is preserved throughout.
 
 ## 06 → 07 — PORTAL EXIT (Destinations → Goodbye)
+
+- Playback: `LOCKED` by user request, the exit automatically completes after its scroll threshold. Input unlocks on arrival at Goodbye. Returning completes the reverse crossing before releasing control.
 
 - Concept: `LOCKED` the visual mirror of 04 → 05, and the 3D world → 2D world transition.
 - Beats: `DIRECTION`

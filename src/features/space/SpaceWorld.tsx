@@ -8,6 +8,7 @@ attribute vec3 aPosition;
 attribute vec2 aStyle;
 uniform float uDepth;
 uniform float uTurn;
+uniform float uPan;
 uniform float uAspect;
 uniform float uPixelRatio;
 uniform float uTime;
@@ -19,7 +20,7 @@ void main() {
   float drift = uTurn + sin(uTime * 0.12) * 0.045;
   float c = cos(drift); float s = sin(drift);
   vec2 sway = vec2(sin(uTime * 0.18) * 22.0, cos(uTime * 0.13) * 16.0 - 16.0);
-  vec2 p = mat2(c, -s, s, c) * (aPosition.xy + sway);
+  vec2 p = mat2(c, -s, s, c) * (aPosition.xy - vec2(uPan, 0.0) + sway);
   gl_Position = vec4(p.x / depth / uAspect, p.y / depth, 0.0, 1.0);
   gl_PointSize = clamp(600.0 * aStyle.x / depth, 1.0, 6.0) * uPixelRatio;
   vLight = smoothstep(80.0, 160.0, depth) * (0.45 + 0.55 * (1.0 - depth / 1680.0));
@@ -79,6 +80,7 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
       gl.blendFunc(gl.SRC_ALPHA, gl.ONE)
       const depth = gl.getUniformLocation(program, 'uDepth')
       const turn = gl.getUniformLocation(program, 'uTurn')
+      const pan = gl.getUniformLocation(program, 'uPan')
       const aspect = gl.getUniformLocation(program, 'uAspect')
       const ratio = gl.getUniformLocation(program, 'uPixelRatio')
       const time = gl.getUniformLocation(program, 'uTime')
@@ -94,17 +96,19 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
       }
       let lastDepth = NaN
       let lastTurn = NaN
+      let lastPan = NaN
       let lastFrame = -1
       const draw = (elapsed: number) => {
         if (gl.isContextLost() || document.hidden || camera.visible === 0) return
-        if (reducedMotion && !dirty && lastDepth === camera.depth && lastTurn === camera.turn) return
+        if (reducedMotion && !dirty && lastDepth === camera.depth && lastTurn === camera.turn && lastPan === camera.pan) return
         if (!dirty && elapsed - lastFrame < 1 / 30) return
         lastFrame = elapsed
-        lastDepth = camera.depth; lastTurn = camera.turn; dirty = false
+        lastDepth = camera.depth; lastTurn = camera.turn; lastPan = camera.pan; dirty = false
         gl.clearColor(0, 0, 0, 0)
         gl.clear(gl.COLOR_BUFFER_BIT)
         gl.uniform1f(depth, camera.depth)
         gl.uniform1f(turn, camera.turn)
+        gl.uniform1f(pan, camera.pan)
         gl.uniform1f(time, reducedMotion ? 0 : elapsed)
         gl.drawArrays(gl.POINTS, 0, count)
       }

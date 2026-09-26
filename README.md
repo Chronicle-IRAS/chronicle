@@ -17,13 +17,13 @@ Verify with `npm run typecheck`, `npm test`, and `npm run build`.
 | --- | --- |
 | 01 Welcome → 02 Composer | Welcome copy scales together beyond the frame; scroll cue fades. Composer reveals in place. Existing restrained Welcome ambience is retained. |
 | 02 Composer → 03 Currently | After an extended editing interval, DeepSeek and Grok push at the left edge of the full-screen board. Gemini hops, Claude strolls with a book, GPT observes. The ensemble follows the moving edge; graph state persists. |
-| 03 Currently → 04 Profile | DeepSeek switches FALL → PRE_IMPACT → IMPACT → RECOVER → RUN poses. A separate deterministic impulse layer scatters letterforms and text rows. Profile fades into place with no vertical slide; everything reverses. |
-| 04 Profile → 05 Space | A masked hole punctures the page. Rings expose depth, text draws inward, and the camera advances through the starfield. |
-| 05 Space → 06 Destinations | One continuous 3D point cloud moves gently while future topics give way to destination planets. |
-| 06 Destinations → 07 Goodbye | The camera retreats and the space viewport contracts into a hole, revealing the quiet page world. |
+| 03 Currently → 04 Profile | DeepSeek's impact scatters letterforms and text rows. The shared chapter background stays fixed while Profile copy slowly floats up in sequence. |
+| 04 Profile → 05 Space | A scroll threshold launches a complete 0.95s portal traversal. Input is locked until the camera reaches Space, then the scroll position advances to Scene 05. |
+| 05 Space → 06 Destinations | The shared camera advances, pans sideways, and turns. Future copy recedes while destination planets approach in the same star world. |
+| 06 Destinations → 07 Goodbye | An automatic 0.95s retreat closes the portal and lands at Goodbye. Both portal crossings also complete automatically when returning. |
 | Restart | Goodbye converges beneath a short closing veil, returns to the beginning, removes the scene hash, and focuses CHRONICLE. Graph state survives. |
 
-All scene boundaries use native document scrolling, GSAP ScrollTrigger, and one reversible timeline. No wheel accumulation or per-frame React/Zustand state is used.
+All boundaries use native scrolling, GSAP ScrollTrigger, and one reversible timeline. Four boundaries remain scrubbed. Portal entry and exit use scroll thresholds to launch time-driven playback (0.95s, or a 0.28s reduced-motion fade), temporarily lock scroll/pointer input, then position the document at the destination. Cleanup kills an active traversal and restores input and overflow. No wheel accumulation or per-frame React/Zustand state is used.
 
 ## Ownership
 
@@ -64,7 +64,7 @@ Edit `src/data/siteContent.ts` to add real profile text or destination URLs. Emp
 
 ## Verification
 
-Type checking, 16 unit tests, and production build pass. In-app browser checks cover desktop 1280×800 and mobile 390×844: opening, character push, impact, portal entry, continuous space, disabled destinations, exit, restart, reverse navigation, graph connection/drag/state retention, and resize. Reduced-motion timelines are covered by unit tests; OS media preference and WebGL context loss have not been exercised in the browser.
+Type checking, 17 unit tests, and production build pass. In-app browser checks cover desktop 1280×800 and mobile 390×844: opening, character push, impact, portal entry, continuous space, disabled destinations, exit, restart, reverse navigation, graph connection/drag/state retention, and resize. Reduced-motion timelines are covered by unit tests; OS media preference and WebGL context loss have not been exercised in the browser.
 
 ## Remaining review items
 
