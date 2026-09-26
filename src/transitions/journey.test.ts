@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { gsap } from '../lib/gsap'
-import { aiPush } from './ai-push'
-import { dsImpact } from './ds-impact'
+import { aiPull, aiPush } from './ai-push'
+import { dsImpact, profileReturn } from './ds-impact'
 import { portalEnter } from './portal-enter'
 import { portalExit } from './portal-exit'
 import { spaceTransition } from './space-transition'
@@ -10,10 +10,64 @@ import { addSpaceMotion } from '../features/space/addSpaceMotion'
 afterEach(() => { gsap.globalTimeline.clear(); vi.unstubAllGlobals() })
 
 describe('Remaining scene boundaries', () => {
+  it('returns the board with pulling poses and repeated exertion while staying at its edge', () => {
+    const board = { autoAlpha: 1, xPercent: 105 }
+    const cast = { autoAlpha: 0, xPercent: 105 }
+    const push = { autoAlpha: 1 }
+    const pull = { autoAlpha: 0 }
+    const actor = { x: 0, y: 0, rotation: 0 }
+    const to = {
+      autoAlpha: 0,
+      querySelector: (s: string) => s === '[data-composer-board]' ? board : s === '.character-cast' ? cast : s === '[data-cast="deepseek"]' ? actor : null,
+      querySelectorAll: (s: string) => s.includes('hard') ? [push] : [pull],
+    }
+    const from = { autoAlpha: 1 }
+    const timeline = aiPull({ from: from as unknown as HTMLElement, to: to as unknown as HTMLElement, reducedMotion: false })
+    timeline.time(0.3)
+    expect(push.autoAlpha).toBe(0)
+    expect(pull.autoAlpha).toBe(1)
+    expect(cast.xPercent).toBeCloseTo(board.xPercent)
+    const y = actor.y
+    timeline.time(0.35)
+    expect(actor.y).not.toBe(y)
+    expect(board.xPercent).toBeLessThan(105)
+    expect(cast.xPercent).toBeCloseTo(board.xPercent)
+    timeline.progress(1)
+    expect(board.xPercent).toBe(0)
+    expect(cast.autoAlpha).toBe(0)
+    expect(actor.y).toBe(0)
+    expect(to.autoAlpha).toBe(1)
+    expect(from.autoAlpha).toBe(0)
+  })
+
+  it('returns from Profile with settled text and no replay of falling or impact poses', () => {
+    const actor = { autoAlpha: 1 }
+    const piece = { x: 100, y: 200, rotation: 20 }
+    const copy = { autoAlpha: 0, y: 0 }
+    const body = { autoAlpha: 0, x: 0 }
+    const outgoing = { autoAlpha: 1, y: 0 }
+    const from = { autoAlpha: 1, querySelector: () => outgoing }
+    const to = {
+      autoAlpha: 0, querySelector: () => body,
+      querySelectorAll: (s: string) => s.includes('actor') ? [actor] : s.includes('piece') ? [piece] : [copy],
+    }
+    const timeline = profileReturn({ from: from as unknown as HTMLElement, to: to as unknown as HTMLElement, reducedMotion: false })
+    timeline.time(0.4)
+    expect(actor.autoAlpha).toBe(0)
+    expect(piece.x).toBe(0)
+    expect(piece.y).toBe(0)
+    expect(copy.autoAlpha).toBeGreaterThan(0)
+    timeline.progress(1)
+    expect(to.autoAlpha).toBe(1)
+    expect(from.autoAlpha).toBe(0)
+    expect(copy.y).toBe(0)
+    expect(outgoing.y).toBe(0)
+  })
+
   it('holds the board for exertion, then keeps the ensemble at the moving board edge', () => {
     const board = { autoAlpha: 1, xPercent: 0 }
     const cast = { autoAlpha: 0, xPercent: 0 }
-    const from = { autoAlpha: 1, querySelector: (selector: string) => selector === '[data-composer-board]' ? board : selector === '.character-cast' ? cast : null }
+    const from = { autoAlpha: 1, querySelectorAll: () => [], querySelector: (selector: string) => selector === '[data-composer-board]' ? board : selector === '.character-cast' ? cast : null }
     const to = { autoAlpha: 0 }
     const timeline = aiPush({ from: from as unknown as HTMLElement, to: to as unknown as HTMLElement, reducedMotion: false })
     timeline.progress(0.2)

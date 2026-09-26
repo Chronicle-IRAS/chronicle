@@ -15,7 +15,7 @@ Cross-cutting requirements:
 
 ## Current implementation — Full Journey V1
 
-All six boundaries now run on a fixed viewport stage. The original transition factory contract is preserved. This is a reviewable implementation of the direction below, not a decision that locks remaining TBD visuals.
+All six boundaries run on a fixed viewport stage. The transition factory contract is preserved; the registry can provide a separate return factory for a boundary. Scroll thresholds are now 18svh for Welcome, 50svh for Composer, and 30svh for scenes 03–06, independently of animation duration.
 
 - Ensemble and impact poses use the existing production PNGs through the character registry. Push holds for a friction beat; roles have separate motion tracks.
 - Impact text uses a separate deterministic ballistic sampler, responding at the impact point. No physics or text-layout dependency has been added; the same progress restores all pieces on reverse.
@@ -57,12 +57,14 @@ All six boundaries now run on a fixed viewport stage. The original transition fa
   - GPT — light support. Calm, stable, quiet, reliable, companion-like; supports, follows, observes. Never straining like DeepSeek or Grok.
 - Ensemble rule: `LOCKED` this must read as group comedy, not five identical sprites performing the same motion.
 - Timing and contact: `LOCKED` by user request, Composer has an extended editing interval with the ensemble fully hidden. The push begins at the left edge of the full-screen board; characters follow that edge instead of standing inside the canvas.
-- Return: `LOCKED` Scene 03 → Scene 02 fully plays the reverse ensemble action, bringing the board and characters back together. Composer is editable only after the pull finishes.
+- Return: `LOCKED` Scene 03 → Scene 02 uses a separately choreographed pull with DS_PULL and GROK_PULL assets, facing the returning board, repeated exertion and distinct support motions. Composer is editable only after the pull finishes.
 - Physics feel: `DIRECTION` when scrolling starts, the characters visibly exert force first and Scene 02 does not move immediately — a beat of static friction / inertia — then the page is pushed away.
 - Reversal: `LOCKED` scrolling up restores the previous state as naturally as possible, and the Scene 02 React Flow state is still present on return.
 - Character detail: see `docs/CHARACTERS.md`.
 
 ## 03 → 04 — DEEPSEEK IMPACT (Currently → Profile)
+
+- Return: `LOCKED` Scene 04 → Scene 03 does not reverse the fall or impact. Profile copy gently fades upward while the settled Currently copy floats into view against the continuous background. The impact actor stays hidden; the director restores the forward timeline's starting state after arrival.
 
 - Reveal: `LOCKED` by the latest user request, the chapter background remains continuous after the impact. Profile's label, heading, and rows float slowly upward in sequence; the page itself stays fixed.
 

@@ -23,7 +23,7 @@ Verify with `npm run typecheck`, `npm test`, and `npm run build`.
 | 06 Destinations → 07 Goodbye | An automatic 1.25s retreat closes the portal and lands at Goodbye. Both portal crossings also complete automatically when returning. |
 | Restart | Goodbye converges beneath a short closing veil, returns to the beginning, removes the scene hash, and focuses CHRONICLE. Graph state survives. |
 
-Every boundary uses a native scroll threshold, GSAP ScrollTrigger, and one reversible timeline. Once triggered, playback runs to completion independently of scroll input. Durations live in `sceneRegistry.ts`: Welcome 2.2s, ensemble push/pull 2.6s, DeepSeek impact and floating Profile 4.6s, portal entry/exit 1.25s each, and space traversal 2.4s. Reduced motion uses 0.35s simplified boundaries. Main content is temporarily inert; wheel, touch scroll and scroll keys are blocked. On arrival the document moves to the destination's reading/editing interval and input returns. Reverse playback finishes fully too, including the ensemble pulling the blueprint back from Scene 03. Restart uses the same input lock and a roughly 1.6s closing veil. Cleanup kills active playback and restores input and overflow. No wheel accumulation or per-frame React/Zustand state is used.
+Every boundary uses a native scroll threshold, GSAP ScrollTrigger, and a forward timeline plus an optional dedicated return timeline. Once triggered, playback runs to completion independently of scroll input. Durations live in `sceneRegistry.ts`: Welcome 2.2s, ensemble push/pull 2.6s, DeepSeek impact and floating Profile 4.6s, portal entry/exit 1.25s each, and space traversal 2.4s. Reduced motion uses 0.35s simplified boundaries. Main content is temporarily inert; wheel, touch scroll and scroll keys are blocked. On arrival the document moves to the destination's reading/editing interval and input returns. Return playback finishes fully too. Scene 03 to 02 uses DS_PULL / GROK_PULL artwork with repeated exertion and accompanying hops. Scene 04 to 03 uses a separate 1.8s text return: Profile fades while settled Currently copy floats into place, without replaying the impact. Restart uses the same input lock and a roughly 1.6s closing veil. Cleanup kills active playback and restores input and overflow. No wheel accumulation or per-frame React/Zustand state is used.
 
 ## Ownership
 
@@ -40,7 +40,7 @@ Every boundary uses a native scroll threshold, GSAP ScrollTrigger, and one rever
 | `src/data/siteContent.ts` | Currently/Profile content, future topics, destination URLs, and Goodbye labels. |
 | `src/stores/` | Low-frequency active scene, reduced motion, and composer readiness. |
 
-Scene timing lives in `src/app/sceneRegistry.ts`: Welcome has 200svh, Composer 500svh, Currently 400svh, scenes 04–06 300svh each, and Goodbye 100svh. The journey totals 21 viewport heights. Currently's additional distance gives the descent and impact more room. Each scene has a dedicated hold before its outgoing transition: Composer reserves the first 65% (325svh) for editing with all push characters hidden. Content remains fixed and scenes remain mounted. Non-active scenes are inert and hidden from assistive technology. Composer becomes editable after Welcome completes, and locks when its outgoing transition starts.
+Scene timing lives in `src/app/sceneRegistry.ts`: Welcome and scenes 03–06 have 150svh, Composer 200svh, and Goodbye 100svh, totaling 10.5 viewport heights. Welcome triggers after 18svh; Composer reserves 50svh for editing with the cast hidden; scenes 03–06 trigger after 30svh. Scroll distance is independent of playback duration, so the shorter wheel journey preserves the longer animation pacing. Content remains fixed and scenes remain mounted. Non-active scenes are inert and hidden from assistive technology. Composer becomes editable after Welcome completes, and locks when its outgoing transition starts.
 
 Composer recipes are unchanged: Vue + ESP32 → **ESP32 Monitor**, React + TypeScript → **Blueprint Editor**, unknown pairs → **Experimental Concept**. Results are derived, draggable, and non-connectable. Node measurements are retained as presentation metadata so new results become visible; removing an edge still removes its result.
 
@@ -64,7 +64,7 @@ Edit `src/data/siteContent.ts` to add real profile text or destination URLs. Emp
 
 ## Verification
 
-Type checking, 19 unit tests, and production build pass. In-app browser checks cover desktop 1280×800 and mobile 390×844: opening, character push, impact, portal entry, continuous space, disabled destinations, exit, restart, reverse navigation, graph connection/drag/state retention, and resize. Reduced-motion timelines are covered by unit tests; OS media preference and WebGL context loss have not been exercised in the browser.
+Type checking, 21 unit tests, and production build pass. In-app browser checks cover desktop 1280×800 and mobile 390×844: opening, character push, impact, portal entry, continuous space, disabled destinations, exit, restart, reverse navigation, graph connection/drag/state retention, and resize. Reduced-motion timelines are covered by unit tests; OS media preference and WebGL context loss have not been exercised in the browser.
 
 ## Remaining review items
 

@@ -66,7 +66,7 @@ export function SceneDirector() {
         const ready = id === 'composer' && window.scrollY >= sections[1].offsetTop && window.scrollY <= sections[1].offsetTop + sections[1].offsetHeight * sceneRegistry[1].holdFraction
         if (ready !== interactive) { interactive = ready; setComposerReady(ready) }
       }
-      const traverse = (animation: gsap.core.Timeline, forward: boolean, index: number) => {
+      const traverse = (animation: gsap.core.Timeline, forward: boolean, index: number, returnAnimation?: gsap.core.Timeline) => {
         if (traversing) return
         traversing = true
         releaseInput = lockJourneyInput(root)
@@ -75,12 +75,16 @@ export function SceneDirector() {
         sections[index].dataset.transitioning = 'true'
         interactive = false
         setComposerReady(false)
+        const playback = !forward && returnAnimation ? returnAnimation : animation
         animation.progress(forward ? 0 : 1)
-        flight = animation.tweenTo(forward ? animation.duration() : 0, {
-          duration: reducedMotion ? 0.35 : sceneRegistry[index].transitionSeconds,
+        if (playback !== animation) playback.progress(0)
+        flight = playback.tweenTo(forward || playback !== animation ? playback.duration() : 0, {
+          duration: reducedMotion ? 0.35 : (!forward ? sceneRegistry[index].returnSeconds : undefined) ?? sceneRegistry[index].transitionSeconds,
           ease: 'none',
-          onUpdate: () => { sections[index].style.setProperty('--transition-progress', String(animation.progress())) },
+          onUpdate: () => { sections[index].style.setProperty('--transition-progress', String(playback.progress())) },
           onComplete: () => {
+            // Restore the boundary's canonical start after a separately choreographed return.
+            if (playback !== animation) animation.progress(0)
             unlock()
             sections[index].dataset.transitioning = 'false'
             window.scrollTo(0, forward ? sections[index + 1].offsetTop + 2 : sections[index].offsetTop + sections[index].offsetHeight * sceneRegistry[index].holdFraction - 2)
@@ -108,6 +112,7 @@ export function SceneDirector() {
         const toContent = next.querySelector<HTMLElement>('[data-scene-content]')
         if (!fromContent || !toContent) return
         const animation = factory({ from: fromContent, to: toContent, reducedMotion })
+        const returnAnimation = sceneRegistry[index].transitionBack?.({ from: toContent, to: fromContent, reducedMotion })
         if (world) addSpaceMotion(animation, id, world, camera.current, reducedMotion)
         // Every boundary plays to an endpoint once triggered, including on return.
         ScrollTrigger.create({
@@ -122,7 +127,7 @@ export function SceneDirector() {
           onEnterBack: (self) => {
             if (traversing) return
             if (window.scrollY <= self.start) animation.progress(0)
-            else traverse(animation, false, index)
+            else traverse(animation, false, index, returnAnimation)
           },
           onLeave: () => { if (!traversing) animation.progress(1) },
           onLeaveBack: () => { if (!traversing) animation.progress(0) },

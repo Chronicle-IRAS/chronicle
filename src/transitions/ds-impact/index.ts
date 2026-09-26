@@ -49,3 +49,19 @@ export const dsImpact: TransitionFactory = ({ from, to, reducedMotion }) => {
   }
   return timeline
 }
+
+/** Return to the chapter without resurrecting the impact or rewinding the fall. */
+export const profileReturn: TransitionFactory = ({ from, to, reducedMotion }) => {
+  const timeline = gsap.timeline({ paused: true, defaults: { immediateRender: false } })
+  const incoming = to.querySelectorAll('.section-number, .scene-title, .text-list > div')
+  timeline.set(to.querySelectorAll('[data-impact-actor], [data-impact-ripple]'), { autoAlpha: 0 }, 0)
+  timeline.set(to.querySelectorAll('[data-impact-piece]'), { x: 0, y: 0, rotation: 0 }, 0)
+  timeline.set(to, { autoAlpha: 1, backgroundColor: 'transparent' }, 0)
+  timeline.set(to.querySelector('.scene-body'), { autoAlpha: 1, x: 0 }, 0)
+  timeline.set(incoming, { autoAlpha: 0 }, 0)
+  timeline.fromTo(from.querySelector('.scene-body'), { autoAlpha: 1, y: 0 }, { autoAlpha: 0, y: reducedMotion ? 0 : -14, duration: 0.35, ease: 'power1.inOut' }, 0)
+  timeline.fromTo(incoming, { autoAlpha: 0, y: reducedMotion ? 0 : 24 }, { autoAlpha: 1, y: 0, duration: 0.55, stagger: reducedMotion ? 0 : 0.055, ease: 'power2.out' }, 0.36)
+  timeline.fromTo(from, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.1 }, 0.84)
+  timeline.set(from.querySelector('.scene-body'), { y: 0, autoAlpha: 1 }, 0.94)
+  return timeline
+}
