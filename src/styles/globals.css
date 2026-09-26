@@ -35,6 +35,15 @@ button:focus-visible, a:focus-visible { outline: 2px solid #8edec8; outline-offs
 .welcome-grid-far { background-image: linear-gradient(#6380762b 1px, transparent 1px), linear-gradient(90deg, #6380762b 1px, transparent 1px); background-size: 58px 58px; }
 .welcome-grid-near { opacity: 0; background-image: radial-gradient(circle, #526862 1px, transparent 1.5px); background-size: 24px 24px; }
 .welcome-grid-vignette { background: radial-gradient(circle, transparent 15%, #101419 70%); }
+.welcome-atmosphere { position: absolute; inset: 0; background: radial-gradient(ellipse at 28% 35%, #8edec811, transparent 46%), radial-gradient(ellipse at 78% 70%, #8edec809, transparent 38%); animation: welcome-breathe 9s ease-in-out infinite alternate; }
+.welcome-signal { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: #9bdbc9; opacity: .2; animation: welcome-signal 6s ease-in-out infinite; }
+.welcome-signal::after { content: ''; position: absolute; inset: -6px; border: 1px solid #8edec82b; border-radius: 50%; }
+.welcome-signal-one { left: 18%; top: 29%; }
+.welcome-signal-two { left: 79%; top: 68%; animation-delay: -2s; }
+.welcome-signal-three { left: 65%; top: 19%; animation-delay: -4s; }
+@keyframes welcome-breathe { from { opacity: .3; } to { opacity: .9; } }
+@keyframes welcome-signal { 0%, 100% { opacity: .12; } 50% { opacity: .55; } }
+@media (prefers-reduced-motion: reduce) { .welcome-atmosphere, .welcome-signal { animation: none; } }
 .welcome-title-layer { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; text-align: center; }
 .display-title { margin: 0; font-size: clamp(4rem, 13vw, 12rem); font-weight: 650; letter-spacing: -.085em; line-height: .95; }
 .scene-subtitle { margin: 0; color: #a9b9b8; font-size: clamp(.9rem, 1.7vw, 1.3rem); letter-spacing: .04em; }

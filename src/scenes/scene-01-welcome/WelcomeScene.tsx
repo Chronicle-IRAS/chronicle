@@ -5,6 +5,10 @@ export function WelcomeScene() {
         <div className="welcome-grid-far" data-enter-grid-far />
         <div className="welcome-grid-near" data-enter-grid-near />
         <div className="welcome-grid-vignette" data-enter-grid-vignette />
+        <div className="welcome-atmosphere" />
+        <span className="welcome-signal welcome-signal-one" />
+        <span className="welcome-signal welcome-signal-two" />
+        <span className="welcome-signal welcome-signal-three" />
       </div>
       <div className="welcome-title-layer" data-enter-grid-title>
         <h1 className="display-title">CHRONICLE</h1>
