@@ -36,6 +36,7 @@ Scene map (stable identifiers):
 - Text role: `LOCKED` text is allowed only as secondary UI / context — a small scene label, a concise instruction, lightweight status / control text — and must stay visually subordinate to the nodes. Large hero-style headings, explanatory copy, or centered textual introductions must not compete with the graph. Exact position, font size, typography, and control layout remain `TBD`.
 - Technology nodes: `LOCKED` the vocabulary is React, Vue, TypeScript, Node.js, ESP32, AI. `DIRECTION` this set may grow.
 - Interaction: `LOCKED` drag technology nodes; connect two technology nodes.
+- Viewport: `LOCKED` user-requested fixed blueprint. No user zoom, background pan, viewport controls, or auto-pan while editing. Only the initial layout and a display resize may fit the canvas; composition creation must preserve the existing viewport.
 - Connection semantics: `LOCKED` a connection means composition, not direction — "Vue + ESP32", not "Vue → ESP32". The composition key must be order-independent, so `['vue','esp32']` and `['esp32','vue']` yield the same composition.
 - Results: `LOCKED` a composition may produce a **Project** result (a real, existing project) or a **Concept** result (a what-if / experimental concept the user has not actually built). Real projects and concepts must remain clearly distinguishable.
 - Result behavior: `LOCKED` result nodes are draggable, not connectable, and derived from the current composition. Result nodes never take part in a further composition.

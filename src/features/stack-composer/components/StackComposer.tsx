@@ -1,4 +1,4 @@
-import { Background, Controls, ReactFlow } from '@xyflow/react'
+import { Background, ReactFlow } from '@xyflow/react'
 import type { Connection, Edge, NodeTypes, ReactFlowInstance } from '@xyflow/react'
 import { useEffect, useMemo, useRef } from 'react'
 import { useSceneStore } from '../../../stores/sceneStore'
@@ -38,11 +38,6 @@ export function StackComposer() {
     return () => observer.disconnect()
   }, [])
 
-  useEffect(() => {
-    const frame = window.requestAnimationFrame(() => { void flowRef.current?.fitView({ padding: 0.25, duration: 0 }) })
-    return () => window.cancelAnimationFrame(frame)
-  }, [nodes.length])
-
   return (
     <div ref={canvasRef} className="composer-canvas" aria-label="Stack Composer canvas" inert={!interactive} data-interactive={interactive}>
       <ReactFlow<ComposerNode>
@@ -61,15 +56,18 @@ export function StackComposer() {
         nodesDraggable={interactive}
         nodesConnectable={interactive}
         elementsSelectable={interactive}
-        panOnDrag={interactive}
-        zoomOnScroll={interactive}
-        zoomOnPinch={interactive}
-        zoomOnDoubleClick={interactive}
+        panOnDrag={false}
+        panOnScroll={false}
+        zoomOnScroll={false}
+        zoomOnPinch={false}
+        zoomOnDoubleClick={false}
+        autoPanOnNodeDrag={false}
+        autoPanOnConnect={false}
+        preventScrolling={false}
         disableKeyboardA11y={!interactive}
         deleteKeyCode={interactive ? ['Backspace', 'Delete'] : null}
       >
         <Background gap={24} size={1} color="#303a41" />
-        <Controls showInteractive={false} showZoom={interactive} showFitView={interactive} />
       </ReactFlow>
     </div>
   )

@@ -1,7 +1,9 @@
+import { SceneAtmosphere } from '../../components/SceneAtmosphere'
 export function WelcomeScene() {
   return (
     <div className="scene-content welcome-content" data-scene-content>
       <div className="welcome-grid" data-enter-grid-backdrop aria-hidden="true">
+        <SceneAtmosphere />
         <div className="welcome-grid-far" data-enter-grid-far />
         <div className="welcome-grid-near" data-enter-grid-near />
         <div className="welcome-grid-vignette" data-enter-grid-vignette />

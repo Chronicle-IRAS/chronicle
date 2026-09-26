@@ -1,7 +1,9 @@
+import { SceneAtmosphere } from '../../components/SceneAtmosphere'
 import { siteContent } from '../../data/siteContent'
 
 export function DestinationsScene() {
   return <div className="scene-content space-content destination-content" data-scene-content>
+    <SceneAtmosphere />
     <div className="scene-body content-column">
       <p className="section-number">06 / DESTINATIONS</p>
       <h2 className="destination-heading">Choose an orbit.</h2>

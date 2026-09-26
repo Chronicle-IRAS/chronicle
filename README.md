@@ -44,6 +44,10 @@ Scene 01 has 150svh of scroll distance; scenes 02–06 have 180svh; Goodbye has 
 
 Composer recipes are unchanged: Vue + ESP32 → **ESP32 Monitor**, React + TypeScript → **Blueprint Editor**, unknown pairs → **Experimental Concept**. Results are derived, draggable, and non-connectable. Node measurements are retained as presentation metadata so new results become visible; removing an edge still removes its result.
 
+The blueprint viewport is fixed: user wheel/pinch/double-click zoom, background panning, automatic drag panning, and viewport controls are disabled. Only nodes and edges are editable. Initial fitting and resizing adapt the layout to the display; adding a result does not refit or move the viewport. Wheel scrolling continues the journey.
+
+Each scene now has layered animated haze, orbital points, drifting particles, light sweeps, and a pointer-responsive light field. Text rows have moving accents; composer nodes and edges pulse and results arrive with a short highlight. Space adds continuous shader twinkling and gentle drift, nebula motion, floating planets and moving rings. Inactive scene effects pause, and all added motion becomes static with reduced-motion preferences.
+
 ## Content configuration
 
 Edit `src/data/siteContent.ts` to add real profile text or destination URLs. Empty profile values render as an em dash. Empty destination URLs render disabled planets with NOT CONNECTED; no fake URLs or personal claims are supplied. Email can use a `mailto:` URL.
@@ -53,7 +57,7 @@ Edit `src/data/siteContent.ts` to add real profile text or destination URLs. Emp
 - Reduced motion uses fades rather than giant spatial motion, ensemble movement, falling characters, scattering, or camera traversal.
 - Restart transfers focus to the Welcome heading; repeated clicks are guarded.
 - WebGL unavailable or lost: CSS stars remain visible. Restoring the context recreates the renderer.
-- The renderer caps pixel ratio, pauses while hidden, and skips unchanged frames. GSAP context cleanup restores scene transforms and text impulses.
+- The renderer caps pixel ratio, pauses while hidden, and limits ambient animation to 30fps. Reduced motion skips unchanged frames. GSAP context cleanup restores scene transforms and text impulses.
 - Desktop and mobile layouts preserve the seven-scene order and readable text.
 
 ## Verification

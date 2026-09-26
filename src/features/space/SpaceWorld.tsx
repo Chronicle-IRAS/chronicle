@@ -10,15 +10,18 @@ uniform float uDepth;
 uniform float uTurn;
 uniform float uAspect;
 uniform float uPixelRatio;
+uniform float uTime;
 varying float vLight;
 varying float vTint;
 void main() {
   float depth = mod(aPosition.z - uDepth + 3200.0, 1600.0) + 80.0;
-  float c = cos(uTurn); float s = sin(uTurn);
+  float drift = uTurn + sin(uTime * 0.07) * 0.012;
+  float c = cos(drift); float s = sin(drift);
   vec2 p = mat2(c, -s, s, c) * aPosition.xy;
   gl_Position = vec4(p.x / depth / uAspect, p.y / depth, 0.0, 1.0);
   gl_PointSize = clamp(480.0 * aStyle.x / depth, 1.0, 4.5) * uPixelRatio;
   vLight = smoothstep(80.0, 160.0, depth) * (0.45 + 0.55 * (1.0 - depth / 1680.0));
+  vLight *= 0.8 + 0.2 * sin(uTime * 0.6 + aPosition.z * 0.03);
   vTint = aStyle.y;
 }`
 const fragment = `
@@ -31,7 +34,7 @@ void main() {
   gl_FragColor = vec4(mix(vec3(0.65, 0.76, 1.0), vec3(1.0, 0.91, 0.76), vTint), light);
 }`
 
-export function SpaceWorld({ camera }: { camera: SpaceCamera }) {
+export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; reducedMotion: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   useEffect(() => {
     const canvas = canvasRef.current
@@ -76,6 +79,7 @@ export function SpaceWorld({ camera }: { camera: SpaceCamera }) {
       const turn = gl.getUniformLocation(program, 'uTurn')
       const aspect = gl.getUniformLocation(program, 'uAspect')
       const ratio = gl.getUniformLocation(program, 'uPixelRatio')
+      const time = gl.getUniformLocation(program, 'uTime')
       let dirty = true
       const resize = () => {
         const dpr = Math.min(window.devicePixelRatio, 1.75)
@@ -88,14 +92,18 @@ export function SpaceWorld({ camera }: { camera: SpaceCamera }) {
       }
       let lastDepth = NaN
       let lastTurn = NaN
-      const draw = () => {
+      let lastFrame = -1
+      const draw = (elapsed: number) => {
         if (gl.isContextLost() || document.hidden || camera.visible === 0) return
-        if (!dirty && lastDepth === camera.depth && lastTurn === camera.turn) return
+        if (reducedMotion && !dirty && lastDepth === camera.depth && lastTurn === camera.turn) return
+        if (!dirty && elapsed - lastFrame < 1 / 30) return
+        lastFrame = elapsed
         lastDepth = camera.depth; lastTurn = camera.turn; dirty = false
         gl.clearColor(0, 0, 0, 0)
         gl.clear(gl.COLOR_BUFFER_BIT)
         gl.uniform1f(depth, camera.depth)
         gl.uniform1f(turn, camera.turn)
+        gl.uniform1f(time, reducedMotion ? 0 : elapsed)
         gl.drawArrays(gl.POINTS, 0, count)
       }
       resize()
@@ -108,6 +116,6 @@ export function SpaceWorld({ camera }: { camera: SpaceCamera }) {
     canvas.addEventListener('webglcontextrestored', initialize)
     initialize()
     return () => { dispose(); canvas.removeEventListener('webglcontextlost', lost); canvas.removeEventListener('webglcontextrestored', initialize) }
-  }, [camera])
+  }, [camera, reducedMotion])
   return <div className="space-world" data-space-world aria-hidden="true"><div className="space-nebula" /><div className="stars" /><canvas ref={canvasRef} /></div>
 }

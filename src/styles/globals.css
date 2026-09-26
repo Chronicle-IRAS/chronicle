@@ -142,7 +142,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #8edec8; outline-offs
 .planet-3 { background: radial-gradient(circle at 30% 28%, #bee0cf, #54797e 50%, #102131 85%); }
 .planet-4 { background: radial-gradient(circle at 30% 28%, #e3cdb0, #84705f 50%, #221b2c 85%); }
 .planet-2::after { content: ''; position: absolute; inset: 24% -35%; border: 1px solid #bba8cd99; border-radius: 50%; transform: rotate(-28deg); }
-a.destination:hover .planet, a.destination:focus-visible .planet { transform: scale(1.12); box-shadow: 0 0 35px #9ab6d344; }
+a.destination:hover .planet, a.destination:focus-visible .planet { scale: 1.12; box-shadow: 0 0 35px #9ab6d344; }
 .planet-label { font-size: clamp(.9rem, 1.5vw, 1.3rem); }
 .planet-label small { display: block; color: #9ca9bc; font-size: .5rem; letter-spacing: .16em; margin-top: .5rem; }
 .goodbye-notes { display: flex; gap: 2rem; flex-wrap: wrap; padding: 0; list-style: none; font-size: .8rem; color: #52625e; }
@@ -164,4 +164,69 @@ a.destination:hover .planet, a.destination:focus-visible .planet { transform: sc
 }
 @media (prefers-reduced-motion: reduce) {
   .planet { transition: none; }
+}
+
+/* Ambient motion is layered inside each scene so it follows the existing handoff. */
+.scene-atmosphere { --ambient-color: 142, 222, 200; position: absolute; inset: 0; z-index: 0; overflow: clip; pointer-events: none; }
+.scene-profile .scene-atmosphere, .scene-goodbye .scene-atmosphere { --ambient-color: 60, 104, 100; }
+.scene-profile .scene-atmosphere { mask-image: radial-gradient(circle at 70% 60%, transparent 0 var(--portal-radius, 0vmax), #000 calc(var(--portal-radius, 0vmax) + 2px)); }
+.scene-space .scene-atmosphere, .scene-destinations .scene-atmosphere { --ambient-color: 155, 183, 255; }
+.ambient-pointer { position: absolute; left: calc(50% - 40vmax); top: calc(50% - 40vmax); width: 80vmax; height: 80vmax; border-radius: 50%; background: radial-gradient(circle, rgba(var(--ambient-color), .09), transparent 65%); transform: translate3d(calc((var(--ambient-x, 50) - 50) * .5vw), calc((var(--ambient-y, 50) - 50) * .5vh), 0); }
+.ambient-haze { position: absolute; width: 58vmax; height: 58vmax; border-radius: 50%; background: radial-gradient(ellipse, rgba(var(--ambient-color), .1), transparent 65%); animation: ambient-haze 17s ease-in-out infinite alternate; }
+.ambient-haze-a { left: -25%; top: -32%; }
+.ambient-haze-b { right: -20%; bottom: -35%; animation-duration: 23s; animation-delay: -9s; }
+.ambient-orbit { position: absolute; width: 64vmax; height: 64vmax; border: 1px solid rgba(var(--ambient-color), .09); border-radius: 50%; animation: ambient-orbit 46s linear infinite; }
+.ambient-orbit::before, .ambient-orbit::after { content: ''; position: absolute; left: 50%; top: -3px; width: 5px; height: 5px; border-radius: 50%; background: rgba(var(--ambient-color), .6); box-shadow: 0 0 15px rgba(var(--ambient-color), .3); }
+.ambient-orbit::after { top: auto; bottom: -3px; width: 3px; height: 3px; }
+.ambient-orbit-a { right: -28vmax; top: -26vmax; }
+.ambient-orbit-b { left: -36vmax; bottom: -32vmax; width: 75vmax; height: 75vmax; animation-direction: reverse; animation-duration: 58s; }
+.ambient-trace { position: absolute; top: 0; left: -25%; width: 25%; height: 100%; background: linear-gradient(100deg, transparent, rgba(var(--ambient-color), .035), transparent); animation: ambient-trace 18s ease-in-out infinite; }
+.ambient-mote { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: rgba(var(--ambient-color), .5); box-shadow: 0 0 9px rgba(var(--ambient-color), .25); animation: ambient-mote calc(8s + var(--i) * .7s) ease-in-out infinite alternate; animation-delay: calc(var(--i) * -.9s); }
+.ambient-mote:nth-of-type(3n) { width: 1px; height: 1px; }
+@keyframes ambient-haze { from { transform: translate3d(-3%, 2%, 0) scale(.9); opacity: .4; } to { transform: translate3d(15%, -10%, 0) scale(1.2); opacity: 1; } }
+@keyframes ambient-orbit { to { transform: rotate(360deg); } }
+@keyframes ambient-trace { 0%, 15% { transform: translateX(0) skewX(-12deg); opacity: 0; } 30% { opacity: 1; } 80%, 100% { transform: translateX(600%) skewX(-12deg); opacity: 0; } }
+@keyframes ambient-mote { 0% { transform: translate3d(0, 8px, 0); opacity: .15; } 50% { opacity: .8; } 100% { transform: translate3d(18px, -34px, 0); opacity: .25; } }
+.scroll-cue span { animation: cue-drift 2s ease-in-out infinite; }
+@keyframes cue-drift { 50% { transform: translateY(7px); } }
+.text-list > div { position: relative; }
+.text-list > div::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 25%; height: 1px; background: linear-gradient(90deg, transparent, #8edec8, transparent); animation: line-travel 7s ease-in-out infinite; opacity: .65; }
+.text-list > div:nth-child(2)::after { animation-delay: -2s; }
+.text-list > div:nth-child(3)::after { animation-delay: -4s; }
+.text-list > div:nth-child(4)::after { animation-delay: -6s; }
+.profile-list > div::after { background: linear-gradient(90deg, transparent, #436c62, transparent); }
+@keyframes line-travel { 0%, 15% { transform: translateX(0); opacity: 0; } 50% { opacity: .8; } 85%, 100% { transform: translateX(300%); opacity: 0; } }
+.composer-canvas { position: relative; overflow: hidden; }
+.composer-canvas::after { content: ''; position: absolute; z-index: 3; inset: 0; pointer-events: none; background: linear-gradient(115deg, transparent 35%, #8edec809 48%, transparent 60%); background-size: 250% 100%; animation: canvas-light 14s ease-in-out infinite; }
+@keyframes canvas-light { 0%, 15% { background-position: 100% 0; opacity: 0; } 45% { opacity: 1; } 85%, 100% { background-position: 0 0; opacity: 0; } }
+.flow-node { animation: node-breathe 5s ease-in-out infinite; transition: border-color .2s, box-shadow .2s; }
+.flow-node:hover, .react-flow__node.selected .flow-node { border-color: #effff9; box-shadow: 0 0 0 1px #b1e9da66, 0 10px 35px #8edec826; }
+.react-flow__node:nth-child(2n) .flow-node { animation-delay: -2s; }
+@keyframes node-breathe { 0%, 100% { box-shadow: 0 8px 24px #0005; } 50% { box-shadow: 0 8px 26px #0005, 0 0 18px #8edec814; } }
+.react-flow__edge-path { animation: edge-breathe 3s ease-in-out infinite; }
+@keyframes edge-breathe { 50% { stroke-opacity: .45; } }
+.result-node { animation: result-arrive .65s ease-out, node-breathe 5s ease-in-out infinite .65s; }
+@keyframes result-arrive { from { opacity: 0; filter: brightness(1.5); } to { opacity: 1; filter: brightness(1); } }
+.future-orbits li { position: relative; }
+.future-orbits li::before { content: ''; position: absolute; left: -12px; top: .55em; width: 4px; height: 4px; border-radius: 50%; background: #9bb7ff; box-shadow: 0 0 15px #9bb7ff99; animation: orbit-signal 4s ease-in-out infinite; }
+.future-orbits li:nth-child(2n)::before { animation-delay: -2s; }
+@keyframes orbit-signal { 50% { opacity: .25; transform: scale(.5); } }
+.planet { animation: planet-float 7s ease-in-out infinite; }
+.destination:nth-child(2n) .planet { animation-delay: -3s; animation-duration: 9s; }
+@keyframes planet-float { 50% { transform: translateY(-12px) rotate(4deg); } }
+.planet-2::after { animation: planet-ring 15s ease-in-out infinite alternate; }
+@keyframes planet-ring { to { transform: rotate(-12deg) scaleY(.8); } }
+.space-nebula { animation: nebula-drift 28s ease-in-out infinite alternate; }
+@keyframes nebula-drift { to { transform: scale(1.13) translate3d(-2%, 2%, 0); opacity: .6; } }
+.goodbye-notes li { animation: thanks-breathe 5s ease-in-out infinite; }
+.goodbye-notes li:nth-child(2) { animation-delay: -1.6s; }
+.goodbye-notes li:nth-child(3) { animation-delay: -3.2s; }
+@keyframes thanks-breathe { 50% { color: #17232a; } }
+.restart-button span { animation: restart-arrow 3s ease-in-out infinite; }
+@keyframes restart-arrow { 50% { transform: translate(3px, -3px); } }
+.scene:not([data-active="true"]) .scene-atmosphere *, .scene:not([data-active="true"]) .flow-node, .scene:not([data-active="true"]) .react-flow__edge-path, .scene:not([data-active="true"]) .planet, .scene:not([data-active="true"]) .planet::after, .scene:not([data-active="true"]) .text-list > div::after, .scene:not([data-active="true"]) .future-orbits li::before, .scene:not([data-active="true"]) .goodbye-notes li, .scene:not([data-active="true"]) .restart-button span, .scene:not([data-active="true"]) .composer-canvas::after { animation-play-state: paused; }
+@media (max-width: 700px) { .ambient-mote:nth-of-type(n+17) { display: none; } .ambient-haze { opacity: .65; } }
+@media (prefers-reduced-motion: reduce) {
+  .scene-atmosphere *, .scroll-cue span, .text-list > div::after, .composer-canvas::after, .flow-node, .react-flow__edge-path, .future-orbits li::before, .planet, .planet::after, .space-nebula, .goodbye-notes li, .restart-button span { animation: none !important; }
+  .flow-node { transition: none; }
 }

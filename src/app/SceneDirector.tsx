@@ -7,12 +7,14 @@ import { sceneRegistry } from './sceneRegistry'
 import { SpaceWorld } from '../features/space/SpaceWorld'
 import type { SpaceCamera } from '../features/space/field'
 import { addSpaceMotion } from '../features/space/addSpaceMotion'
+import { useAmbientPointer } from '../hooks/useAmbientPointer'
 
 export function SceneDirector() {
   const rootRef = useRef<HTMLElement>(null)
   const progressRef = useRef(new Map<SceneId, number>())
   const camera = useRef<SpaceCamera>({ depth: 0, turn: 0, visible: 0 })
   const reducedMotion = useReducedMotion()
+  useAmbientPointer(rootRef, reducedMotion)
   const setCurrentScene = useSceneStore((state) => state.setCurrentScene)
   const setReducedMotion = useSceneStore((state) => state.setReducedMotion)
   const setComposerReady = useSceneStore((state) => state.setComposerReady)
@@ -93,7 +95,7 @@ export function SceneDirector() {
 
   return (
     <main ref={rootRef} id="journey">
-      <SpaceWorld camera={camera.current} />
+      <SpaceWorld camera={camera.current} reducedMotion={reducedMotion} />
       {sceneRegistry.map(({ id, Component }, index) => (
         <section className={`scene scene-${id}`} style={{ zIndex: 10 - index }} data-scene-id={id} id={id} key={id} aria-label={`Scene ${String(index + 1).padStart(2, '0')}: ${id}`}>
           <Component />
