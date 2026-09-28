@@ -1,5 +1,19 @@
 import { SceneDirector } from './SceneDirector'
+import { useCallback, useState } from 'react'
+import { OpeningLoader } from '../components/OpeningLoader'
+
+const INTRO_KEY = 'chronicle.intro.v1'
 
 export function App() {
-  return <SceneDirector />
+  const [opening, setOpening] = useState(() => {
+    try { return sessionStorage.getItem(INTRO_KEY) !== 'seen' } catch { return true }
+  })
+  const finishOpening = useCallback(() => {
+    try { sessionStorage.setItem(INTRO_KEY, 'seen') } catch { /* Storage may be unavailable in private contexts. */ }
+    setOpening(false)
+  }, [])
+  return <div className="chronicle-app" data-opening={opening}>
+    <SceneDirector />
+    {opening && <OpeningLoader onComplete={finishOpening} />}
+  </div>
 }

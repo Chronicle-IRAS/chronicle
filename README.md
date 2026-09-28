@@ -15,7 +15,7 @@ Verify with `npm run typecheck`, `npm test`, and `npm run build`.
 
 | Scene / boundary | Implemented behavior |
 | --- | --- |
-| 01 Welcome → 02 Composer | Welcome copy scales together beyond the frame; scroll cue fades. Composer reveals in place. Existing restrained Welcome ambience is retained. |
+| 01 Welcome → 02 Composer | Welcome copy scales together beyond the frame; scroll cue fades. Composer reveals in place. Welcome now has luminous mint orbits, a drifting light field, pointer parallax and staggered letter entrances. |
 | 02 Composer → 03 Currently | After an extended editing interval, DeepSeek and Grok push at the left edge of the full-screen board. Gemini hops, Claude strolls with a book, GPT observes. The ensemble follows the moving edge; graph state persists. |
 | 03 Currently → 04 Profile | DeepSeek has an extended visible descent, followed by impact, recovery and a run-off. The background stays fixed while Profile copy slowly floats up in sequence. |
 | 04 Profile → 05 Space | A scroll threshold launches a complete 1.25s portal traversal. Input is locked until the camera reaches Space, then the scroll position advances to Scene 05. |
@@ -24,6 +24,8 @@ Verify with `npm run typecheck`, `npm test`, and `npm run build`.
 | Restart | Goodbye converges beneath a short closing veil, returns to the beginning, removes the scene hash, and focuses CHRONICLE. Graph state survives. |
 
 Every boundary uses a native scroll threshold, GSAP ScrollTrigger, and a forward timeline plus an optional dedicated return timeline. Once triggered, playback runs to completion independently of scroll input. Durations live in `sceneRegistry.ts`: Welcome 2.2s, ensemble push/pull 2.6s, DeepSeek impact and floating Profile 4.6s, portal entry/exit 1.25s each, and space traversal 2.4s. Reduced motion uses 0.35s simplified boundaries. Main content is temporarily inert; wheel, touch scroll and scroll keys are blocked. On arrival the document moves to the destination's reading/editing interval and input returns. Return playback finishes fully too. Scene 03 to 02 uses DS_PULL / GROK_PULL artwork with repeated exertion and accompanying hops. Scene 04 to 03 uses a separate 1.8s text return: Profile fades while settled Currently copy floats into place, without replaying the impact. Restart uses the same input lock and a roughly 1.6s closing veil. Cleanup kills active playback and restores input and overflow. No wheel accumulation or per-frame React/Zustand state is used.
+
+The first visit in each tab session opens with a skippable Loading sequence that warms fonts and the two primary character poses. It completes after resource readiness and a short minimum presentation, with a six-second timeout fallback. Journey input is locked while the overlay is visible. Reduced motion shortens the sequence. Welcome letters enter after the overlay closes; Restart retains its own existing transition.
 
 ## Ownership
 
@@ -50,6 +52,8 @@ Scenes 03 and 04 share the same deep blue background, mint accents, typography, 
 
 ## Content configuration
 
+Scene 07 uses the user-requested `@chenglou/pretext` 0.0.9 dependency for a flowing farewell letter. The paragraph is compiled with the library's rich-inline helper, so upper-case tokens (`CHRONICLE`) become inline stamps with their own weight, tracking and chrome width, and collapsed boundary spaces return as fragment gaps. Text is prepared once per font/resize; cached measurements route each DOM line around both sides of a large central circular opening at up to 30fps. The chosen size is the largest one whose every line still fits with the margin sampled across its travel, and lines whose gaps stay inside a river-free band are justified to the margin. The opening travels horizontally and vertically, pulses in size, and follows mouse movement across both axes. The margin is drawn as an engraved dial (ring lettering, tick ring, satellite), the page carries hairlines on the Pretext line bands, ink deepens toward the margin, wide columns get a drop cap and a drawn signature flourish, and the letter writes itself in when the scene becomes active. Inactive scenes stop ticking; reduced motion renders a static layout. The complete original paragraph stays accessible, and Restart retains its existing journey and graph-state behavior. Farewell copy lives in `siteContent.goodbye`.
+
 Narrow screens start with a two-column, three-row graph to keep node labels readable. This layout is chosen only when the store initializes; later resizing or scene transitions preserve edited node positions.
 
 Edit `src/data/siteContent.ts` to add real profile text or destination URLs. Empty profile values render as an em dash. Empty destination URLs render disabled planets with NOT CONNECTED; no fake URLs or personal claims are supplied. Email can use a `mailto:` URL.
@@ -64,8 +68,10 @@ Edit `src/data/siteContent.ts` to add real profile text or destination URLs. Emp
 
 ## Verification
 
-Type checking, 21 unit tests, and production build pass. In-app browser checks cover desktop 1280×800 and mobile 390×844: opening, character push, impact, portal entry, continuous space, disabled destinations, exit, restart, reverse navigation, graph connection/drag/state retention, and resize. Reduced-motion timelines are covered by unit tests; OS media preference and WebGL context loss have not been exercised in the browser.
+Type checking, 22 unit tests, and production build pass. In-app browser checks cover desktop 1280×800 and mobile 390×844: opening, character push, impact, portal entry, continuous space, disabled destinations, exit, restart, reverse navigation, graph connection/drag/state retention, and resize. Reduced-motion timelines are covered by unit tests; OS media preference and WebGL context loss have not been exercised in the browser.
+
+Latest visual verification: the central Pretext opening was checked at 1280×720 with the complete letter visible. Browser tooling subsequently disconnected; the new Loading/Welcome design and the revised narrow-screen letter still need browser verification. The earlier journey checks above predate this redesign.
 
 ## Remaining review items
 
-Final palette, typography, precise timing, portal/starfield art direction, and character asset delivery optimization remain design/performance review items. Original PNG poses are large. Vite also reports the existing main bundle size warning. No new dependencies, backend, database, remote Git repository, deployment, push, or merge were introduced.
+Final palette, typography, precise timing, portal/starfield art direction, and character asset delivery optimization remain design/performance review items. Original PNG poses are large. Vite also reports the existing main bundle size warning. Pretext is the sole dependency added for the user-requested outro; no backend, database, remote Git repository, deployment, push, or merge was introduced.
