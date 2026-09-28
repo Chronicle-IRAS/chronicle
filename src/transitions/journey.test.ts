@@ -108,6 +108,23 @@ describe('Remaining scene boundaries', () => {
     expect(body.y).toBe(0)
   })
 
+  it('fades the chapter background without dragging it through light grey', () => {
+    const from = { autoAlpha: 1, backgroundColor: 'rgb(22, 32, 40)', querySelector: () => null, querySelectorAll: () => [] }
+    const to = { autoAlpha: 0, querySelector: () => null, querySelectorAll: () => [] }
+    const timeline = dsImpact({ from: from as unknown as HTMLElement, to: to as unknown as HTMLElement, reducedMotion: false })
+    // GSAP parses 'transparent' as rgba(255, 255, 255, 0), so tweening the chapter to it
+    // washed the screen light grey mid-fade. Only alpha may move.
+    for (const progress of [0.62, 0.66, 0.7, 0.74]) {
+      timeline.progress(progress)
+      const [r, g, b] = from.backgroundColor.match(/[\d.]+/g)!.map(Number)
+      expect(r).toBeLessThanOrEqual(22)
+      expect(g).toBeLessThanOrEqual(32)
+      expect(b).toBeLessThanOrEqual(40)
+    }
+    timeline.progress(1)
+    expect(from.backgroundColor).toContain('0)')
+  })
+
   it('warps forward through open space and decelerates on arrival without lateral slides', () => {
     const outgoing = { xPercent: 0, scale: 1, z: 0, rotationY: 0, transformPerspective: 1200 }
     const incoming = { xPercent: 0, scale: 1, z: 0, rotationY: 0, transformPerspective: 1200 }

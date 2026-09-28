@@ -39,7 +39,9 @@ export const dsImpact: TransitionFactory = ({ from, to, reducedMotion }) => {
     timeline.fromTo(to, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 }, 0.3)
   } else {
     // Keep the shared chapter behind the impact; only Profile's copy floats up.
-    timeline.to(from, { backgroundColor: 'transparent', duration: 0.22 }, 1.1)
+    // GSAP parses 'transparent' as rgba(255, 255, 255, 0), so tweening to it drags the
+    // chapter through light grey. Hold the chapter RGB and fade alpha only.
+    timeline.to(from, { backgroundColor: 'rgba(22, 32, 40, 0)', duration: 0.22 }, 1.1)
     const body = from.querySelector('.scene-body')
     if (body) timeline.to(body, { autoAlpha: 0, duration: 0.24 }, 1.1)
     timeline.fromTo(to, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, 1.1)

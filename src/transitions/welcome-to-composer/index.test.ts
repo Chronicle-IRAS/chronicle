@@ -48,8 +48,12 @@ describe('Enter the Grid timeline', () => {
 
     timeline.progress(0.8)
     expect(elements.title.scale).toBeGreaterThan(5)
-    expect(elements.title.autoAlpha).toBe(1)
+    // Scene 02 arrives only once the oversized title is already receding, so the two
+    // never sit on screen at full strength (no heavy blur, no double exposure).
+    expect(elements.title.autoAlpha).toBeLessThan(1)
+    expect(elements.title.autoAlpha).toBeGreaterThan(0)
     expect(elements.canvas.autoAlpha).toBeGreaterThan(0)
+    expect(elements.canvas.filter).toBe('none')
     expect(elements.backdrop.autoAlpha).toBeLessThan(1)
 
     timeline.progress(1)

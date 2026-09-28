@@ -11,11 +11,15 @@ export const welcomeToComposer: TransitionFactory = ({ from, to, reducedMotion }
 
   if (support) timeline.to(support, { autoAlpha: 0, duration: 0.24 }, 0.02)
   if (backdrop) timeline.to(backdrop, { autoAlpha: 0, duration: 0.38 }, 0.6)
+  // The canvas only reveals once the typography group starts receding, so the oversized
+  // CHRONICLE stays in the foreground instead of double-exposing with sharp Scene 02 nodes.
+  // No blur: TRANSITIONS.md locks out heavy motion blur, and a full-screen filter is the
+  // most expensive thing this boundary could animate.
   if (canvas) timeline.fromTo(
     canvas,
-    { autoAlpha: 0, scale: reducedMotion ? 1 : 0.97, filter: reducedMotion ? 'none' : 'blur(3px)' },
-    { autoAlpha: 1, scale: 1, filter: reducedMotion ? 'none' : 'blur(0px)', duration: 0.28 },
-    0.72,
+    { autoAlpha: 0, scale: reducedMotion ? 1 : 0.97 },
+    { autoAlpha: 1, scale: 1, duration: 0.28 },
+    0.84,
   )
   if (heading) timeline.fromTo(heading, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.12 }, 0.88)
 
