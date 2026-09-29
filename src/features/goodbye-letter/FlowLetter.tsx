@@ -4,8 +4,6 @@ import type { PreparedRichInline, RichInlineCursor, RichInlineItem, RichInlineLi
 import { gsap } from '../../lib/gsap'
 import { useSceneStore } from '../../stores/sceneStore'
 
-/** The drop cap is a second obstacle beside the moving margin, so it only appears on wide columns. */
-const CAP_MIN_WIDTH = 380
 /** Ink deepens toward the margin; a prebuilt ramp keeps the per-frame writes allocation-free. */
 const INK = [
   'rgb(59, 76, 71)', 'rgb(53, 71, 66)', 'rgb(47, 66, 61)', 'rgb(41, 60, 56)',
@@ -23,7 +21,7 @@ const STAMP_TRACKING_EM = 0.08
 const GAP_MIN_RATIO = 0.65
 const GAP_MAX_RATIO = 1.5
 /** Circle centres sampled when proving a font size still fits; the margin travels between them. */
-const MARGIN_TRAVEL = [0.3, 0.5, 0.7]
+const MARGIN_TRAVEL = [0.15, 0.3, 0.5, 0.7, 0.85]
 
 /** Prepared once per font/resize; the ticker only lays out cached text widths. */
 export function FlowLetter({ text }: { text: string }) {
@@ -63,8 +61,8 @@ export function FlowLetter({ text }: { text: string }) {
       follow += (pointer - follow) * 0.12
       followX += (pointerX - followX) * 0.12
       const phase = reducedMotion ? 0 : time - start
-      const targetY = 0.5 + (reducedMotion ? 0 : (hovering ? follow * 0.2 : Math.sin(phase * 0.8) * 0.18))
-      const targetX = 0.5 + (reducedMotion ? 0 : (hovering ? followX * 0.2 : Math.sin(phase * 0.55) * 0.17))
+      const targetY = 0.5 + (reducedMotion ? 0 : (hovering ? follow * 0.35 : Math.sin(phase * 0.8) * 0.24))
+      const targetX = 0.5 + (reducedMotion ? 0 : (hovering ? followX * 0.35 : Math.sin(phase * 0.55) * 0.28))
       centerX += (targetX - centerX) * 0.12
       centerY += (targetY - centerY) * 0.12
       const cy = height * centerY
@@ -187,12 +185,12 @@ export function FlowLetter({ text }: { text: string }) {
       height = rect.height
       top = rect.top
       left = rect.left
-      radius = Math.min(82, width * 0.16)
-      let size = width < 400 ? 13 : 15
+      radius = Math.min(150, width * 0.17, height * 0.24)
+      let size = Math.min(64, Math.max(20, Math.round(Math.sqrt(width * height / text.length) * 1.35)))
       let inset = 0
       do {
         lineHeight = size + (width < 400 ? 6 : 10)
-        inset = width >= CAP_MIN_WIDTH ? Math.round(size * 1.75) : 0
+        inset = 0
         const items: RichInlineItem[] = []
         const classes: string[] = []
         const tracking = Math.round(size * STAMP_TRACKING_EM * 100) / 100
@@ -224,7 +222,6 @@ export function FlowLetter({ text }: { text: string }) {
       render(gsap.ticker.time)
     }
     const move = (event: PointerEvent) => {
-      if (event.pointerType !== 'mouse') return
       hovering = true
       pointer = Math.max(-1, Math.min(1, (event.clientY - top) / height * 2 - 1))
       pointerX = Math.max(-1, Math.min(1, (event.clientX - left) / width * 2 - 1))

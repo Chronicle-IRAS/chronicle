@@ -13,16 +13,17 @@ export function WelcomeScene() {
         <span className="welcome-signal welcome-signal-two" />
         <span className="welcome-signal welcome-signal-three" />
         <div className="welcome-aurora" />
+        <div className="welcome-eclipse"><div className="welcome-eclipse-rim" /><div className="welcome-eclipse-body" /><span className="welcome-eclipse-flare" /></div>
         <div className="welcome-orbital-field"><div className="welcome-orbit welcome-orbit-a" /><div className="welcome-orbit welcome-orbit-b" /><div className="welcome-orbit welcome-orbit-c" /><span className="welcome-orbit-core" /></div>
         <div className="welcome-floor" />
         <div className="welcome-grain" />
       </div>
       <div className="welcome-title-layer" data-enter-grid-title>
         <div className="welcome-meta welcome-entry"><span>01 / THE BEGINNING</span><span>CODE · CURIOSITY · POSSIBILITY</span></div>
-        <p className="welcome-kicker welcome-entry"><span /> A PERSONAL UNIVERSE, ALWAYS IN MOTION</p>
+        <p className="welcome-kicker welcome-entry"><span /> STEP INSIDE THE UNEXPECTED</p>
         <h1 className="display-title" aria-label="CHRONICLE"><span className="welcome-word" aria-hidden="true">{'CHRONICLE'.split('').map((letter, index) => <span key={index} style={{ '--letter-index': index } as CSSProperties}>{letter}</span>)}</span></h1>
         <p className="scene-subtitle">Developer · Builder · Explorer</p>
-        <p className="welcome-manifesto welcome-entry">Small ideas.<br /><em>Unexpected worlds.</em></p>
+        <p className="welcome-manifesto welcome-entry">Not just a page.<br /><em>A world to move through.</em></p>
         <p className="welcome-side-note welcome-entry">A place to build, connect,<br />and see what happens next.</p>
       </div>
       <p className="scroll-cue" data-enter-grid-support>SCROLL TO ENTER <span aria-hidden="true">↓</span></p>

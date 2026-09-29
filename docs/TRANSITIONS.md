@@ -29,6 +29,7 @@ All six boundaries run on a fixed viewport stage. The transition factory contrac
 ## 01 → 02 — ENTER THE GRID (Welcome → Stack Composer)
 
 - Concept: `LOCKED` "enter the grid".
+- Current pacing: 3.1 seconds, one continuously accelerating typography zoom with a long eased background/canvas overlap and a gentle final settle; no two-stage scale velocity jump.
 - Primary transition object: `LOCKED` the CHRONICLE title, not the grid. The move is a typography push-through: the title itself carries the visitor into the next space. The grid maintains spatial continuity between the two scenes.
 - Choreography: `LOCKED` (exact easing, scale amount, timing, font, and positioning remain `TBD`)
   - the scene begins as the complete Welcome state,
