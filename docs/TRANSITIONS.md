@@ -127,3 +127,9 @@ All six boundaries run on a fixed viewport stage. The transition factory contrac
 - Trigger: `LOCKED` the RESTART action in Scene 07.
 - Concept: `LOCKED` a closing animation completes the loop and returns to WELCOME. It must not be a hard instantaneous jump.
 - Current state: `DIRECTION` the Skeleton implementation is a simple return to the top; the final closing animation is `TBD`.
+
+## Character choreography revision
+
+The user authorized freely redesigning both AI sequences. Composer now makes a first short movement, settles back slightly, then accelerates away with the cast attached to its edge. DeepSeek and Grok compress and lean into the push; Gemini uses two distinct hops; Claude and GPT have quieter, offset secondary motion. Returning retains actual pulling poses, backward effort and a longer deceleration. The ensemble crossing takes 3.6 seconds.
+
+DeepSeek's 5.6-second scene combines an airborne sway, accelerating descent, contact squash, a small rebound, recovery, a backward wind-up and a running exit. A growing contact shadow, short falling trails and radial dust connect the sprite to the scene. Reduced motion uses the existing fade alternative. Graph state and automatic input locking remain in the director.

@@ -8,17 +8,37 @@ export const dsImpact: TransitionFactory = ({ from, to, reducedMotion }) => {
     const actor = from.querySelector('[data-impact-actor]')
     if (actor) {
       const poses = ['fall', 'preImpact', 'impact', 'recover', 'run']
-      timeline.fromTo(actor, { autoAlpha: 0, y: -window.innerHeight, x: 0 }, { autoAlpha: 1, y: -window.innerHeight * 0.78, duration: 0.24 }, 0.08)
-      timeline.to(actor, { y: 0, rotation: 8, duration: 0.52, ease: 'power1.in' }, 0.32)
+      timeline.fromTo(actor, { autoAlpha: 0, y: -window.innerHeight * 0.75, x: -55, rotation: -18, scaleX: 0.94, scaleY: 1.06 }, { autoAlpha: 1, y: -window.innerHeight * 0.42, x: -30, rotation: 12, duration: 0.38, ease: 'sine.out' }, 0.02)
+      timeline.to(actor, { y: 0, x: 0, rotation: -3, duration: 0.44, ease: 'power2.in' }, 0.4)
+      timeline.to(actor, { scaleX: 1.17, scaleY: 0.8, y: 12, duration: 0.065, ease: 'power2.out' }, 0.84)
+      timeline.to(actor, { scaleX: 0.96, scaleY: 1.04, y: -26, rotation: 4, duration: 0.12, ease: 'power2.out' }, 0.905)
+      timeline.to(actor, { scaleX: 1, scaleY: 1, y: 0, rotation: 0, duration: 0.15, ease: 'power2.in' }, 1.025)
       poses.forEach((pose, i) => {
         const image = actor.querySelector(`[data-impact-pose="${pose}"]`)
         if (!image) return
         timeline.fromTo(image, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.001 }, [0.08, 0.65, 0.84, 1.05, 1.22][i])
         if (i < 4) timeline.to(image, { autoAlpha: 0, duration: 0.001 }, [0.65, 0.84, 1.05, 1.22][i])
       })
-      timeline.to(actor, { rotation: 0, duration: 0.17 }, 1.05)
-      timeline.to(actor, { x: window.innerWidth, autoAlpha: 0, duration: 0.4, ease: 'power2.in' }, 1.22)
+      timeline.to(actor, { x: -14, rotation: -8, duration: 0.12, ease: 'sine.inOut' }, 1.18)
+      timeline.to(actor, { x: window.innerWidth, rotation: 6, duration: 0.46, ease: 'power2.in' }, 1.3)
+      timeline.to(actor, { y: -9, duration: 0.055, repeat: 5, yoyo: true, ease: 'sine.inOut' }, 1.3)
+      const trail = actor.querySelector('[data-impact-trail]')
+      if (trail) {
+        timeline.fromTo(trail, { autoAlpha: 0, scaleY: 0.2 }, { autoAlpha: 0.6, scaleY: 1, duration: 0.3 }, 0.4)
+        timeline.to(trail, { autoAlpha: 0, duration: 0.08 }, 0.8)
+      }
     }
+    const ground = from.querySelector('[data-impact-ground]')
+    if (ground) {
+      timeline.fromTo(ground, { autoAlpha: 0, scale: 0.3 }, { autoAlpha: 0.65, scale: 1, duration: 0.7, ease: 'power2.in' }, 0.14)
+      timeline.to(ground, { autoAlpha: 0, scale: 1.4, duration: 0.6 }, 0.9)
+    }
+    const dust = from.querySelectorAll('[data-impact-dust]')
+    dust.forEach((particle, index) => {
+      const angle = Math.PI * 2 * index / 8
+      timeline.fromTo(particle, { x: 0, y: 0, scale: 0, autoAlpha: 0 }, { x: Math.cos(angle) * 120, y: Math.sin(angle) * 38 - 15, scale: 1.5, autoAlpha: 0.7, duration: 0.16, ease: 'power2.out' }, 0.84)
+      timeline.to(particle, { x: Math.cos(angle) * 190, y: Math.sin(angle) * 50 + 15, scale: 0.2, autoAlpha: 0, duration: 0.45, ease: 'sine.out' }, 1)
+    })
     // The impact impulse drives the separate, deterministic text system.
     const textMotion = createTextImpact(from)
     timeline.fromTo(textMotion, { progress: 0 }, { progress: 1, duration: 0.55 }, 0.84)

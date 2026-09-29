@@ -28,8 +28,8 @@ type SceneDefinition = {
 
 export const sceneRegistry: readonly SceneDefinition[] = [
   { id: 'welcome', Component: WelcomeScene, transitionToNext: welcomeToComposer, scrollScreens: 1.5, holdFraction: 0.12, transitionSeconds: 3.1 },
-  { id: 'composer', Component: ComposerScene, transitionToNext: aiPush, transitionBack: aiPull, scrollScreens: 2, holdFraction: 0.25, transitionSeconds: 2.6 },
-  { id: 'currently', Component: CurrentlyScene, transitionToNext: dsImpact, transitionBack: profileReturn, returnSeconds: 1.8, scrollScreens: 1.5, holdFraction: 0.2, transitionSeconds: 4.6 },
+  { id: 'composer', Component: ComposerScene, transitionToNext: aiPush, transitionBack: aiPull, scrollScreens: 2, holdFraction: 0.25, transitionSeconds: 3.6 },
+  { id: 'currently', Component: CurrentlyScene, transitionToNext: dsImpact, transitionBack: profileReturn, returnSeconds: 1.8, scrollScreens: 1.5, holdFraction: 0.2, transitionSeconds: 5.6 },
   { id: 'profile', Component: ProfileScene, transitionToNext: portalEnter, scrollScreens: 1.5, holdFraction: 0.2, transitionSeconds: 1.25 },
   { id: 'space', Component: SpaceScene, transitionToNext: spaceTransition, scrollScreens: 1.5, holdFraction: 0.2, transitionSeconds: 2.4 },
   { id: 'destinations', Component: DestinationsScene, transitionToNext: portalExit, scrollScreens: 1.5, holdFraction: 0.2, transitionSeconds: 1.25 },

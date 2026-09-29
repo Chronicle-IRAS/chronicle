@@ -157,7 +157,7 @@ describe('Remaining scene boundaries', () => {
   it('keeps DeepSeek visibly descending before the delayed impact', () => {
     vi.stubGlobal('window', { innerHeight: 800, innerWidth: 1280 })
     const impact = { autoAlpha: 0 }
-    const actor = { autoAlpha: 0, y: 0, x: 0, querySelector: (selector: string) => selector.includes('"impact"') ? impact : null }
+    const actor = { autoAlpha: 0, y: 0, x: 0, rotation: 0, scaleX: 1, scaleY: 1, querySelector: (selector: string) => selector.includes('"impact"') ? impact : null }
     const from = { autoAlpha: 1, querySelector: (selector: string) => selector === '[data-impact-actor]' ? actor : null, querySelectorAll: () => [] }
     const to = { autoAlpha: 0, querySelectorAll: () => [] }
     const timeline = dsImpact({ from: from as unknown as HTMLElement, to: to as unknown as HTMLElement, reducedMotion: false })
@@ -166,8 +166,14 @@ describe('Remaining scene boundaries', () => {
     expect(actor.y).toBeLessThan(-200)
     expect(impact.autoAlpha).toBe(0)
     timeline.time(0.86)
-    expect(actor.y).toBe(0)
+    expect(actor.y).toBeGreaterThan(0)
+    expect(actor.scaleY).toBeLessThan(1)
     expect(impact.autoAlpha).toBe(1)
+    timeline.time(1.02)
+    expect(actor.y).toBeLessThan(0)
+    timeline.time(1.18)
+    expect(actor.y).toBe(0)
+    expect(actor.scaleY).toBe(1)
   })
 
   for (const factory of [aiPush, dsImpact, portalEnter, spaceTransition, portalExit]) {

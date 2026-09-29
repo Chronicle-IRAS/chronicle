@@ -11,6 +11,8 @@ export function CurrentlyScene() {
       <dl className="text-list">{siteContent.currently.map(({ label, value }) => <div data-impact-piece key={label}><dt>{label}</dt><dd>{value || '—'}</dd></div>)}</dl>
     </div>
     <ImpactActor />
+    <div className="impact-ground" data-impact-ground aria-hidden="true" />
+    <div className="impact-dust" aria-hidden="true">{Array.from({ length: 8 }, (_, index) => <i key={index} data-impact-dust />)}</div>
     <div className="impact-ripple" data-impact-ripple aria-hidden="true" />
   </div>
 }

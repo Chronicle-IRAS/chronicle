@@ -116,3 +116,23 @@
   .welcome-eclipse-rim, .welcome-eclipse-flare { animation: none; }
   .welcome-eclipse { transform: translate(-50%, -50%); }
 }
+
+/* Character choreography: grounded silhouettes, contact light and restrained dust. */
+.cast-actor, .impact-actor { transform-origin: 70% 88%; filter: drop-shadow(0 10px 9px #0005); }
+.cast-actor::after { content: ''; position: absolute; z-index: -1; left: 15%; right: 12%; bottom: 3%; height: 6%; border-radius: 50%; background: #06151c4d; filter: blur(5px); }
+.cast-ds { bottom: 16vh; }
+.cast-grok { bottom: 40vh; }
+.cast-gpt { bottom: 64vh; }
+.cast-wake { position: absolute; left: -190px; width: 180px; top: 20%; bottom: 12%; opacity: 0; visibility: hidden; transform-origin: right; }
+.cast-wake i { position: absolute; right: 0; width: 100%; height: 1px; background: linear-gradient(90deg, transparent, #b3e1d3aa); top: 30%; }
+.cast-wake i:nth-child(2) { top: 60%; width: 65%; }
+.cast-wake i:nth-child(3) { top: 85%; width: 85%; }
+.impact-actor { transform-origin: 50% 88%; }
+.impact-speed-lines { position: absolute; inset: -60% 20% 45%; background: repeating-linear-gradient(90deg, transparent 0 22%, #b6ddec77 23% 24%, transparent 25% 33%); mask-image: linear-gradient(transparent, #000); opacity: 0; transform-origin: bottom; }
+.impact-ground { position: absolute; left: calc(44% + clamp(140px, 23vw, 300px) * .15); top: calc(34% + clamp(140px, 23vw, 300px) * .88); width: clamp(100px, 16vw, 210px); height: 18px; border-radius: 50%; background: radial-gradient(ellipse, #a6dcca66, #a6dcca00 70%); opacity: 0; pointer-events: none; }
+.impact-dust { position: absolute; left: calc(44% + clamp(140px, 23vw, 300px) * .5); top: calc(34% + clamp(140px, 23vw, 300px) * .88); pointer-events: none; }
+.impact-dust i { position: absolute; width: 8px; height: 3px; border-radius: 50%; background: #b6dace; opacity: 0; }
+@media (max-width: 700px) {
+  .impact-ground { left: calc(42% + clamp(140px, 23vw, 300px) * .15); top: calc(30% + clamp(140px, 23vw, 300px) * .88); }
+  .impact-dust { left: calc(42% + clamp(140px, 23vw, 300px) * .5); top: calc(30% + clamp(140px, 23vw, 300px) * .88); }
+}

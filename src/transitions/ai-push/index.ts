@@ -1,63 +1,78 @@
 import { gsap } from '../../lib/gsap'
 import type { TransitionFactory } from '../types'
 
+/** The carrier follows the board; local actor motion supplies weight and personality. */
 export const aiPush: TransitionFactory = ({ from, to, reducedMotion }) => {
-  const timeline = gsap.timeline({ paused: true, defaults: { ease: 'none', immediateRender: false } })
+  const timeline = gsap.timeline({ paused: true, defaults: { ease: 'sine.inOut', immediateRender: false } })
   const board = from.querySelector('[data-composer-board]') ?? from
   const cast = from.querySelector('.character-cast')
-  timeline.set(from.querySelectorAll('[data-pose="pull"]'), { autoAlpha: 0 }, 0)
-  timeline.set(from.querySelectorAll('[data-cast="grok"] [data-pose="push"]'), { autoAlpha: 1 }, 0)
-  timeline.fromTo(to, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.25 }, 0.1)
-  if (!reducedMotion) {
-    const ds = from.querySelector('[data-cast="deepseek"]')
-    const grok = from.querySelector('[data-cast="grok"]')
-    const gemini = from.querySelector('[data-cast="gemini"]')
-    const claude = from.querySelector('[data-cast="claude"]')
-    const gpt = from.querySelector('[data-cast="gpt"]')
-    if (cast) timeline.fromTo(cast, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.08 }, 0.04)
-    if (ds) {
-      timeline.fromTo(ds, { x: -180, rotation: -10 }, { x: 0, rotation: 5, duration: 0.2 }, 0.04)
-      timeline.fromTo(ds.querySelector('[data-pose="push"]'), { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.01 }, 0.23)
-      timeline.fromTo(ds.querySelector('[data-pose="hard"]'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, 0.23)
-    }
-    if (grok) timeline.fromTo(grok, { x: -200, rotation: -4 }, { x: 0, rotation: 2, duration: 0.23 }, 0.04)
-    if (gemini) {
-      timeline.fromTo(gemini, { x: -240, y: 0 }, { x: 0, y: -55, duration: 0.16 }, 0.08)
-      timeline.to(gemini, { y: 0, duration: 0.13 }, 0.24)
-      timeline.to(gemini, { y: -30, duration: 0.12 }, 0.4)
-      timeline.to(gemini, { y: 0, duration: 0.12 }, 0.52)
-    }
-    if (claude) timeline.fromTo(claude, { x: -240 }, { x: 0, duration: 0.48 }, 0.1)
-    if (gpt) timeline.fromTo(gpt, { x: -160, y: -5 }, { x: 0, y: 0, duration: 0.42 }, 0.12)
+  timeline.set(from.querySelectorAll('[data-pose="pull"], [data-pose="hard"]'), { autoAlpha: 0 }, 0)
+  timeline.set(from.querySelectorAll('[data-pose="push"]'), { autoAlpha: 1 }, 0)
+  timeline.fromTo(to, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 }, 0.05)
+  if (reducedMotion) {
+    timeline.fromTo(board, { autoAlpha: 1, xPercent: 0 }, { autoAlpha: 0, duration: 0.5 }, 0.2)
+    timeline.fromTo(from, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.2 }, 0.7)
+    return timeline
   }
-  // Friction beat: the page holds until the cast has visibly exerted force.
-  timeline.fromTo(board, { xPercent: 0, autoAlpha: 1 }, { xPercent: reducedMotion ? 0 : 105, autoAlpha: reducedMotion ? 0 : 1, duration: 0.65, ease: 'power2.in' }, 0.3)
-  if (cast && !reducedMotion) timeline.fromTo(cast, { xPercent: 0 }, { xPercent: 105, duration: 0.65, ease: 'power2.in' }, 0.3)
-  // Explicit endpoints keep the board visible when restoring it from Scene 03.
-  timeline.fromTo(from, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.05 }, 0.95)
+  if (cast) timeline.fromTo(cast, { autoAlpha: 0, xPercent: 0 }, { autoAlpha: 1, duration: 0.16 }, 0)
+  const actors = ['deepseek', 'grok', 'gemini', 'claude', 'gpt'] as const
+  actors.forEach((id, index) => {
+    const actor = from.querySelector(`[data-cast="${id}"]`)
+    if (!actor) return
+    const helper = index > 1
+    timeline.fromTo(actor, { x: -45 - index * 12, y: 12, rotation: -8, scaleX: 1, scaleY: 1 }, { x: 0, y: 0, rotation: 0, duration: 0.25 + index * 0.035, ease: 'power2.out' }, index * 0.025)
+    if (!helper) {
+      timeline.to(actor, { rotation: 7 - index * 2, scaleX: 0.96, scaleY: 1.04, duration: 0.16 }, 0.3)
+      timeline.to(actor, { rotation: -3, scaleX: 1.03, scaleY: 0.97, duration: 0.14 }, 0.46)
+      timeline.to(actor, { rotation: 4, scaleX: 1, scaleY: 1, y: -5, duration: 0.085, repeat: 5, yoyo: true }, 0.62)
+    } else if (id === 'gemini') {
+      timeline.to(actor, { y: -65, rotation: -12, duration: 0.2, ease: 'power2.out' }, 0.35)
+      timeline.to(actor, { y: 0, rotation: 7, duration: 0.18, ease: 'power2.in' }, 0.55)
+      timeline.to(actor, { y: -32, rotation: -5, duration: 0.15, repeat: 1, yoyo: true }, 0.76)
+    } else {
+      timeline.to(actor, { y: id === 'claude' ? -4 : -10, rotation: id === 'claude' ? 2 : -3, duration: 0.14 + index * 0.02, repeat: 3, yoyo: true }, 0.32)
+    }
+  })
+  const hard = from.querySelector('[data-cast="deepseek"] [data-pose="hard"]')
+  const push = from.querySelector('[data-cast="deepseek"] [data-pose="push"]')
+  if (hard) timeline.to(hard, { autoAlpha: 1, duration: 0.08 }, 0.46)
+  if (push) timeline.to(push, { autoAlpha: 0, duration: 0.08 }, 0.46)
+  const carriers = cast ? [board, cast] : [board]
+  // First overcome friction, rock back a little, then gain momentum together.
+  timeline.fromTo(carriers, { xPercent: 0 }, { xPercent: 12, duration: 0.22, ease: 'power2.out' }, 0.3)
+  timeline.to(carriers, { xPercent: 10, duration: 0.12 }, 0.52)
+  timeline.to(carriers, { xPercent: 105, duration: 0.65, ease: 'power2.inOut' }, 0.64)
+  timeline.fromTo(board, { autoAlpha: 1, scale: 1 }, { scale: 0.985, duration: 0.25 }, 0.3)
+  timeline.to(board, { scale: 1, duration: 0.3 }, 0.99)
+  const wake = from.querySelector('[data-cast-wake]')
+  if (wake) {
+    timeline.fromTo(wake, { autoAlpha: 0, scaleX: 0.3 }, { autoAlpha: 0.7, scaleX: 1, duration: 0.22 }, 0.65)
+    timeline.to(wake, { autoAlpha: 0, duration: 0.3 }, 0.98)
+  }
+  timeline.fromTo(from, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.1 }, 1.29)
   return timeline
 }
 
-/** Returning uses pulling artwork and fresh motion, rather than reversing a push. */
+/** Pulling leads with a backward lean, then decelerates into a soft landing. */
 export const aiPull: TransitionFactory = ({ from, to, reducedMotion }) => {
   const timeline = gsap.timeline({ paused: true, defaults: { immediateRender: false } })
   const board = to.querySelector('[data-composer-board]') ?? to
   const cast = to.querySelector('.character-cast')
   timeline.fromTo(to, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.05 }, 0)
-  timeline.fromTo(board, { xPercent: reducedMotion ? 0 : 105, autoAlpha: reducedMotion ? 0 : 1 }, { xPercent: 0, autoAlpha: 1, duration: 0.78, ease: 'power2.inOut' }, 0.12)
+  timeline.fromTo(board, { xPercent: reducedMotion ? 0 : 105, autoAlpha: reducedMotion ? 0 : 1 }, { xPercent: 0, autoAlpha: 1, duration: 0.95, ease: 'power2.inOut' }, 0.12)
   if (cast && !reducedMotion) {
     timeline.set(to.querySelectorAll('[data-pose="push"], [data-pose="hard"]'), { autoAlpha: 0 }, 0)
     timeline.set(to.querySelectorAll('[data-pose="pull"]'), { autoAlpha: 1 }, 0)
-    timeline.fromTo(cast, { xPercent: 105, autoAlpha: 0 }, { autoAlpha: 1, duration: 0.08 }, 0)
-    timeline.to(cast, { xPercent: 0, duration: 0.78, ease: 'power2.inOut' }, 0.12)
-    for (const [id, lift, tilt] of [['deepseek', -9, -6], ['grok', -6, -3], ['gemini', -26, 3], ['claude', -3, 1], ['gpt', -5, 2]] as const) {
+    timeline.fromTo(cast, { xPercent: 105, autoAlpha: 0 }, { autoAlpha: 1, duration: 0.12 }, 0)
+    timeline.to(cast, { xPercent: 0, duration: 0.95, ease: 'power2.inOut' }, 0.12)
+    for (const [id, lift, tilt, phase] of [['deepseek', -7, -9, 0.08], ['grok', -5, -6, 0.11], ['gemini', -36, 8, 0.15], ['claude', -3, 2, 0.2], ['gpt', -9, -3, 0.12]] as const) {
       const actor = to.querySelector(`[data-cast="${id}"]`)
       if (!actor) continue
-      timeline.fromTo(actor, { x: 0, y: 0, rotation: 0 }, { y: lift, rotation: tilt, duration: 0.1, repeat: 7, yoyo: true, ease: 'sine.inOut' }, 0.08)
-      timeline.to(actor, { y: 0, rotation: 0, duration: 0.12 }, 0.88)
+      timeline.fromTo(actor, { x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 }, { y: lift, rotation: tilt, duration: 0.14, repeat: 5, yoyo: true, ease: 'sine.inOut' }, phase)
+      timeline.to(actor, { y: 0, rotation: 0, duration: 0.18, ease: 'back.out(1.4)' }, 1.04)
     }
-    timeline.to(cast, { autoAlpha: 0, duration: 0.12 }, 0.9)
+    timeline.to(cast, { autoAlpha: 0, duration: 0.18 }, 1.08)
   }
-  timeline.fromTo(from, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.16 }, 0.78)
+  timeline.fromTo(from, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.25 }, 0.82)
   return timeline
 }
