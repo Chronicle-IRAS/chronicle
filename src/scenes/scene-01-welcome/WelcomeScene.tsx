@@ -13,7 +13,7 @@ export function WelcomeScene() {
         <span className="welcome-signal welcome-signal-two" />
         <span className="welcome-signal welcome-signal-three" />
         <div className="welcome-aurora" />
-        <div className="welcome-eclipse"><div className="welcome-eclipse-rim" /><div className="welcome-eclipse-body" /><span className="welcome-eclipse-flare" /></div>
+        <div className="welcome-eclipse" data-enter-grid-orb><div className="welcome-eclipse-rim" /><div className="welcome-eclipse-body" /><span className="welcome-eclipse-flare" /></div>
         <div className="welcome-orbital-field"><div className="welcome-orbit welcome-orbit-a" /><div className="welcome-orbit welcome-orbit-b" /><div className="welcome-orbit welcome-orbit-c" /><span className="welcome-orbit-core" /></div>
         <div className="welcome-floor" />
         <div className="welcome-grain" />

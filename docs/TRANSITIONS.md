@@ -26,26 +26,14 @@ All six boundaries run on a fixed viewport stage. The transition factory contrac
 
 ---
 
-## 01 → 02 — ENTER THE GRID (Welcome → Stack Composer)
+## 01 → 02 — THROUGH THE ECLIPSE (Welcome → Stack Composer)
 
-- Concept: `LOCKED` "enter the grid".
-- Current pacing: 3.1 seconds, one continuously accelerating typography zoom with a long eased background/canvas overlap and a gentle final settle; no two-stage scale velocity jump.
-- Primary transition object: `LOCKED` the CHRONICLE title, not the grid. The move is a typography push-through: the title itself carries the visitor into the next space. The grid maintains spatial continuity between the two scenes.
-- Choreography: `LOCKED` (exact easing, scale amount, timing, font, and positioning remain `TBD`)
-  - the scene begins as the complete Welcome state,
-  - only `SCROLL TO ENTER` fades early,
-  - CHRONICLE and `Developer · Builder · Explorer` remain together as one typography group,
-  - as scroll progresses, the entire typography group scales continuously toward the viewer; this is not a subtle scale but a large push-through,
-  - the Welcome background stays fixed in the viewport and blends away during the handoff; it must not slide with the document,
-  - the title grows until it exceeds the viewport, its letterforms are cropped by the frame edges, and the visitor finally sees a huge letterform fragment instead of the whole word,
-  - the Stack Composer canvas is already aligned with the viewport when it becomes visible behind the receding oversized title; it reveals in place rather than sliding upward into the frame,
-  - the title passes beyond the frame and Stack Composer fully owns the screen.
-- No blank frame: `LOCKED` the title must not disappear into an empty frame followed by a cut to Scene 02. The intended overlap is an oversized CHRONICLE in the foreground while Scene 02 becomes visible behind it.
-- Grid role: `LOCKED` the faint blueprint / node grid from Scene 01 persists as a **spatial continuity** device, never as the transition actor. During the transition it may subtly scale, slightly change spacing, become a little clearer, and blend toward the Scene 02 canvas grid; in Scene 02 the React Flow canvas / grid becomes the real workspace. The visitor should feel that Welcome and Stack Composer belong to one grid world, while the visual advance comes from the CHRONICLE typography scaling.
-- Rhythm (design intent, no fixed percentages): early — the scroll cue fades; middle — CHRONICLE and its subtitle enlarge together and the grid continuity strengthens; late — the typography exceeds the viewport, Scene 02 becomes visible behind it, oversized letterforms move beyond the frame, Stack Composer takes over.
-- Reverse: `LOCKED` scrolling up plays the same process backwards — Stack Composer → the huge letterforms return into the viewport → CHRONICLE and its subtitle scale back down → the scroll cue returns → the complete Welcome state.
-- Requirements: `LOCKED` scroll-triggered, automatically completed, reversible through a full return animation.
-- Avoid: `LOCKED` the grid becoming an exaggerated main zoom effect; a simple Scene 01 fade-out / Scene 02 fade-in; hard cuts; a black frame in between; a flashy sci-fi tunnel; heavy motion blur; exaggerated glow; cyberpunk treatment. The transition stays quiet, restrained, cinematic, and spatial.
+- Latest user direction replaces the former typography zoom with a sphere-led traversal.
+- Welcome typography keeps its original scale and fades early alongside the scroll cue.
+- The eclipse grows toward the viewer; an expanding circular iris reveals the fixed Composer canvas behind it.
+- The background and incoming canvas overlap, then the Composer heading settles in. Duration: 3.1 seconds.
+- Return reverses the iris and restores the sphere and original typography; input stays locked until completion.
+- Reduced motion uses a fully open iris, a stationary sphere, and short fades.
 
 ## 02 → 03 — AI ENSEMBLE PUSH (Stack Composer → Currently)
 
