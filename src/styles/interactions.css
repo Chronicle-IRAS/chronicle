@@ -133,3 +133,20 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid 
 @media (prefers-reduced-motion: reduce) { .black-hole-lensing, .black-hole-disk, .black-hole-loading { animation: none; } }
 .black-hole > canvas { position: absolute; inset: -35%; width: 170%; height: 170%; z-index: 1; border-radius: 50%; mask-image: radial-gradient(circle, #000 48%, transparent 70%); }
 .black-hole:has(> canvas[data-renderer="webgl"]) > .black-hole-core, .black-hole:has(> canvas[data-renderer="webgl"]) > .black-hole-disk, .black-hole:has(> canvas[data-renderer="webgl"]) > .black-hole-lensing { visibility: hidden; }
+/* The event horizon is the hero; editorial text stays outside its silhouette. */
+.welcome-content .welcome-grid { background: #030507; }
+.welcome-content .welcome-grid-far, .welcome-content .welcome-floor, .welcome-content .welcome-orbital-field, .welcome-content .welcome-signal, .welcome-content .welcome-grain { display: none; }
+.welcome-content .welcome-atmosphere, .welcome-content .welcome-aurora, .welcome-content .scene-atmosphere { opacity: .12; }
+.welcome-eclipse.black-hole { width: min(65vw, 790px); top: 43%; }
+.welcome-content .display-title { position: absolute; bottom: 8vh; left: 4.5vw; margin: 0; font-size: clamp(35px, 5.4vw, 78px); letter-spacing: -.065em; }
+.welcome-content .scene-subtitle { position: absolute; left: 5vw; bottom: 6vh; font-size: 10px; }
+.welcome-content .welcome-kicker { position: absolute; top: 13vh; left: 5vw; font-size: 8px; color: #c6b59b; }
+.welcome-content .welcome-manifesto { display: none; }
+.welcome-content .welcome-side-note { color: #978d7d; }
+.black-hole:has(> canvas[data-renderer="webgl"]) .black-hole-loading { display: none; }
+@media (max-width: 700px) {
+  .welcome-eclipse.black-hole { width: 110vw; top: 43%; }
+  .welcome-content .display-title { bottom: 17vh; left: 6vw; font-size: 11vw; }
+  .welcome-content .scene-subtitle { bottom: 14.5vh; left: 7vw; font-size: 8px; }
+  .welcome-content .welcome-kicker { top: 14vh; left: 7vw; font-size: 7px; }
+}

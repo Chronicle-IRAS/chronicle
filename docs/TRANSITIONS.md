@@ -123,3 +123,5 @@ The user authorized freely redesigning both AI sequences. Composer now makes a f
 DeepSeek's 5.6-second scene combines an airborne sway, accelerating descent, contact squash, a small rebound, recovery, a backward wind-up and a running exit. A growing contact shadow, short falling trails and radial dust connect the sprite to the scene. Reduced motion uses the existing fade alternative. Graph state and automatic input locking remain in the director.
 
 Latest Welcome revision: the shared WebGL canvas ray-marches a three-dimensional black hole (tilted emitting disk, horizon occlusion, bent rays, gently orbiting view). The transition reveals circular LOADING text and rotates/expands the hole over 4.8 seconds. Reduced motion avoids rotation/expansion; CSS art remains the unavailable-WebGL fallback.
+
+The black-hole hero now keeps the title outside the disk silhouette. Disk shading uses turbulent emission, asymmetric brightness and stronger ray bending. LOADING is a generated texture sampled in disk-space by the same ray marcher, so it follows disk perspective and horizon occlusion; the SVG label is fallback-only.

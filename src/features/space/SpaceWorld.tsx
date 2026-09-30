@@ -54,6 +54,7 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
     if (!canvas) return
     const home = canvas.parentElement!
     const hole = home.closest('main')?.querySelector<HTMLElement>('[data-enter-grid-orb]')
+    const loadingLabel = hole?.querySelector('[data-enter-grid-loading]')
     let dispose = () => {}
     const initialize = () => {
       dispose()
@@ -125,7 +126,7 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
           gl.viewport(0, 0, canvas.width, canvas.height)
           lastFrame = elapsed
           dirty = false
-          blackHole.draw(reducedMotion ? 0 : elapsed)
+          blackHole.draw(reducedMotion ? 0 : elapsed, loadingLabel ? Number(gsap.getProperty(loadingLabel, 'opacity')) : 0)
           return
         }
         if (canvas.parentElement !== home) { home.appendChild(canvas); gl.useProgram(program); resize() }
