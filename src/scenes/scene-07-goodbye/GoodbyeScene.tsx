@@ -1,26 +1,10 @@
-import { SceneAtmosphere } from '../../components/SceneAtmosphere'
 import { useSceneStore } from '../../stores/sceneStore'
 import { restartJourney } from '../../transitions/restart'
-import { siteContent } from '../../data/siteContent'
-import { FlowLetter } from '../../features/goodbye-letter/FlowLetter'
+import { PaperFlight } from '../../features/paper-flight/PaperFlight'
 
 export function GoodbyeScene() {
   const reducedMotion = useSceneStore((state) => state.reducedMotion)
-  return <div className="scene-content" data-scene-content>
-    <SceneAtmosphere />
-    <div className="scene-body goodbye-layout">
-      <header className="goodbye-heading">
-        <p className="section-number">07 / GOODBYE</p>
-        <h2 className="scene-title">GOODBYE, FOR NOW.</h2>
-        <p className="goodbye-intro">MOVE THROUGH THE WORDS ↗</p>
-      </header>
-      <div className="goodbye-letter">
-        <FlowLetter text={siteContent.goodbye.letter} />
-      </div>
-      <footer className="goodbye-footer">
-        <p className="letter-signoff">{siteContent.goodbye.closing}</p>
-        <button className="restart-button" type="button" onClick={(event) => restartJourney(reducedMotion, event.currentTarget)}>RESTART <span aria-hidden="true">↗</span></button>
-      </footer>
-    </div>
+  return <div className="scene-content paper-goodbye" data-scene-content>
+    <div className="scene-body paper-layout"><header className="paper-header"><span>07 / GOODBYE</span><span>CHRONICLE</span></header><PaperFlight /><button className="restart-button paper-restart" type="button" onClick={(event) => restartJourney(reducedMotion, event.currentTarget)}>RESTART <span aria-hidden="true">↗</span></button></div>
   </div>
 }

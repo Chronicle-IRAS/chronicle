@@ -24,7 +24,7 @@ Scene map (stable identifiers):
 - Content: `DIRECTION` the name CHRONICLE, the line "Developer · Builder · Explorer", and a "SCROLL TO ENTER" cue. The current Skeleton wording is placeholder, not final copy.
 - Character: user-authorized redesign replaces the earlier restrained direction with a full-screen mint observatory: large staggered typography, a sculptural eclipse, tilted orbital rings, moving light fields, a perspective grid and pointer parallax. Supporting editorial copy anchors the lower corners.
 - Background: `DIRECTION` a faint blueprint / node grid that also foreshadows Scene 02.
-- Opening: a skippable resource-warming Loading overlay plays once per tab session, then releases the Welcome letter entrance. Reduced motion simplifies both. All Welcome text continues to scale together into Composer, except the fading scroll cue.
+- Opening: a skippable resource-warming Loading overlay plays once per tab session, then releases the Welcome letter entrance. Reduced motion simplifies both. Welcome text now fades at its original scale while the eclipse expands into the Composer iris, per the latest user direction.
 - Color: `TBD` — do not fix final colors from the current placeholder styling.
 - Boundary to Scene 02: see `docs/TRANSITIONS.md` (01 → 02).
 
@@ -87,8 +87,12 @@ Scene map (stable identifiers):
 
 - Purpose: `LOCKED` return to the 2D page world; a pure outro.
 - Primary element: `LOCKED` GOODBYE.
-- Current outro: by user request, a full-viewport farewell letter with adaptive large typography uses `@chenglou/pretext` to flow text around both sides of a large central circular opening. The paragraph is compiled with the rich-inline helper (upper-case tokens become inline stamps with their own weight, tracking and chrome width; collapsed boundary spaces return as fragment gaps) and laid out one row at a time for the margin. Font size is chosen as the largest that still fits with the margin sampled across its travel, and rows whose gaps stay inside a river-free band are justified to the margin. The central opening travels across both axes, pulses in size, and follows mouse movement; reduced motion uses a static layout. The letter remains readable as a semantic paragraph for assistive technology. Presentation: engraved margin dial (ring lettering, tick ring, orbiting satellite), ruled page aligned to the Pretext line bands, uniform text sizing, ink that deepens toward the margin, a written-in stagger, and a slim header/footer that preserves the whole page for interaction. Footer notes and Restart stay visible; no personal details or URLs are invented.
+- Current outro: a paper-airplane scene with an editorial farewell, a repeatable flight, and a full-letter reading surface using Pretext. The open letter folds away before takeoff. Keyboard controls, reduced-motion fallback and the Restart loop remain available.
 - Possible contents: `DIRECTION` friends, friends' websites, blogroll, special thanks, other outbound links.
 - Closing action: `LOCKED` RESTART. It is part of the narrative loop, not a plain back-to-top, and returns to Scene 01.
 - Open: `TBD` the closing animation (e.g. text gathering / convergence).
 - Boundary to Scene 01: see `docs/TRANSITIONS.md` (07 → 01).
+
+## Interactive chapter revision
+
+The user authorized expanding interaction while preserving the seven-scene outline. Currently/Profile have selectable entries and a rotatable instrument; What’s Next has a user-built constellation; Destinations has planet selection and honest unconfigured-link feedback; Goodbye turns its letter into a returning paper flight. No personal biography or destination URL was invented.

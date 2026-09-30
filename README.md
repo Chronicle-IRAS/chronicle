@@ -15,7 +15,7 @@ Verify with `npm run typecheck`, `npm test`, and `npm run build`.
 
 | Scene / boundary | Implemented behavior |
 | --- | --- |
-| 01 Welcome → 02 Composer | Welcome copy scales together beyond the frame; scroll cue fades. Composer reveals in place. Welcome now has a large sculptural eclipse and luminous mint orbits, a drifting light field, pointer parallax and staggered letter entrances. |
+| 01 Welcome → 02 Composer | Welcome text fades without scaling; the eclipse grows into an expanding iris that reveals the fixed Composer canvas. Welcome now has a large sculptural eclipse and luminous mint orbits, a drifting light field, pointer parallax and staggered letter entrances. |
 | 02 Composer → 03 Currently | After an extended editing interval, DeepSeek and Grok push at the left edge of the full-screen board. Gemini hops, Claude strolls with a book, GPT observes. The ensemble follows the moving edge; graph state persists. |
 | 03 Currently → 04 Profile | DeepSeek has an extended visible descent, followed by impact, recovery and a run-off. The background stays fixed while Profile copy slowly floats up in sequence. |
 | 04 Profile → 05 Space | A scroll threshold launches a complete 1.25s portal traversal. Input is locked until the camera reaches Space, then the scroll position advances to Scene 05. |
@@ -52,11 +52,13 @@ Scenes 03 and 04 share the same deep blue background, mint accents, typography, 
 
 ## Content configuration
 
-Scene 07 is a full-viewport typographic field with a slim heading and footer. Its font size adapts to the available area, and its larger moving opening follows pointer movement across the page, including touch pointers. Scene 07 uses the user-requested `@chenglou/pretext` 0.0.9 dependency for a flowing farewell letter. The paragraph is compiled with the library's rich-inline helper, so upper-case tokens (`CHRONICLE`) become inline stamps with their own weight, tracking and chrome width, and collapsed boundary spaces return as fragment gaps. Text is prepared once per font/resize; cached measurements route each DOM line around both sides of a large central circular opening at up to 30fps. The chosen size is the largest one whose every line still fits with the margin sampled across its travel, and lines whose gaps stay inside a river-free band are justified to the margin. The opening travels horizontally and vertically, pulses in size, and follows mouse movement across both axes. The margin is drawn as an engraved dial (ring lettering, tick ring, satellite), the page carries hairlines on the Pretext line bands, ink deepens toward the margin, the fullscreen layout uses uniform text sizing, and the letter writes itself in when the scene becomes active. Inactive scenes stop ticking; reduced motion renders a static layout. The complete original paragraph stays accessible, and Restart retains its existing journey and graph-state behavior. Farewell copy lives in `siteContent.goodbye`.
+Scenes 03 and 04 use a shared ChapterExplorer: select a topic to update its description and indexed orbital sculpture, and rotate the sculpture with a keyboard-accessible range input. Unwritten personal fields remain marked as such. Scene 05 lets visitors connect future-topic stars in their chosen order and clear the route. Scene 06 lets visitors select planets, inspect descriptions, and pause their ambient orbit motion; external links appear only when configured.
+
+Scene 07 is a paper-airplane ending. Visitors can launch the plane on a returning flight, open the full farewell letter, or fold the open letter before flying. The reading surface retains the user-requested @chenglou/pretext layout around a moving circular opening. Flight timelines stop when the scene becomes inactive; reduced motion keeps a brief opacity response. The existing Restart loop remains available. Modules live in `src/features/chapter-explorer/` and `src/features/paper-flight/`; interaction styles live in `src/styles/interactions.css`.
 
 Narrow screens start with a two-column, three-row graph to keep node labels readable. This layout is chosen only when the store initializes; later resizing or scene transitions preserve edited node positions.
 
-Edit `src/data/siteContent.ts` to add real profile text or destination URLs. Empty profile values render as an em dash. Empty destination URLs render disabled planets with NOT CONNECTED; no fake URLs or personal claims are supplied. Email can use a `mailto:` URL.
+Edit `src/data/siteContent.ts` to add real profile text or destination URLs. Empty profile values render as an em dash. All planets can be selected to inspect their purpose. Empty destination URLs show an honest unconfigured-address state, with no outbound link; no fake URLs or personal claims are supplied. Email can use a `mailto:` URL.
 
 ## Accessibility and fallback
 
@@ -70,7 +72,7 @@ Edit `src/data/siteContent.ts` to add real profile text or destination URLs. Emp
 
 Type checking, 22 unit tests, and production build pass. In-app browser checks cover desktop 1280×800 and mobile 390×844: opening, character push, impact, portal entry, continuous space, disabled destinations, exit, restart, reverse navigation, graph connection/drag/state retention, and resize. Reduced-motion timelines are covered by unit tests; OS media preference and WebGL context loss have not been exercised in the browser.
 
-Latest visual verification: the full-screen Pretext letter was checked in the in-app browser at desktop size and 390×844, with complete text and the Restart control visible. The revised Welcome and its scroll-triggered Composer handoff render successfully; the canvas reaches full opacity and input unlocks at the endpoint. No console warnings or errors were reported. Resizing the viewport can change the active scene because scene scroll distances are viewport-relative; animation quality under live resizing remains a review item. Touch hardware and OS reduced-motion settings were not exercised.
+Latest visual verification: desktop 1440×900 and mobile 390×844 checks cover chapter selection and orbital controls, ordered star connections and reset, planet details and orbit pause, and the paper ending. Opening the full Pretext letter, folding it, completing a flight, and returning to the repeat-flight state were verified. The eclipse entrance and reverse are also covered by transition unit tests. Touch hardware and OS reduced-motion settings were not exercised.
 
 ## Remaining review items
 

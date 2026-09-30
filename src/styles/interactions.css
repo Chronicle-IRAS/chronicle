@@ -1,0 +1,106 @@
+/* Interactive chapters share one editorial instrument language. */
+.quiet-control { background: transparent; color: inherit; border: 1px solid currentColor; padding: 12px 18px; font: 10px/1.3 Arial,sans-serif; letter-spacing: .13em; cursor: pointer; transition: background .2s, color .2s; }
+.quiet-control:hover:not(:disabled), .quiet-control[aria-pressed="true"] { background: #a8cfbe24; }
+.quiet-control:disabled { opacity: .4; cursor: default; }
+button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid currentColor; outline-offset: 5px; }
+.chapter-explorer { display: grid; grid-template-columns: 1fr 1fr; gap: 8vw; align-items: center; width: 100%; }
+.chapter-explorer .explorer-list { width: 100%; }
+.explorer-list > div { display: block; padding: 13px 0; border-color: #a5c9bc38; }
+.explorer-list dt button { width: 100%; display: flex; gap: 16px; align-items: center; background: transparent; border: 0; padding: 0 0 8px; color: #93a9a2; font: 12px Arial,sans-serif; text-transform: uppercase; letter-spacing: .1em; cursor: pointer; }
+.explorer-list dt button span { font-size: 9px; opacity: .65; }
+.explorer-list dt button b { margin-left: auto; font-size: 23px; font-weight: 300; }
+.explorer-list dt button[aria-pressed="true"] { color: #d0f4dc; }
+.explorer-list dd { font-size: clamp(20px, 2.5vw, 34px); margin: 0; }
+.explorer-list > div:has([aria-pressed="true"]) { border-color: #bfe6ca; }
+.chapter-detail { position: relative; padding-left: 3vw; border-left: 1px solid #9bbcaa33; }
+.chapter-sculpture { height: clamp(130px, 20vh, 220px); position: relative; max-width: 340px; margin: 0 auto 20px; transform: rotate(var(--instrument-angle)); transition: transform .2s ease-out; }
+.instrument-ring { position: absolute; width: 190px; height: 190px; left: 50%; top: 50%; translate: -50% -50%; border: 1px solid #b7d6c66b; border-radius: 50%; transform: rotateX(58deg) rotate(-30deg); }
+.instrument-ring.second { transform: rotateY(60deg) rotate(40deg); border-style: dashed; }
+.instrument-core { position: absolute; inset: 0; display: grid; place-items: center; font: italic 70px Georgia,serif; color: #bfdec9; transform: rotate(calc(-1 * var(--instrument-angle))); }
+.chapter-sculpture > i { position: absolute; left: 50%; top: 50%; width: 7px; height: 7px; border: 1px solid #99bcab; border-radius: 50%; transform: rotate(var(--point-angle)) translateX(95px); }
+.chapter-sculpture > i[data-selected="true"] { background: #daf5cc; box-shadow: 0 0 20px #d7efb7; }
+.chapter-detail-copy { min-height: 145px; animation: chapter-reveal .35s ease-out; }
+.chapter-detail-copy small, .atlas-footer small { font-size: 9px; letter-spacing: .15em; color: #a9c5b6; }
+.chapter-detail h3 { font-size: 25px; font-weight: 400; margin: 12px 0; }
+.chapter-detail p { max-width: 350px; font-size: 13px; line-height: 1.7; color: #a3b5b0; }
+.instrument-control { display: flex; align-items: center; gap: 15px; font-size: 8px; letter-spacing: .14em; color: #b7cdbd; }
+.instrument-control input { width: 130px; accent-color: #b7d5be; cursor: ew-resize; }
+@keyframes chapter-reveal { from { opacity: 0; translate: 0 8px; } to { opacity: 1; translate: 0 0; } }
+.star-atlas { position: relative; }
+.scene-space .star-atlas .scene-title { margin-bottom: 10px; font-size: clamp(40px, 6vw, 88px); }
+.atlas-instruction { color: #a8b5cb; font-size: 13px; margin: 0; }
+.constellation-map { position: relative; height: min(43vh, 400px); width: 100%; }
+.constellation-map > svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.constellation-map polyline { fill: none; stroke: #cfdbbd; stroke-width: 1.2px; vector-effect: non-scaling-stroke; stroke-dasharray: 5 6; animation: atlas-flow 4s linear infinite; }
+.atlas-star { position: absolute; translate: -50% -50%; color: #dee5f1; background: none; border: 0; padding: 12px; display: grid; justify-items: center; gap: 8px; cursor: pointer; min-width: 130px; }
+.atlas-star-core { width: 14px; height: 14px; border-radius: 50%; background: #dce9ff; box-shadow: 0 0 16px #c4d5ff, 0 0 45px #a8c0ff4d; transition: scale .3s; }
+.atlas-star-core::after { content: ''; display: block; width: 50px; height: 50px; border: 1px solid #b9cff844; border-radius: 50%; translate: -18px -18px; }
+.atlas-star[aria-pressed="true"] .atlas-star-core { background: #e9e8af; scale: 1.35; box-shadow: 0 0 30px #d9e9b5; }
+.atlas-star small { font-size: 8px; margin-top: 10px; opacity: .6; }
+.atlas-star strong { font-weight: 400; font-size: clamp(13px, 1.6vw, 22px); }
+.atlas-footer { border-top: 1px solid #b4c2df33; display: flex; justify-content: space-between; align-items: center; gap: 20px; padding-top: 20px; }
+.atlas-footer p { font-size: 13px; color: #b6c0d1; margin: 8px 0 0; }
+@keyframes atlas-flow { to { stroke-dashoffset: -44; } }
+.orbit-control { position: absolute; right: 0; top: 8%; font-size: 9px; z-index: 2; }
+.destination-content .destination-orbits { bottom: 20%; }
+.destination[aria-pressed="true"] .planet { scale: 1.3; box-shadow: 0 0 45px #bbcaec66, 0 0 0 12px #adbedc16; }
+.destination[aria-pressed="true"] .planet-label { color: #fff0bc; }
+.destination-content[data-orbits-held="true"] .planet, .destination-content[data-orbits-held="true"] .planet::after { animation-play-state: paused; }
+.destination-inspector { position: absolute; bottom: 4%; left: 0; right: 0; min-height: 90px; border-top: 1px solid #aec1de44; padding: 18px 40px 0 0; display: flex; gap: 30px; justify-content: space-between; align-items: center; }
+.destination-inspector small { font-size: 8px; letter-spacing: .16em; color: #a4b6d6; }
+.destination-inspector h3 { margin: 6px 0; font-weight: 400; font-size: 25px; }
+.destination-inspector p, .destination-empty { color: #b5bed0; font-size: 12px; line-height: 1.6; margin: 0; }
+.inspector-close { position: absolute; right: 0; top: 12px; color: #c9d5eb; border: 0; background: none; font-size: 25px; cursor: pointer; }
+/* Final chapter: the letter becomes a paper aircraft and returns home. */
+.paper-goodbye { background: #e2e9df; color: #263d36; }
+.scene-goodbye .paper-layout { width: 100%; max-width: none; height: 100%; padding: 4vh 4vw; display: flex; flex-direction: column; }
+.paper-header { display: flex; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px solid #314f4755; font-size: 10px; letter-spacing: .24em; }
+.paper-header span:last-child { font: 17px Georgia,serif; letter-spacing: .18em; }
+.paper-world { position: relative; flex: 1; min-height: 0; }
+.paper-editorial { position: relative; padding-top: 4vh; z-index: 1; pointer-events: none; }
+.paper-editorial h2 { font-size: clamp(50px, 7.6vw, 112px); line-height: .95; letter-spacing: -.075em; font-weight: 600; margin: 0 0 4vh; }
+.paper-editorial h2 em { font-family: Georgia,serif; font-weight: 400; letter-spacing: -.065em; }
+.paper-editorial p { font: clamp(13px, 1.4vw, 20px)/1.5 Georgia,serif; margin: 0 0 20px; max-width: 38%; }
+.paper-plane { position: absolute; top: 20%; left: 57%; width: 40%; border: 0; background: none; padding: 0; cursor: pointer; z-index: 3; transform-origin: 50% 50%; }
+.paper-plane svg { width: 100%; overflow: visible; filter: drop-shadow(-9px 18px 18px #314f471a); }
+.paper-plane:hover:not(:disabled) svg { filter: drop-shadow(-12px 20px 20px #314f472e); }
+.paper-plane:disabled { cursor: default; }
+.paper-route { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.paper-route path { stroke: #314f4766; fill: none; stroke-width: 1; stroke-dasharray: 6 9; vector-effect: non-scaling-stroke; }
+.paper-orbit { position: absolute; top: 14%; right: 2%; width: 39%; aspect-ratio: 1; border: 1px solid #314f4733; border-radius: 50%; pointer-events: none; animation: paper-orbit-turn 70s linear infinite; }
+.paper-orbit span { position: absolute; left: 50%; top: 50%; font: italic 22px Georgia,serif; }
+.paper-orbit span:nth-child(1) { translate: -11vw -6vw; }.paper-orbit span:nth-child(2) { translate: -13vw 7vw; }.paper-orbit span:nth-child(3) { translate: -3vw 17vw; }.paper-orbit span:nth-child(4) { translate: 12vw 12vw; }.paper-orbit span:nth-child(5) { translate: 18vw -2vw; }.paper-orbit span:nth-child(6) { translate: 8vw -14vw; }.paper-orbit span:nth-child(7) { translate: -6vw -17vw; }
+@keyframes paper-orbit-turn { to { rotate: 360deg; } }
+.paper-actions { position: absolute; left: 0; bottom: 0; display: flex; gap: 20px; align-items: center; z-index: 4; max-width: 75%; }
+.paper-actions span { font-size: 10px; color: #53675c; max-width: 150px; }
+.paper-layout .paper-restart { position: absolute; right: 4vw; bottom: 4vh; margin: 0; z-index: 5; font-size: 10px; padding: 13px 18px; }
+.paper-letter-overlay { position: absolute; inset: 12px 0 60px; background: #e2e9df; z-index: 6; display: flex; flex-direction: column; gap: 18px; }
+.paper-letter-heading { display: flex; justify-content: space-between; align-items: center; }
+.paper-letter-heading h3 { font-size: 10px; letter-spacing: .18em; }
+.paper-letter-overlay .flow-letter { flex: 1; min-height: 0; height: auto; }
+.paper-letter-overlay > .quiet-control { align-self: flex-start; }
+.scene:not([data-active="true"]) .paper-orbit, .scene:not([data-active="true"]) .constellation-map polyline { animation-play-state: paused; }
+@media (max-width: 700px) {
+  .chapter-explorer { gap: 22px; grid-template-columns: 1fr; }
+  .scene-currently .scene-title, .scene-profile .scene-title { margin-bottom: 15px; }
+  .chapter-explorer .explorer-list { max-width: none; }
+  .explorer-list > div { padding: 5px 0; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .explorer-list dt { flex: 1; }.explorer-list dd { font-size: 15px; }
+  .explorer-list dt button { padding: 7px 0; font-size: 9px; gap: 9px; }.explorer-list dt button b { font-size: 18px; }
+  .chapter-detail { padding-left: 0; border: 0; min-height: 185px; display: grid; grid-template-columns: 96px 1fr; gap: 12px; }
+  .chapter-sculpture { width: 92px; height: 105px; margin: 14px 0 0; }
+  .instrument-ring { width: 88px; height: 88px; }.instrument-core { font-size: 38px; }.chapter-sculpture > i { transform: rotate(var(--point-angle)) translateX(43px); }
+  .chapter-detail-copy { min-height: 125px; }.chapter-detail h3 { font-size: 19px; margin: 8px 0; }.chapter-detail p { font-size: 11px; line-height: 1.5; }
+  .instrument-control { grid-column: 1/-1; justify-content: space-between; }
+  .scene-space .star-atlas .scene-title { font-size: 42px; }.atlas-instruction { font-size: 11px; }
+  .constellation-map { height: 42vh; }.atlas-star { min-width: 78px; padding: 12px 3px; }.atlas-star strong { font-size: 11px; max-width: 80px; }
+  .atlas-footer { gap: 8px; }.atlas-footer p { max-width: 200px; font-size: 11px; }.atlas-footer .quiet-control { font-size: 8px; padding: 10px; }
+  .orbit-control { top: 18%; font-size: 8px; padding: 8px; }.destination-content .destination-orbits { top: 29%; bottom: 25%; }
+  .destination-inspector { bottom: 4%; gap: 12px; min-height: 100px; }.destination-empty { max-width: 100px; font-size: 10px; }.destination-inspector p { font-size: 11px; }.destination-inspector h3 { font-size: 21px; }
+  .paper-editorial h2 { font-size: 13vw; }.paper-editorial p { max-width: 65%; font-size: 13px; margin-bottom: 14px; }
+  .paper-plane { left: 42%; width: 55%; top: 43%; }.paper-orbit { right: 3%; width: 60%; top: 43%; }
+  .paper-actions { bottom: 62px; max-width: 100%; gap: 9px; flex-wrap: wrap; }.paper-actions .quiet-control { font-size: 8px; padding: 12px; }.paper-actions span { width: 100%; max-width: none; font-size: 9px; }
+  .paper-layout .paper-restart { bottom: 4vh; font-size: 9px; padding: 11px 16px; }.paper-letter-overlay { bottom: 110px; }
+}
+@media (prefers-reduced-motion: reduce) { .chapter-detail-copy, .constellation-map polyline, .paper-orbit { animation: none; }.chapter-sculpture { transition: none; } }
+.scene-goodbye .paper-goodbye { background: #e2e9df; color: #263d36; }

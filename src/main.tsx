@@ -4,6 +4,7 @@ import { App } from './app/App'
 import './styles/globals.css'
 import '@xyflow/react/dist/style.css'
 import './styles/opening.css'
+import './styles/interactions.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

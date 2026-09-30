@@ -1,3 +1,4 @@
+import { ChapterExplorer } from '../../features/chapter-explorer/ChapterExplorer'
 import { SceneAtmosphere } from '../../components/SceneAtmosphere'
 import { siteContent } from '../../data/siteContent'
 
@@ -7,7 +8,7 @@ export function ProfileScene() {
     <div className="scene-body content-column">
       <p className="section-number">04 / PROFILE</p>
       <h2 className="scene-title">PROFILE</h2>
-      <dl className="text-list profile-list">{siteContent.profile.map(({ label, value }) => <div key={label}><dt>{label}</dt><dd>{value || '—'}</dd></div>)}</dl>
+      <ChapterExplorer entries={siteContent.profile} chapter="profile" />
     </div>
     <div className="portal-mouth" data-portal-mouth aria-hidden="true"><i /><i /><i /></div>
   </div>

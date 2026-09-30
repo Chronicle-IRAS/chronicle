@@ -65,7 +65,7 @@ export const dsImpact: TransitionFactory = ({ from, to, reducedMotion }) => {
     const body = from.querySelector('.scene-body')
     if (body) timeline.to(body, { autoAlpha: 0, duration: 0.24 }, 1.1)
     timeline.fromTo(to, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, 1.1)
-    const copy = to.querySelectorAll('.section-number, .scene-title, .text-list > div')
+    const copy = to.querySelectorAll('.section-number, .scene-title, .text-list > div, .chapter-detail')
     if (copy.length) timeline.fromTo(copy, { y: 44, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.78, stagger: 0.075, ease: 'power2.out' }, 1.17)
     timeline.fromTo(from, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.15 }, 1.65)
   }
@@ -75,7 +75,7 @@ export const dsImpact: TransitionFactory = ({ from, to, reducedMotion }) => {
 /** Return to the chapter without resurrecting the impact or rewinding the fall. */
 export const profileReturn: TransitionFactory = ({ from, to, reducedMotion }) => {
   const timeline = gsap.timeline({ paused: true, defaults: { immediateRender: false } })
-  const incoming = to.querySelectorAll('.section-number, .scene-title, .text-list > div')
+  const incoming = to.querySelectorAll('.section-number, .scene-title, .text-list > div, .chapter-detail')
   timeline.set(to.querySelectorAll('[data-impact-actor], [data-impact-ripple]'), { autoAlpha: 0 }, 0)
   timeline.set(to.querySelectorAll('[data-impact-piece]'), { x: 0, y: 0, rotation: 0 }, 0)
   timeline.set(to, { autoAlpha: 1, backgroundColor: 'transparent' }, 0)
