@@ -13,7 +13,10 @@ export function WelcomeScene() {
         <span className="welcome-signal welcome-signal-two" />
         <span className="welcome-signal welcome-signal-three" />
         <div className="welcome-aurora" />
-        <div className="welcome-eclipse" data-enter-grid-orb><div className="welcome-eclipse-rim" /><div className="welcome-eclipse-body" /><span className="welcome-eclipse-flare" /></div>
+        <div className="welcome-eclipse black-hole" data-enter-grid-orb>
+          <div className="black-hole-lensing" /><div className="black-hole-disk" /><div className="black-hole-core" />
+          <svg className="black-hole-loading" data-enter-grid-loading viewBox="0 0 400 400"><defs><path id="loading-orbit" d="M200,200 m-166,0 a166,166 0 1,1 332,0 a166,166 0 1,1 -332,0" /></defs><text><textPath href="#loading-orbit" textLength="1043">LOADING · ENTERING THE BLUEPRINT · LOADING · ENTERING THE BLUEPRINT · </textPath></text></svg>
+        </div>
         <div className="welcome-orbital-field"><div className="welcome-orbit welcome-orbit-a" /><div className="welcome-orbit welcome-orbit-b" /><div className="welcome-orbit welcome-orbit-c" /><span className="welcome-orbit-core" /></div>
         <div className="welcome-floor" />
         <div className="welcome-grain" />

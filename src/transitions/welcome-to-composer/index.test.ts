@@ -4,14 +4,16 @@ import { welcomeToComposer } from './index'
 
 function fixture() {
   const title = { autoAlpha: 1, scale: 1 }
-  const orb = { scale: 1 }
+  const orb = { scale: 1, rotation: 0 }
+  const loading = { autoAlpha: 0 }
   const backdrop = { autoAlpha: 1 }
   const support = { autoAlpha: 1 }
   const canvas = { autoAlpha: 1, clipPath: 'circle(150% at 50% 44%)' }
   const heading = { autoAlpha: 1 }
   const targets: Record<string, object> = { '[data-enter-grid-title]': title, '[data-enter-grid-orb]': orb, '[data-enter-grid-backdrop]': backdrop, '[data-enter-grid-support]': support, '[data-enter-grid-canvas]': canvas, '[data-enter-grid-heading]': heading }
+  targets['[data-enter-grid-loading]'] = loading
   const root = { querySelector: (selector: string) => targets[selector] ?? null } as unknown as HTMLElement
-  return { root, title, orb, backdrop, support, canvas, heading }
+  return { root, title, orb, loading, backdrop, support, canvas, heading }
 }
 afterEach(() => gsap.globalTimeline.clear())
 describe('Eclipse iris transition', () => {
@@ -22,6 +24,8 @@ describe('Eclipse iris transition', () => {
     expect(f.title.scale).toBe(1)
     expect(f.title.autoAlpha).toBe(0)
     expect(f.orb.scale).toBeGreaterThan(1)
+    expect(f.orb.rotation).toBeGreaterThan(0)
+    expect(f.loading.autoAlpha).toBe(1)
     expect(f.canvas.autoAlpha).toBeGreaterThan(0)
     expect(f.backdrop.autoAlpha).toBeGreaterThan(0)
     timeline.progress(1)
@@ -32,6 +36,8 @@ describe('Eclipse iris transition', () => {
     timeline.progress(0)
     expect(f.title.autoAlpha).toBe(1)
     expect(f.orb.scale).toBe(1)
+    expect(f.orb.rotation).toBe(0)
+    expect(f.loading.autoAlpha).toBe(0)
     expect(f.backdrop.autoAlpha).toBe(1)
     expect(f.support.autoAlpha).toBe(1)
   })

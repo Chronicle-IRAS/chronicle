@@ -77,3 +77,6 @@ Latest visual verification: desktop 1440×900 and mobile 390×844 checks cover c
 ## Remaining review items
 
 Final palette, typography, precise timing, portal/starfield art direction, and character asset delivery optimization remain design/performance review items. Original PNG poses are large. Vite also reports the existing main bundle size warning. Pretext is the sole dependency added for the user-requested outro; no backend, database, remote Git repository, deployment, push, or merge was introduced.
+
+### Black-hole entrance and composition workbench
+Welcome uses a ray-marched 3D accretion disk with horizon occlusion and curved rays. The existing SpaceWorld WebGL context renders both the black hole and later starfield; its canvas moves between the Welcome host and space layer. CSS remains the fallback. The 4.8-second entrance reveals orbiting LOADING typography while the hole rotates and expands. The composition workbench supports selecting two technologies, connecting them through the existing engine, and removing individual connections. It follows the same interaction gate as the fixed graph.

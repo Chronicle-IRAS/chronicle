@@ -7,6 +7,7 @@ import { useComposerStore } from '../store/composerStore'
 import type { ComposerEdge, ComposerNode } from '../types'
 import { ResultNode } from './ResultNode'
 import { TechNode } from './TechNode'
+import { ComposerWorkbench } from './ComposerWorkbench'
 
 const nodeTypes: NodeTypes = { tech: TechNode, project: ResultNode, concept: ResultNode }
 
@@ -69,6 +70,7 @@ export function StackComposer() {
       >
         <Background variant={BackgroundVariant.Lines} gap={58} size={1} color="#6380762b" />
       </ReactFlow>
+      <ComposerWorkbench />
     </div>
   )
 }

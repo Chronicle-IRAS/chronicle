@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { gsap } from '../../lib/gsap'
 import { createStarField } from './field'
 import type { SpaceCamera } from './field'
+import { createBlackHolePass } from './blackHole'
 
 const vertex = `
 attribute vec3 aPosition;
@@ -51,6 +52,8 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
+    const home = canvas.parentElement!
+    const hole = home.closest('main')?.querySelector<HTMLElement>('[data-enter-grid-orb]')
     let dispose = () => {}
     const initialize = () => {
       dispose()
@@ -75,6 +78,7 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
       gl.linkProgram(program)
       if (!gl.getProgramParameter(program, gl.LINK_STATUS)) { release(); canvas.dataset.renderer = 'fallback'; return }
       canvas.dataset.renderer = 'webgl'
+      const blackHole = createBlackHolePass(gl)
       gl.useProgram(program)
       gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
       const count = window.innerWidth < 700 ? 1300 : 2400
@@ -96,6 +100,7 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
       const time = gl.getUniformLocation(program, 'uTime')
       let dirty = true
       const resize = () => {
+        gl.useProgram(program)
         const dpr = Math.min(window.devicePixelRatio, 1.75)
         canvas.width = Math.round(window.innerWidth * dpr)
         canvas.height = Math.round(window.innerHeight * dpr)
@@ -110,6 +115,20 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
       let lastWarp = NaN
       let lastFrame = -1
       const draw = (elapsed: number) => {
+        const welcome = hole?.closest('[data-scene-id]')
+        const inHole = !!hole && (welcome?.getAttribute('data-active') === 'true' || welcome?.getAttribute('data-transitioning') === 'true')
+        if (inHole && blackHole.valid) {
+          if (canvas.parentElement !== hole) { hole.appendChild(canvas); dirty = true }
+          if (gl.isContextLost() || document.hidden || (reducedMotion && !dirty) || (!dirty && elapsed - lastFrame < 1 / 30)) return
+          const resolution = window.innerWidth < 700 ? 420 : 640
+          if (canvas.width !== resolution || canvas.height !== resolution) canvas.width = canvas.height = resolution
+          gl.viewport(0, 0, canvas.width, canvas.height)
+          lastFrame = elapsed
+          dirty = false
+          blackHole.draw(reducedMotion ? 0 : elapsed)
+          return
+        }
+        if (canvas.parentElement !== home) { home.appendChild(canvas); gl.useProgram(program); resize() }
         if (gl.isContextLost() || document.hidden || camera.visible === 0) return
         if (reducedMotion && !dirty && lastDepth === camera.depth && lastTurn === camera.turn && lastPan === camera.pan && lastWarp === camera.warp) return
         if (!dirty && elapsed - lastFrame < 1 / 30) return
@@ -117,6 +136,11 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
         lastDepth = camera.depth; lastTurn = camera.turn; lastPan = camera.pan; lastWarp = camera.warp; dirty = false
         gl.clearColor(0, 0, 0, 0)
         gl.clear(gl.COLOR_BUFFER_BIT)
+        gl.useProgram(program)
+        gl.enable(gl.BLEND)
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+        gl.vertexAttribPointer(position, 3, gl.FLOAT, false, 20, 0)
+        gl.vertexAttribPointer(style, 2, gl.FLOAT, false, 20, 12)
         gl.uniform1f(depth, camera.depth)
         gl.uniform1f(turn, camera.turn)
         gl.uniform1f(pan, camera.pan)
@@ -127,7 +151,7 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
       resize()
       window.addEventListener('resize', resize)
       gsap.ticker.add(draw)
-      dispose = () => { gsap.ticker.remove(draw); window.removeEventListener('resize', resize); release() }
+      dispose = () => { gsap.ticker.remove(draw); window.removeEventListener('resize', resize); home.appendChild(canvas); blackHole.dispose(); release() }
     }
     const lost = (event: Event) => { event.preventDefault(); canvas.dataset.renderer = 'fallback' }
     canvas.addEventListener('webglcontextlost', lost)

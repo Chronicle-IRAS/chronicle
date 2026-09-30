@@ -104,3 +104,32 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid 
 }
 @media (prefers-reduced-motion: reduce) { .chapter-detail-copy, .constellation-map polyline, .paper-orbit { animation: none; }.chapter-sculpture { transition: none; } }
 .scene-goodbye .paper-goodbye { background: #e2e9df; color: #263d36; }
+/* Black-hole entrance: rotating accretion light around a genuinely dark core. */
+.welcome-eclipse.black-hole { width: min(49vw, 620px); isolation: isolate; }
+.black-hole-lensing { position: absolute; inset: -5%; border-radius: 50%; background: conic-gradient(#fff2c0, #db8a3322 20%, #fff3c1 45%, #dc742d66 60%, #ffdb95); box-shadow: 0 0 35px #ffb45e66, 0 0 110px #ff9d3630; animation: eclipse-turn 35s linear infinite; }
+.black-hole-core { position: absolute; inset: 3%; border-radius: 50%; background: #010203; box-shadow: inset 0 0 24px #000, 0 0 10px 6px #050504, 0 0 22px #ffd28c66; }
+.black-hole-disk { position: absolute; z-index: 2; inset: -34%; border-radius: 50%; transform: rotate(-17deg) scaleY(.25); background: repeating-radial-gradient(ellipse, transparent 0 43%, #fff0becc 44%, #e29d53aa 45%, transparent 46% 48%, #ffbf6466 49%, transparent 51% 54%); box-shadow: 0 0 42px #ffad3d55; filter: drop-shadow(0 0 8px #f8b15d); animation: accretion-pulse 7s ease-in-out infinite alternate; }
+.black-hole-loading { position: absolute; z-index: 3; inset: -24%; width: 148%; height: 148%; overflow: visible; opacity: 0; visibility: hidden; fill: #fff2cc; font: 11px monospace; letter-spacing: 3px; animation: eclipse-turn 12s linear infinite; filter: drop-shadow(0 0 5px #ffb65f); }
+.welcome-content .welcome-orbital-field { opacity: .17; }
+.welcome-content .welcome-aurora { background: radial-gradient(ellipse at 50% 43%, #bb722a30, transparent 36%), radial-gradient(ellipse at 28% 59%, #447d8720, transparent 30%); }
+@keyframes accretion-pulse { to { filter: drop-shadow(0 0 15px #ffcf7c); transform: rotate(-14deg) scaleY(.28); } }
+.scene:not([data-active="true"]) .black-hole-lensing, .scene:not([data-active="true"]) .black-hole-disk, .scene:not([data-active="true"]) .black-hole-loading { animation-play-state: paused; }
+.composer-workbench { position: absolute; z-index: 8; bottom: 22px; left: 50%; transform: translateX(-50%); width: min(640px, calc(100% - 32px)); padding: 16px 20px; border: 1px solid #accab844; border-radius: 18px; background: #0a191bec; box-shadow: 0 12px 45px #0005; color: #dcebdc; backdrop-filter: blur(18px); }
+.workbench-title { display: flex; justify-content: space-between; gap: 12px; font-size: 9px; letter-spacing: .16em; margin-bottom: 12px; }
+.workbench-title span { color: #91bc9f; }
+.workbench-techs { display: flex; flex-wrap: wrap; gap: 6px; }
+.workbench-techs button, .workbench-connections button { border: 1px solid #96c3a52d; background: #ffffff04; color: #c6d9ce; padding: 7px 10px; border-radius: 7px; cursor: pointer; font-size: 11px; transition: background .2s, border-color .2s; }
+.workbench-techs button span { margin-left: 12px; color: #a1dbb4; }
+.workbench-techs button[aria-pressed="true"] { background: #bce9b82b; border-color: #c1e7ac; color: #f1ffe8; }
+.workbench-action { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 10px; }
+.workbench-action p { margin: 0; font-size: 10px; color: #a5b9ad; line-height: 1.5; }
+.workbench-action > button { flex-shrink: 0; padding: 10px 15px; border-radius: 8px; border: 0; background: #d1ebae; color: #182c23; font-size: 10px; font-weight: 700; cursor: pointer; }
+.workbench-action > button:disabled { opacity: .3; cursor: default; }
+.workbench-connections { display: flex; gap: 6px; overflow-x: auto; margin-top: 10px; max-height: 45px; }
+.workbench-connections button { white-space: nowrap; }
+.composer-workbench button:focus-visible { outline: 2px solid #f5d69a; outline-offset: 3px; }
+.react-flow__node.selected .tech-node { border-color: #e2efaa; box-shadow: 0 0 0 3px #d1ebae22, 0 0 36px #a5d98145; }
+@media (max-width: 700px) { .welcome-eclipse.black-hole { width: 76vw; } .composer-workbench { padding: 12px; bottom: 12px; } .workbench-title { font-size: 8px; } .workbench-techs button { font-size: 10px; padding: 6px 8px; } .workbench-techs button span { margin-left: 8px; } }
+@media (prefers-reduced-motion: reduce) { .black-hole-lensing, .black-hole-disk, .black-hole-loading { animation: none; } }
+.black-hole > canvas { position: absolute; inset: -35%; width: 170%; height: 170%; z-index: 1; border-radius: 50%; mask-image: radial-gradient(circle, #000 48%, transparent 70%); }
+.black-hole:has(> canvas[data-renderer="webgl"]) > .black-hole-core, .black-hole:has(> canvas[data-renderer="webgl"]) > .black-hole-disk, .black-hole:has(> canvas[data-renderer="webgl"]) > .black-hole-lensing { visibility: hidden; }
