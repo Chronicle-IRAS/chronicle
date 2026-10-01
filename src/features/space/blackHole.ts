@@ -10,10 +10,10 @@ export function createBlackHolePass(gl: WebGLRenderingContext) {
     float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
     float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
     void main(){
-      vec3 ro=vec3(sin(time*.035)*.5,1.8,7.5);
+      vec3 ro=vec3(sin(time*.18)*1.05,1.8+sin(time*.23)*.28,7.5+sin(time*.16)*.16);
       vec3 forward=normalize(-ro), right=normalize(cross(forward,vec3(0.,1.,0.))), up=cross(right,forward);
       vec3 rd=normalize(forward+uv.x*right*.72+uv.y*up*.72);
-      float roll=.13; mat2 rot=mat2(cos(roll),-sin(roll),sin(roll),cos(roll));
+      float roll=.13+sin(time*.21)*.055; mat2 rot=mat2(cos(roll),-sin(roll),sin(roll),cos(roll));
       rd.xy=rot*rd.xy;
       vec3 pos=ro, col=vec3(0.); float trans=1.;
       for(int i=0;i<180;i++){
@@ -35,16 +35,20 @@ export function createBlackHolePass(gl: WebGLRenderingContext) {
         if(previous.y*pos.y<0.) {
           vec3 surface=mix(previous,pos,previous.y/(previous.y-pos.y));
           float sr=length(surface.xz), sa=atan(surface.z,surface.x);
-          float orbit=sa-time*.35/pow(max(sr,1.),1.5)-spin;
-          vec2 turbulenceUV=vec2(sr*15.,sin(orbit)*4.);
+          float orbit=sa-time*2.6/pow(max(sr,1.),1.5)-spin;
+          float inflow=sr+.035*sin(orbit*3.+sr*5.-time*.8);
+          vec2 turbulenceUV=vec2(inflow*15.,sin(orbit)*4.);
           float coarse=noise(turbulenceUV+vec2(cos(orbit)*3.,sr*.3));
           float fine=noise(vec2(sr*65.+coarse*3.,sin(orbit*3.)*9.));
           float thread=pow(.5+.5*sin(sr*115.+coarse*7.+fine*2.),3.);
-          float density=(.16+coarse*.6+fine*.3+thread*.55);
+          float spiral=pow(.5+.5*sin(orbit*3.+sr*5.),6.);
+          float hotSpot=pow(.5+.5*cos(sa-time*.9-spin),24.)*exp(-pow((sr-1.9)/.3,2.));
+          float outerSpot=pow(.5+.5*cos(sa-time*.48-spin+2.),18.)*exp(-pow((sr-3.)/.4,2.));
+          float density=(.12+coarse*.5+fine*.25+thread*.45+spiral*.5+hotSpot*1.2+outerSpot*.7);
           float rim=smoothstep(1.25,1.5,sr)*(1.-smoothstep(3.1,4.3,sr));
           float brightness=pow(clamp(1.-surface.x*.22,.35,1.9),2.);
           vec3 temperature=mix(vec3(.62,.13,.025),vec3(1.,.85,.61),exp(-max(sr-1.5,0.)*.7));
-          col+=trans*temperature*density*rim*brightness*1.8;
+          col+=trans*temperature*density*rim*brightness*(1.65+.12*sin(time*.85));
           float ringV=(sr-2.45)/.55;
           if(ringV>0. && ringV<1.) {
             float ink=texture2D(lettering,vec2(fract((atan(surface.z,surface.x)-spin)/6.283185-time*.035),ringV)).r;

@@ -127,3 +127,5 @@ Latest Welcome revision: the shared WebGL canvas ray-marches a three-dimensional
 The black-hole hero now keeps the title outside the disk silhouette. Disk shading uses turbulent emission, asymmetric brightness and stronger ray bending. LOADING is a generated texture sampled in disk-space by the same ray marcher, so it follows disk perspective and horizon occlusion; the SVG label is fallback-only.
 
 Entrance timing revision: disk-space spin accelerates first for roughly 1.8 seconds, then the black hole expands into Composer. Shader spin is driven by the existing GSAP timeline and resets on reverse; reduced motion keeps the static disk. Fine disk emission is sampled at the ray/plane intersection to preserve filament detail.
+
+Welcome ambient motion now runs continuously: differential disk rotation, two orbiting hot regions, spiral density waves and gentle camera orbit/tilt. The entrance adds its acceleration on top of ambient spin. Reduced motion still freezes shader time and spin.
