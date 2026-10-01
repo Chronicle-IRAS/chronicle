@@ -1,0 +1,63 @@
+/* Shared editorial rhythm: generous type, fine rules and tactile controls. */
+:root { --editorial-ink: #e8ede0; --editorial-accent: #d3efaa; }
+.journey-signature { position: fixed; z-index: 45; right: 3vw; bottom: 17px; display: flex; align-items: center; gap: 13px; pointer-events: none; color: #dce6d4; font: 9px/1.2 ui-monospace,monospace; letter-spacing: .08em; mix-blend-mode: difference; }
+.journey-wordmark { font-size: 16px; font-weight: 700; letter-spacing: -.12em; }.journey-wordmark span { font-size: 12px; }
+.journey-caption { text-transform: uppercase; opacity: .65; }
+.journey-track { display: flex; gap: 4px; }.journey-track i { width: 13px; height: 2px; background: #ffffff30; transition: width .5s, background .5s; }.journey-track i[data-past="true"] { background: #ffffff88; }.journey-track i[data-current="true"] { background: #fff; width: 30px; }
+.journey-count { font-variant-numeric: tabular-nums; }.journey-count em { opacity: .4; font-style: normal; margin-left: 4px; }
+.quiet-control, .sculpture-toggle { position: relative; transition: background .25s, color .25s, border-color .25s, translate .25s; }
+.quiet-control:hover:not(:disabled) { background: #e2edcc; color: #152b26; translate: 0 -3px; }
+.welcome-content .welcome-kicker { writing-mode: vertical-rl; top: 22vh; left: 3vw; letter-spacing: .2em; }
+.welcome-content .welcome-side-note { bottom: 9vh; font-family: Georgia,serif; font-style: italic; font-size: clamp(13px,1.25vw,19px); line-height: 1.45; color: #bfaf96; }
+.welcome-content .display-title { font-weight: 450; letter-spacing: -.07em; }
+.welcome-content .scroll-cue::before { height: 38px; background: linear-gradient(transparent,#efd0a0); }
+.welcome-content .scroll-cue { color: #e6c99d; }
+.scene-currently .content-column, .scene-profile .content-column { max-width: 1320px; justify-content: flex-start; padding-top: 8svh; padding-bottom: 7svh; }
+.scene-currently .scene-title, .scene-profile .scene-title { font-size: clamp(48px,7.8vw,118px); font-weight: 450; line-height: .94; margin-bottom: 5svh; letter-spacing: -.075em; position: relative; }
+.scene-profile .scene-title { font-size: clamp(40px,6.7vw,100px); }
+.scene-currently .section-number, .scene-profile .section-number { width: 100%; padding-bottom: 16px; border-bottom: 1px solid #b8dacb33; font: 10px ui-monospace,monospace; letter-spacing: .14em; margin-bottom: 4svh; }
+.chapter-explorer { grid-template-columns: 1.1fr 1fr; gap: 7vw; align-items: start; flex: 1; min-height: 0; }
+.chapter-explorer .explorer-list > div { padding: 18px 0; display: block; position: relative; transition: padding .35s, background .35s; }
+.chapter-explorer .explorer-list > div:has([aria-pressed="true"]) { padding-left: 18px; background: linear-gradient(90deg,#c3ebbc0b,transparent); }
+.explorer-list dt button { font: 11px ui-monospace,monospace; letter-spacing: .08em; padding-bottom: 12px; }
+.explorer-list dt button span { width: 22px; }.explorer-list dt button b { transition: rotate .3s; }.explorer-list dt button:hover b { rotate: 90deg; }
+.chapter-explorer .explorer-list dd { font-size: clamp(22px,3.1vw,43px); letter-spacing: -.055em; font-weight: 400; line-height: 1.1; }
+.chapter-detail { padding-left: 0; border: 0; display: grid; grid-template-columns: 1fr auto; align-items: start; column-gap: 20px; }
+.chapter-sculpture { width: 100%; height: clamp(150px,25svh,290px); max-width: none; margin: -3svh 0 12px; grid-column: 1/-1; perspective: 800px; transform: none; }
+.sculpture-object { position: absolute; left: 50%; top: 50%; width: min(22vw,270px); aspect-ratio: 1; translate: -50% -50%; transform-style: preserve-3d; transform: rotateZ(var(--instrument-angle)); animation: sculpture-tumble 24s linear infinite; }
+.sculpture-rib { position: absolute; inset: 0; border: 1px solid #d3e9b3aa; border-radius: 50%; transform: rotateY(calc(var(--rib) * 15deg)); box-shadow: 0 0 10px #d3e9b309; transition: border-radius .8s, inset .8s, border-color .8s; }
+.chapter-sculpture[data-form="1"] .sculpture-rib { border-radius: 15%; inset: 10%; border-color: #b4d7dcaa; }
+.chapter-sculpture[data-form="2"] .sculpture-rib { border-radius: 48% 8% 48% 8%; inset: 3% 18%; border-color: #e7cfa3aa; }
+.chapter-sculpture[data-form="3"] .sculpture-rib { border-radius: 0; inset: 15%; border-color: #c8bde7aa; }
+.sculpture-coordinate { position: absolute; bottom: 0; right: 0; color: #9bb7a4; font: 8px ui-monospace,monospace; letter-spacing: .18em; }
+@keyframes sculpture-tumble { from { transform: rotateZ(var(--instrument-angle)) rotateX(18deg) rotateY(0); } to { transform: rotateZ(var(--instrument-angle)) rotateX(378deg) rotateY(360deg); } }
+.chapter-sculpture[data-playing="false"] .sculpture-object, .scene:not([data-active="true"]) .sculpture-object { animation-play-state: paused; }
+.chapter-detail-copy { min-height: 130px; grid-column: 1/-1; border-top: 1px solid #b5d1ba33; padding-top: 18px; }
+.chapter-detail h3 { font-size: 25px; letter-spacing: -.04em; margin: 9px 0; }.chapter-detail p { font-size: 12px; max-width: 450px; margin-bottom: 18px; }
+.instrument-control { align-self: center; }.instrument-control input { width: 100px; }
+.sculpture-toggle { background: none; border: 0; border-bottom: 1px solid #b4cebc88; padding: 9px 0; color: #c9ddbd; font: 8px ui-monospace,monospace; letter-spacing: .06em; cursor: pointer; }.sculpture-toggle span { margin-left: 16px; }.sculpture-toggle:hover { color: #fff; border-color: #fff; }
+.composer-workbench { border-radius: 4px; border-top: 2px solid #d2edb0; background: #0a181dee; padding: 17px 22px; }
+.workbench-title strong { font-weight: 400; letter-spacing: .2em; }.workbench-techs button { border-radius: 2px; }.workbench-action > button { border-radius: 2px; transition: background .2s, translate .2s; }.workbench-action > button:hover:not(:disabled) { translate: 2px -2px; background: #edffcf; }
+.flow-node { border-radius: 5px; }.result-node { animation: result-materialize .65s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes result-materialize { from { opacity: 0; clip-path: inset(0 100% 0 0); } to { opacity: 1; clip-path: inset(0); } }
+.scene-space .star-atlas .scene-title { font-weight: 400; letter-spacing: -.065em; }.atlas-instruction { font-family: Georgia,serif; font-style: italic; font-size: 16px; }
+.constellation-map::before { content: ''; position: absolute; inset: 4% 12%; border: 1px solid #bdcfe515; border-radius: 50%; transform: rotate(-13deg); pointer-events: none; }
+.constellation-map::after { content: '+'; position: absolute; left: 50%; top: 45%; color: #cfdbed44; font-size: 24px; pointer-events: none; }
+.atlas-star { transition: color .3s; }.atlas-star:hover .atlas-star-core { scale: 1.5; }.atlas-star-core::after { transition: scale .5s, border-color .5s; }.atlas-star:hover .atlas-star-core::after { scale: 1.4; border-color: #e8eab9; }.atlas-star strong { letter-spacing: -.035em; }
+.destination-heading { font-weight: 400; letter-spacing: -.06em; }.destination-inspector { padding-bottom: 14px; }.destination-inspector h3 { font-family: Georgia,serif; font-style: italic; font-size: 33px; }.planet-label { transition: translate .3s; }.destination:hover .planet-label { translate: 0 -5px; }
+.paper-plane svg { transition: transform .6s cubic-bezier(.2,.8,.2,1), filter .6s; }.paper-plane:hover:not(:disabled) svg { transform: translateY(-12px) rotate(-4deg); }.paper-route path { animation: paper-trail 25s linear infinite; }@keyframes paper-trail { to { stroke-dashoffset: -300; } }
+.scene:not([data-active="true"]) .paper-route path { animation-play-state: paused; }
+@media (max-width: 700px) {
+  .journey-signature { bottom: 8px; right: 5vw; gap: 8px; font-size: 8px; }.journey-caption,.journey-wordmark { display: none; }.journey-track i { width: 8px; }.journey-track i[data-current="true"] { width: 18px; }
+  .welcome-content .welcome-kicker { writing-mode: horizontal-tb; left: 7vw; top: 14vh; }
+  .scene-currently .content-column,.scene-profile .content-column { padding-top: 7svh; padding-bottom: 6svh; }
+  .scene-currently .section-number,.scene-profile .section-number { margin-bottom: 24px; padding-bottom: 12px; font-size: 8px; }
+  .scene-currently .scene-title { font-size: 13vw; margin-bottom: 24px; }.scene-profile .scene-title { font-size: 11vw; margin-bottom: 24px; }
+  .chapter-explorer { grid-template-columns: 1fr; gap: 20px; flex: 0; }.chapter-explorer .explorer-list > div { display: flex; padding: 10px 0; }.chapter-explorer .explorer-list > div:has([aria-pressed="true"]) { padding-left: 10px; }.explorer-list dt button { font-size: 9px; padding-bottom: 0; }.chapter-explorer .explorer-list dd { font-size: 18px; }
+  .chapter-detail { grid-template-columns: 110px 1fr; gap: 10px 16px; min-height: 0; }.chapter-sculpture { grid-column: 1; grid-row: 1; height: 140px; margin: 0; }.sculpture-object { width: 100px; }.sculpture-coordinate { font-size: 6px; right: 0; bottom: 0; }
+  .chapter-detail-copy { grid-column: 2; grid-row: 1; min-height: 0; padding-top: 8px; }.chapter-detail h3 { font-size: 19px; }.chapter-detail p { font-size: 10px; margin-bottom: 5px; line-height: 1.6; }.chapter-detail-copy small { font-size: 7px; }
+  .instrument-control { grid-column: 1/-1; font-size: 7px; }.sculpture-toggle { grid-column: 2; justify-self: end; font-size: 7px; padding: 6px 0; }
+  .composer-workbench { padding: 12px; bottom: 25px; }.atlas-instruction { font-size: 13px; }.destination-inspector h3 { font-size: 26px; }
+}
+@media (max-height: 700px) and (min-width: 701px) { .scene-currently .scene-title,.scene-profile .scene-title { font-size: 64px; margin-bottom: 22px; }.chapter-sculpture { height: 170px; }.sculpture-object { width: 160px; }.chapter-detail-copy { min-height: 100px; }.chapter-explorer .explorer-list > div { padding: 12px 0; } }
+@media (prefers-reduced-motion: reduce) { .sculpture-object,.paper-route path,.result-node { animation: none; }.sculpture-rib,.quiet-control,.planet-label,.paper-plane svg { transition: none; }.quiet-control:hover:not(:disabled) { translate: none; } }

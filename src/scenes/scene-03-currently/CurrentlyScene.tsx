@@ -8,7 +8,7 @@ export function CurrentlyScene() {
     <SceneAtmosphere />
     <div className="scene-body content-column">
       <p className="section-number">03 / CURRENTLY</p>
-      <h2 className="scene-title" aria-label="CURRENTLY"><span aria-hidden="true">{'CURRENTLY'.split('').map((letter, i) => <span className="impact-letter" data-impact-piece key={i}>{letter}</span>)}</span></h2>
+      <h2 className="scene-title" aria-label="In motion."><span aria-hidden="true">{'IN MOTION.'.split('').map((letter, i) => <span className="impact-letter" data-impact-piece key={i}>{letter === ' ' ? '\u00a0' : letter}</span>)}</span></h2>
       <ChapterExplorer entries={siteContent.currently} chapter="currently" />
     </div>
     <ImpactActor />
