@@ -125,3 +125,5 @@ DeepSeek's 5.6-second scene combines an airborne sway, accelerating descent, con
 Latest Welcome revision: the shared WebGL canvas ray-marches a three-dimensional black hole (tilted emitting disk, horizon occlusion, bent rays, gently orbiting view). The transition reveals circular LOADING text and rotates/expands the hole over 4.8 seconds. Reduced motion avoids rotation/expansion; CSS art remains the unavailable-WebGL fallback.
 
 The black-hole hero now keeps the title outside the disk silhouette. Disk shading uses turbulent emission, asymmetric brightness and stronger ray bending. LOADING is a generated texture sampled in disk-space by the same ray marcher, so it follows disk perspective and horizon occlusion; the SVG label is fallback-only.
+
+Entrance timing revision: disk-space spin accelerates first for roughly 1.8 seconds, then the black hole expands into Composer. Shader spin is driven by the existing GSAP timeline and resets on reverse; reduced motion keeps the static disk. Fine disk emission is sampled at the ray/plane intersection to preserve filament detail.

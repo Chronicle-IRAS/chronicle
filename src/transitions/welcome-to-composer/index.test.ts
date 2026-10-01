@@ -4,7 +4,7 @@ import { welcomeToComposer } from './index'
 
 function fixture() {
   const title = { autoAlpha: 1, scale: 1 }
-  const orb = { scale: 1, rotation: 0 }
+  const orb = { scale: 1, rotation: 0, '--hole-spin': 0 }
   const loading = { autoAlpha: 0 }
   const backdrop = { autoAlpha: 1 }
   const support = { autoAlpha: 1 }
@@ -20,6 +20,9 @@ describe('Eclipse iris transition', () => {
   it('passes through the sphere without scaling text and restores the start on return', () => {
     const f = fixture()
     const timeline = welcomeToComposer({ from: f.root, to: f.root, reducedMotion: false })
+    timeline.progress(0.25)
+    expect(f.orb.scale).toBe(1)
+    expect(f.orb['--hole-spin']).toBeGreaterThan(0)
     timeline.progress(0.5)
     expect(f.title.scale).toBe(1)
     expect(f.title.autoAlpha).toBe(0)

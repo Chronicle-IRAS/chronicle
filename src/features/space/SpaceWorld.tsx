@@ -121,12 +121,12 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
         if (inHole && blackHole.valid) {
           if (canvas.parentElement !== hole) { hole.appendChild(canvas); dirty = true }
           if (gl.isContextLost() || document.hidden || (reducedMotion && !dirty) || (!dirty && elapsed - lastFrame < 1 / 30)) return
-          const resolution = window.innerWidth < 700 ? 420 : 640
+          const resolution = window.innerWidth < 700 ? 560 : 960
           if (canvas.width !== resolution || canvas.height !== resolution) canvas.width = canvas.height = resolution
           gl.viewport(0, 0, canvas.width, canvas.height)
           lastFrame = elapsed
           dirty = false
-          blackHole.draw(reducedMotion ? 0 : elapsed, loadingLabel ? Number(gsap.getProperty(loadingLabel, 'opacity')) : 0)
+          blackHole.draw(reducedMotion ? 0 : elapsed, loadingLabel ? Number(gsap.getProperty(loadingLabel, 'opacity')) : 0, reducedMotion ? 0 : Number(gsap.getProperty(hole, '--hole-spin')) || 0)
           return
         }
         if (canvas.parentElement !== home) { home.appendChild(canvas); gl.useProgram(program); resize() }

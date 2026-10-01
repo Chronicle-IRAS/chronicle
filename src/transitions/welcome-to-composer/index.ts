@@ -14,11 +14,14 @@ export const welcomeToComposer: TransitionFactory = ({ from, to, reducedMotion }
   if (support) timeline.to(support, { autoAlpha: 0, duration: 0.18 }, 0)
   if (title) timeline.to(title, { autoAlpha: 0, duration: 0.35 }, 0.06)
   if (loading) timeline.fromTo(loading, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.12 }, 0.08).to(loading, { autoAlpha: 0, duration: 0.25 }, 0.7)
-  if (orb && !reducedMotion) timeline.fromTo(orb, { scale: 1, rotation: 0 }, { scale: 9, rotation: 100, duration: 1.05, ease: 'power1.in' }, 0.18)
-  if (backdrop) timeline.to(backdrop, { autoAlpha: 0, duration: 0.6 }, 0.55)
+  if (orb && !reducedMotion) {
+    timeline.fromTo(orb, { '--hole-spin': 0 }, { '--hole-spin': 32, duration: 1.2, ease: 'power2.in' }, 0)
+    timeline.fromTo(orb, { scale: 1, rotation: 0 }, { scale: 9, rotation: 18, duration: 0.77, ease: 'power2.in' }, 0.48)
+  }
+  if (backdrop) timeline.to(backdrop, { autoAlpha: 0, duration: 0.45 }, 0.8)
   if (canvas) timeline.fromTo(canvas,
     { autoAlpha: 0, clipPath: reducedMotion ? 'circle(150% at 50% 44%)' : 'circle(0% at 50% 44%)' },
-    { autoAlpha: 1, clipPath: 'circle(150% at 50% 44%)', duration: 0.85, ease: 'power2.inOut' }, 0.4)
+    { autoAlpha: 1, clipPath: 'circle(150% at 50% 44%)', duration: 0.65, ease: 'power2.inOut' }, 0.6)
   if (heading) timeline.fromTo(heading, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 }, 0.95)
   return timeline
 }

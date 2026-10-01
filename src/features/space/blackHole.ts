@@ -4,8 +4,8 @@ export function createBlackHolePass(gl: WebGLRenderingContext) {
   const shaders: WebGLShader[] = []
   const sources = [
     'attribute vec2 p; varying vec2 uv; void main(){uv=p;gl_Position=vec4(p,0.,1.);}',
-    `precision mediump float;
-    varying vec2 uv; uniform float time; uniform float loading;
+    `precision highp float;
+    varying vec2 uv; uniform float time; uniform float loading; uniform float spin;
     uniform sampler2D lettering;
     float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
     float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
@@ -31,20 +31,31 @@ export function createBlackHolePass(gl: WebGLRenderingContext) {
         float filaments=.83+.17*sin(radial*62.+turbulence*4.);
         float doppler=clamp(1.-pos.x*.18,.45,1.8);
         vec3 heat=mix(vec3(.95,.33,.07),vec3(1.,.88,.64),exp(-(radial-1.3)*.55));
-        col+=trans*disk*heat*flow*filaments*doppler*stepSize*3.;
+        col+=trans*disk*heat*flow*filaments*doppler*stepSize*.65;
         if(previous.y*pos.y<0.) {
           vec3 surface=mix(previous,pos,previous.y/(previous.y-pos.y));
-          float ringV=(length(surface.xz)-2.45)/.55;
+          float sr=length(surface.xz), sa=atan(surface.z,surface.x);
+          float orbit=sa-time*.35/pow(max(sr,1.),1.5)-spin;
+          vec2 turbulenceUV=vec2(sr*15.,sin(orbit)*4.);
+          float coarse=noise(turbulenceUV+vec2(cos(orbit)*3.,sr*.3));
+          float fine=noise(vec2(sr*65.+coarse*3.,sin(orbit*3.)*9.));
+          float thread=pow(.5+.5*sin(sr*115.+coarse*7.+fine*2.),3.);
+          float density=(.16+coarse*.6+fine*.3+thread*.55);
+          float rim=smoothstep(1.25,1.5,sr)*(1.-smoothstep(3.1,4.3,sr));
+          float brightness=pow(clamp(1.-surface.x*.22,.35,1.9),2.);
+          vec3 temperature=mix(vec3(.62,.13,.025),vec3(1.,.85,.61),exp(-max(sr-1.5,0.)*.7));
+          col+=trans*temperature*density*rim*brightness*1.8;
+          float ringV=(sr-2.45)/.55;
           if(ringV>0. && ringV<1.) {
-            float ink=texture2D(lettering,vec2(fract(atan(surface.z,surface.x)/6.283185-time*.035),ringV)).r;
+            float ink=texture2D(lettering,vec2(fract((atan(surface.z,surface.x)-spin)/6.283185-time*.035),ringV)).r;
             col+=trans*ink*vec3(1.,.97,.84)*loading*2.5;
           }
         }
         trans*=exp(-disk*stepSize*.55);
-        col+=vec3(1.,.56,.18)*exp(-abs(r-1.03)*35.)*.018;
+        col+=vec3(1.,.73,.37)*exp(-abs(r-1.03)*75.)*.012;
         if(length(pos)>12.)break;
       }
-      col=1.-exp(-col*1.5);
+      col=1.-exp(-col*1.25);
       gl_FragColor=vec4(col,1.);
     }`
   ]
@@ -70,9 +81,10 @@ export function createBlackHolePass(gl: WebGLRenderingContext) {
   gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW)
   const position=gl.getAttribLocation(program,'p'), time=gl.getUniformLocation(program,'time')
   const loading=gl.getUniformLocation(program,'loading')
+  const spin=gl.getUniformLocation(program,'spin')
   return {
     valid: !!gl.getProgramParameter(program,gl.LINK_STATUS),
-    draw(elapsed:number, progress:number){gl.useProgram(program);gl.disable(gl.BLEND);gl.bindTexture(gl.TEXTURE_2D,texture);gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.enableVertexAttribArray(position);gl.vertexAttribPointer(position,2,gl.FLOAT,false,0,0);gl.uniform1f(time,elapsed);gl.uniform1f(loading,progress);gl.drawArrays(gl.TRIANGLES,0,6)},
+    draw(elapsed:number, progress:number, rotation:number){gl.useProgram(program);gl.disable(gl.BLEND);gl.bindTexture(gl.TEXTURE_2D,texture);gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.enableVertexAttribArray(position);gl.vertexAttribPointer(position,2,gl.FLOAT,false,0,0);gl.uniform1f(time,elapsed);gl.uniform1f(loading,progress);gl.uniform1f(spin,rotation);gl.drawArrays(gl.TRIANGLES,0,6)},
     dispose(){gl.deleteTexture(texture);gl.deleteBuffer(buffer);gl.deleteProgram(program);shaders.forEach(shader=>gl.deleteShader(shader))}
   }
 }
