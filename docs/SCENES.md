@@ -87,7 +87,7 @@ Scene map (stable identifiers):
 
 - Purpose: `LOCKED` return to the 2D page world; a pure outro.
 - Primary element: `LOCKED` GOODBYE.
-- Current outro: a paper-airplane scene with an editorial farewell, a repeatable flight, and a full-letter reading surface using Pretext. The open letter folds away before takeoff. Keyboard controls, reduced-motion fallback and the Restart loop remain available.
+- Current outro: a full-width typographic playground with a living glyph bloom, spring-driven letter physics, a perspective text tunnel, and a full-letter reading surface using Pretext. Pointer movement repels letters; holding attracts them; RELEASE LETTERS scatters them radially. Keyboard controls, reduced-motion fallback and the Restart loop remain available.
 - Possible contents: `DIRECTION` friends, friends' websites, blogroll, special thanks, other outbound links.
 - Closing action: `LOCKED` RESTART. It is part of the narrative loop, not a plain back-to-top, and returns to Scene 01.
 - Open: `TBD` the closing animation (e.g. text gathering / convergence).
@@ -95,4 +95,4 @@ Scene map (stable identifiers):
 
 ## Interactive chapter revision
 
-The user authorized expanding interaction while preserving the seven-scene outline. Currently/Profile have selectable entries and a rotatable instrument; What’s Next has a user-built constellation; Destinations has planet selection and honest unconfigured-link feedback; Goodbye turns its letter into a returning paper flight. No personal biography or destination URL was invented.
+The user authorized expanding interaction while preserving the seven-scene outline. Currently/Profile have selectable entries and a rotatable instrument; What’s Next has a user-built constellation; Destinations has planet selection and honest unconfigured-link feedback; Goodbye turns its letter into an interactive typographic playground. No personal biography or destination URL was invented.
