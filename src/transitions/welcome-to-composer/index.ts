@@ -4,6 +4,8 @@ import type { TransitionFactory } from '../types'
 /** The eclipse becomes an iris into the board; typography stays at its original size. */
 export const welcomeToComposer: TransitionFactory = ({ from, to, reducedMotion }) => {
   const timeline = gsap.timeline({ paused: true, defaults: { ease: 'sine.inOut' } })
+  const back = from.querySelector('[data-journey-prev]')
+  if (back) timeline.to(back, { autoAlpha: 0, duration: .18 }, 0)
   const support = from.querySelector('[data-enter-grid-support]')
   const title = from.querySelector('[data-enter-grid-title]')
   const backdrop = from.querySelector('[data-enter-grid-backdrop]')

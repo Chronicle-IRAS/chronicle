@@ -26,11 +26,22 @@ export function SceneDirector() {
     const root = rootRef.current
     if (!root) return
     const sections = Array.from(root.querySelectorAll<HTMLElement>('[data-scene-id]'))
+    const navigate = (event: MouseEvent) => {
+      const button = (event.target as HTMLElement).closest('[data-journey-next], [data-journey-prev]')
+      if (!button || root.dataset.traversing === 'true') return
+      const section = button.closest<HTMLElement>('[data-scene-id]')
+      const index = section ? sections.indexOf(section) : -1
+      const boundary = button.hasAttribute('data-journey-prev') ? index - 1 : index
+      if (boundary < 0 || boundary >= sections.length - 1) return
+      const y = button.hasAttribute('data-journey-prev') ? sections[index].offsetTop - 8 : sections[boundary].offsetTop + sections[boundary].offsetHeight * sceneRegistry[boundary].holdFraction + 8
+      window.scrollTo(0, y)
+    }
+    root.addEventListener('click', navigate)
     let cancelTraversal = () => {}
     const context = gsap.context(() => {
       const world = root.querySelector<HTMLElement>('[data-space-world]')
       const contents = sections.map((section) => section.querySelector<HTMLElement>('[data-scene-content]')!)
-      gsap.set(contents.slice(2), { autoAlpha: 0 })
+      gsap.set(contents.filter((_, i) => !['prelude', 'composer'].includes(sceneRegistry[i].id)), { autoAlpha: 0 })
       gsap.set(world, { autoAlpha: 0, clipPath: 'circle(150% at 70% 60%)' })
       camera.current.depth = 0
       camera.current.turn = 0
@@ -63,7 +74,9 @@ export function SceneDirector() {
           })
           setCurrentScene(id)
         }
-        const ready = id === 'composer' && window.scrollY >= sections[1].offsetTop && window.scrollY <= sections[1].offsetTop + sections[1].offsetHeight * sceneRegistry[1].holdFraction
+        const composerIndex = sceneRegistry.findIndex((scene) => scene.id === 'composer')
+        const composer = sections[composerIndex]
+        const ready = id === 'composer' && window.scrollY >= composer.offsetTop && window.scrollY <= composer.offsetTop + composer.offsetHeight * sceneRegistry[composerIndex].holdFraction
         if (ready !== interactive) { interactive = ready; setComposerReady(ready) }
       }
       const traverse = (animation: gsap.core.Timeline, forward: boolean, index: number, returnAnimation?: gsap.core.Timeline) => {
@@ -138,6 +151,7 @@ export function SceneDirector() {
     }, root)
     ScrollTrigger.refresh()
     return () => {
+      root.removeEventListener('click', navigate)
       cancelTraversal()
       context.revert()
       progressRef.current.clear()
@@ -149,7 +163,7 @@ export function SceneDirector() {
     <main ref={rootRef} id="journey">
       <SpaceWorld camera={camera.current} reducedMotion={reducedMotion} />
       {sceneRegistry.map(({ id, Component, scrollScreens }, index) => (
-        <section className={`scene scene-${id}`} style={{ zIndex: 10 - index, height: `${scrollScreens * 100}svh` }} data-scene-id={id} id={id} key={id} aria-label={`Scene ${String(index + 1).padStart(2, '0')}: ${id}`}>
+        <section className={`scene scene-${id}`} style={{ zIndex: 10 - index, height: `${scrollScreens * 100}svh` }} data-scene-id={id} id={id} key={id} aria-label={`Scene ${id === 'prelude' ? '0.5' : String(index).padStart(2, '0')}: ${id}`}>
           <Component />
         </section>
       ))}

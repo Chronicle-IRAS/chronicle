@@ -87,3 +87,9 @@ Shared typography and interactive feedback live in `src/styles/editorial.css`. S
 ### Typographic playground ending
 
 Scene 07 replaces the paper airplane with an interactive Canvas2D glyph field inspired by the Pretext Playground interaction direction. Pretext `prepareWithSegments` and `layoutWithLines` determine the real letter layout; spring dynamics animate the same glyphs between a living bloom, readable letter physics, and a perspective tunnel. Pointer movement repels letters, holding attracts them, and RELEASE LETTERS emits a radial impulse. Mode changes retain particle positions; PAUSE freezes the current frame. Full letter reading and RESTART remain available. The field stops when Scene 07 is inactive and provides still compositions for reduced motion. No additional WebGL renderer or dependency is introduced.
+
+### Prelude / ink revision
+
+The journey now opens with loading → Scene 0.5 (`prelude`) → Scene 01. The original seven chapter numbers stay unchanged. Loading, prelude and goodbye share paper, forest ink and rust typography. `InkRibbons` uses cached Pretext layout with Canvas2D motion; no extra WebGL context is created. The prelude entry spirals its ink inward and opens a paper mask onto the existing welcome black hole. The independently choreographed return closes that opening, releases the ink and settles the copy. Both routes use the director's input lock. Restart now returns to the prelude. Composer readiness is located by scene ID rather than a numeric index.
+
+The goodbye letter uses an editorial, three-paragraph reading layout with Pretext line wrapping, a scrollable reading column and subtle ink hover. The interactive LIVING LETTER mode uses the original letter once rather than repeating paragraphs. Personal information remains unchanged.

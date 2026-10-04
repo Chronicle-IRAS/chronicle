@@ -1,4 +1,5 @@
 export type SceneId =
+  | 'prelude'
   | 'welcome'
   | 'composer'
   | 'currently'

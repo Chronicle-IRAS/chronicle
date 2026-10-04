@@ -29,6 +29,7 @@ export function WelcomeScene() {
         <p className="welcome-manifesto welcome-entry">Not just a page.<br /><em>A world to move through.</em></p>
         <p className="welcome-side-note welcome-entry">A place to build, connect,<br />and see what happens next.</p>
       </div>
+      <button type="button" className="welcome-back" data-journey-prev>← BACK TO THE PREFACE</button>
       <p className="scroll-cue" data-enter-grid-support>SCROLL TO ENTER <span aria-hidden="true">↓</span></p>
     </div>
   )

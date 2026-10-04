@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react'
 import { OpeningLoader } from '../components/OpeningLoader'
 import { JourneySignature } from '../components/JourneySignature'
 
-const INTRO_KEY = 'chronicle.intro.v1'
+const INTRO_KEY = 'chronicle.intro.v2'
 
 export function App() {
   const [opening, setOpening] = useState(() => {

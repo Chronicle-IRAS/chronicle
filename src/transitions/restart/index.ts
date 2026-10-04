@@ -15,7 +15,7 @@ export function restartJourney(reducedMotion: boolean, button?: HTMLButtonElemen
     veil.remove()
     releaseInput()
     if (button) button.disabled = false
-    const title = document.querySelector<HTMLElement>('.display-title')
+    const title = document.querySelector<HTMLElement>('.prelude-copy h1')
     title?.setAttribute('tabindex', '-1')
     title?.focus({ preventScroll: true })
   } })

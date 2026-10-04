@@ -7,7 +7,7 @@ import { siteContent } from '../../data/siteContent'
 
 type Mode = 'bloom' | 'letter' | 'tunnel'
 type Glyph = { char: string; x: number; y: number; vx: number; vy: number; homeX: number; homeY: number }
-const MODES: { id: Mode; label: string }[] = [{ id: 'bloom', label: '01 / WORD BLOOM' }, { id: 'letter', label: '02 / LETTER PHYSICS' }, { id: 'tunnel', label: '03 / INFINITY' }]
+const MODES: { id: Mode; label: string }[] = [{ id: 'bloom', label: '01 / WORD BLOOM' }, { id: 'letter', label: '02 / LIVING LETTER' }, { id: 'tunnel', label: '03 / INFINITY' }]
 
 /** Pretext owns the readable layout; a Canvas2D spring field animates its glyphs. */
 export function WordBloom() {
@@ -47,14 +47,16 @@ export function WordBloom() {
       const dpr = Math.min(window.devicePixelRatio || 1, 2)
       canvas.width = Math.round(width * dpr); canvas.height = Math.round(height * dpr)
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-      size = width < 600 ? 11 : 14
-      const font = `${size}px monospace`
-      const text = `${siteContent.goodbye.letter} `.repeat(width < 600 ? 3 : 6)
-      const prepared = prepareWithSegments(text, font)
-      const lineHeight = size * 1.75
-      const layout = layoutWithLines(prepared, width - 48, lineHeight)
-      glyphs = []
       const textTop = width >= 900 ? height * .34 : 0
+      const maxWidth = width * .86
+      size = width < 600 ? 17 : 24
+      let layout = layoutWithLines(prepareWithSegments(siteContent.goodbye.letter, `${size}px monospace`), maxWidth, size * 1.65)
+      while (layout.height > height - textTop - 40 && size > 11) {
+        size--
+        layout = layoutWithLines(prepareWithSegments(siteContent.goodbye.letter, `${size}px monospace`), maxWidth, size * 1.65)
+      }
+      const lineHeight = size * 1.65
+      glyphs = []
       for (let row = 0; row < layout.lines.length && (row + 1) * lineHeight < height - 45 - textTop; row++) {
         const line = layout.lines[row]
         const chars = Array.from(line.text)
@@ -62,7 +64,7 @@ export function WordBloom() {
         const advance = line.width / Math.max(1, chars.length)
         chars.forEach((char, col) => {
           if (char === ' ') return
-          const x = 24 + col * advance, y = textTop + 28 + row * lineHeight
+          const x = width * .07 + col * advance, y = textTop + 28 + row * lineHeight
           glyphs.push({ char, x, y, vx: 0, vy: 0, homeX: x, homeY: y })
         })
       }
@@ -77,7 +79,7 @@ export function WordBloom() {
       seenImpulse = impulse.current
       const radius = Math.min(width * .38, height * .42)
       const step = Math.min(dt * 60, 2)
-      ctx.font = `${size}px monospace`
+      ctx.font = `${mode === 'letter' ? size : Math.min(size, 14)}px monospace`
       ctx.textAlign = 'center'
       for (let i = 0; i < glyphs.length; i++) {
         const p = glyphs[i]
@@ -157,7 +159,7 @@ export function WordBloom() {
     }
   }, [active, reduced])
 
-  return <div className="type-playground">
+  return <div className="type-playground" data-reading={reading}>
     <div className="type-heading"><h2>Nothing ends.<br /><em>Everything becomes.</em></h2><p>A playground for the words we leave behind.</p></div>
     <canvas ref={canvasRef} className="type-field" role="img" aria-label="Interactive letter sculpture. Move to scatter letters, hold to attract them. Use the release letters button for a keyboard-accessible burst." />
     <div className="type-caption" aria-live="polite">{reduced ? 'STILL COMPOSITION / REDUCED MOTION' : paused ? 'MOTION PAUSED' : 'MOVE TO SCATTER · HOLD TO ATTRACT'}{bursts > 0 && ` / ${bursts} RELEASED`}</div>
@@ -165,6 +167,6 @@ export function WordBloom() {
       <div className="type-modes">{MODES.map((item) => <button key={item.id} type="button" aria-pressed={mode === item.id} onClick={() => setMode(item.id)}>{item.label}</button>)}</div>
       <div className="type-actions"><button type="button" onClick={burst} disabled={reduced || paused}>RELEASE LETTERS ↗</button><button type="button" onClick={() => setPaused(!paused)} disabled={reduced}>{paused ? 'PLAY' : 'PAUSE'}</button><button ref={readRef} type="button" onClick={() => setReading(true)}>READ THE LETTER</button></div>
     </div>
-    {reading && <div className="paper-letter-overlay type-letter" role="dialog" aria-modal="true" aria-label="A note before you go" onKeyDown={(event) => { if (event.key === 'Escape') close(); if (event.key === 'Tab') { event.preventDefault(); closeRef.current?.focus() } }}><div className="paper-letter-heading"><h3>A NOTE BEFORE YOU GO</h3><button className="quiet-control" ref={closeRef} type="button" onClick={close}>CLOSE ×</button></div><FlowLetter text={siteContent.goodbye.letter} /></div>}
+    {reading && <div className="paper-letter-overlay type-letter" role="dialog" aria-modal="true" aria-label="A note before you go" onKeyDown={(event) => { if (event.key === 'Escape') close(); if (event.key === 'Tab') { const stops = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('button, [tabindex="0"]')); const index = stops.indexOf(document.activeElement as HTMLElement); event.preventDefault(); stops[(index + (event.shiftKey ? -1 : 1) + stops.length) % stops.length]?.focus() } }}><div className="paper-letter-heading"><h3>A NOTE BEFORE YOU GO</h3><button className="quiet-control" ref={closeRef} type="button" onClick={close}>CLOSE ×</button></div><FlowLetter text={siteContent.goodbye.letter} /></div>}
   </div>
 }

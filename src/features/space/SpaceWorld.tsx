@@ -117,7 +117,8 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
       let lastFrame = -1
       const draw = (elapsed: number) => {
         const welcome = hole?.closest('[data-scene-id]')
-        const inHole = !!hole && (welcome?.getAttribute('data-active') === 'true' || welcome?.getAttribute('data-transitioning') === 'true')
+        const inPrelude = home.closest('main')?.querySelector('[data-scene-id="prelude"]')?.getAttribute('data-transitioning') === 'true'
+        const inHole = !!hole && (inPrelude || welcome?.getAttribute('data-active') === 'true' || welcome?.getAttribute('data-transitioning') === 'true')
         if (inHole && blackHole.valid) {
           if (canvas.parentElement !== hole) { hole.appendChild(canvas); dirty = true }
           if (gl.isContextLost() || document.hidden || (reducedMotion && !dirty) || (!dirty && elapsed - lastFrame < 1 / 30)) return

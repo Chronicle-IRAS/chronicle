@@ -11,7 +11,7 @@ type SceneState = {
 }
 
 export const useSceneStore = create<SceneState>((set) => ({
-  currentScene: 'welcome',
+  currentScene: 'prelude',
   reducedMotion: false,
   composerReady: false,
   setCurrentScene: (currentScene) => set({ currentScene }),

@@ -1,9 +1,12 @@
+import { InkRibbons } from '../features/ink/InkRibbons'
+import { useReducedMotion } from '../hooks/useReducedMotion'
 import { useLayoutEffect, useRef } from 'react'
 import { gsap } from '../lib/gsap'
 import { lockJourneyInput } from '../lib/lockJourneyInput'
 import { characterAssets } from '../assets/characters/registry'
 
 export function OpeningLoader({ onComplete }: { onComplete: () => void }) {
+  const reducedMotion = useReducedMotion()
   const rootRef = useRef<HTMLDivElement>(null)
   const skipRef = useRef<() => void>(() => {})
   useLayoutEffect(() => {
@@ -52,17 +55,17 @@ export function OpeningLoader({ onComplete }: { onComplete: () => void }) {
     }
   }, [onComplete])
 
-  return <div className="opening-loader" ref={rootRef}>
+  return <div className="opening-loader" data-ink-surface ref={rootRef}>
     <div className="opening-top"><span>CHRONICLE / C.</span><span>AN INTERACTIVE JOURNEY</span></div>
     <div className="opening-center">
-      <div className="opening-orbits" aria-hidden="true"><i /><i /><i /></div>
-      <p className="opening-eyebrow">A SMALL WORLD OF</p>
-      <p className="opening-title">IDEAS IN<br /><em>MOTION.</em></p>
-      <p className="opening-status" role="status">Preparing your journey</p>
+      <InkRibbons active reduced={reducedMotion} />
+      <p className="opening-eyebrow">GATHERING THE THREADS</p>
+      <p className="opening-title">A little ink.<br /><em>A world to come.</em></p>
+      <p className="opening-status" role="status">Preparing the first page</p>
     </div>
     <div className="opening-bottom">
       <div className="opening-count" aria-hidden="true"><span data-loading-number>00</span><small>/ 100</small></div>
-      <button className="opening-skip" type="button" onClick={() => skipRef.current()}>ENTER NOW <span aria-hidden="true">↗</span></button>
+      <button className="opening-skip" type="button" onClick={() => skipRef.current()}>OPEN THE PREFACE <span aria-hidden="true">↗</span></button>
       <div className="opening-track" aria-hidden="true"><span data-loading-bar /></div>
     </div>
   </div>

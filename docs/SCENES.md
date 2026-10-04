@@ -96,3 +96,7 @@ Scene map (stable identifiers):
 ## Interactive chapter revision
 
 The user authorized expanding interaction while preserving the seven-scene outline. Currently/Profile have selectable entries and a rotatable instrument; What’s Next has a user-built constellation; Destinations has planet selection and honest unconfigured-link feedback; Goodbye turns its letter into an interactive typographic playground. No personal biography or destination URL was invented.
+
+## Scene 0.5 — Prelude (user-authorized addition)
+
+Appears after the first-visit loader, before Welcome. A paper-colored Pretext ribbon field accompanies an invitation and STEP INSIDE. Click/scroll triggers the director boundary; Welcome exposes BACK TO THE PREFACE and supports upward scrolling. Original Scene 01–07 labels remain stable. The loader and Scene 07 share this ink palette. Restart returns to 0.5. Scene 07's reading surface is now a scrollable editorial letter without the circular exclusion, while its LIVING LETTER field uses the source text once.

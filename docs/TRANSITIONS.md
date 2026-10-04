@@ -129,3 +129,7 @@ The black-hole hero now keeps the title outside the disk silhouette. Disk shadin
 Entrance timing revision: disk-space spin accelerates first for roughly 1.8 seconds, then the black hole expands into Composer. Shader spin is driven by the existing GSAP timeline and resets on reverse; reduced motion keeps the static disk. Fine disk emission is sampled at the ray/plane intersection to preserve filament detail.
 
 Welcome ambient motion now runs continuously: differential disk rotation, two orbiting hot regions, spiral density waves and gentle camera orbit/tilt. The entrance adds its acceleration on top of ambient spin. Reduced motion still freezes shader time and spin.
+
+## Prelude boundary (0.5 ↔ 01)
+
+Entry: 4.2 seconds. Ink spirals inward, invitation blocks converge, and a growing aperture removes the paper to reveal Welcome's existing WebGL black hole. Return: a separate 3.3-second timeline settles paper from the perimeter, releases the ink outward and restores the invitation. Both finish autonomously with the director input lock. Reduced motion uses a short opacity handoff. Restart's destination is now 0.5.
