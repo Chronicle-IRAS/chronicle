@@ -132,4 +132,6 @@ Welcome ambient motion now runs continuously: differential disk rotation, two or
 
 ## Prelude boundary (0.5 ↔ 01)
 
-Entry: 4.2 seconds. Ink spirals inward, invitation blocks converge, and a growing aperture removes the paper to reveal Welcome's existing WebGL black hole. Return: a separate 3.3-second timeline settles paper from the perimeter, releases the ink outward and restores the invitation. Both finish autonomously with the director input lock. Reduced motion uses a short opacity handoff. Restart's destination is now 0.5.
+Entry: 5.2 seconds. Ink spirals inward, invitation blocks converge, and a growing aperture removes the paper to reveal Welcome's existing WebGL black hole. Return: a separate 3.3-second timeline settles paper from the perimeter, releases the ink outward and restores the invitation. Both finish autonomously with the director input lock. Reduced motion uses a short opacity handoff. Restart's destination is now 0.5.
+
+The prologue now reveals the real Welcome black hole from the start of entry, scaling that same host from 0.46 to 1 with no replacement at the boundary. The synthetic circular hole has been removed. Individual title words follow staggered elliptical capture paths; background ink has row-dependent delays and angular speeds. Welcome labels appear only after capture.

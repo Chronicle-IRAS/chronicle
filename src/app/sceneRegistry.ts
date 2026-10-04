@@ -29,7 +29,7 @@ type SceneDefinition = {
 }
 
 export const sceneRegistry: readonly SceneDefinition[] = [
-  { id: 'prelude', Component: PreludeScene, transitionToNext: preludeToWelcome, transitionBack: welcomeToPrelude, scrollScreens: 1.5, holdFraction: 0.15, transitionSeconds: 4.2, returnSeconds: 3.3 },
+  { id: 'prelude', Component: PreludeScene, transitionToNext: preludeToWelcome, transitionBack: welcomeToPrelude, scrollScreens: 1.5, holdFraction: 0.15, transitionSeconds: 5.2, returnSeconds: 3.3 },
   { id: 'welcome', Component: WelcomeScene, transitionToNext: welcomeToComposer, scrollScreens: 1.5, holdFraction: 0.12, transitionSeconds: 4.8 },
   { id: 'composer', Component: ComposerScene, transitionToNext: aiPush, transitionBack: aiPull, scrollScreens: 2, holdFraction: 0.25, transitionSeconds: 3.6 },
   { id: 'currently', Component: CurrentlyScene, transitionToNext: dsImpact, transitionBack: profileReturn, returnSeconds: 1.8, scrollScreens: 1.5, holdFraction: 0.2, transitionSeconds: 5.6 },

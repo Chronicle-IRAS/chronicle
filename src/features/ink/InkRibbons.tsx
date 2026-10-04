@@ -17,17 +17,19 @@ export function InkRibbons({ active, reduced = false }: { active: boolean; reduc
     const draw = () => {
       ctx.clearRect(0, 0, w, h)
       const collapse = root ? Number(gsap.getProperty(root, '--ink-collapse')) || 0 : 0
-      const angle = collapse * collapse * Math.PI * 3
-      const shrink = Math.pow(1 - collapse, 1.8)
       for (const p of letters) {
         const wave = Math.sin(p.x / Math.max(w, 1) * 5 + phase * .28 + p.row * .16)
         const x = p.x + Math.sin(phase * .2 + p.row * .1) * 20
         const y = h * .5 + (p.row - 6.5) * (w < 600 ? 23 : 28) + wave * h * .15
-        const dx = x - w * .5, dy = y - h * .5
+        const dx = x - w * .5, dy = y - h * .43
+        const lag = (p.row / 14) * .13 + Math.min(1, Math.abs(dx) / Math.max(w, 1)) * .08
+        const pull = Math.max(0, Math.min(1, (collapse - lag) / (1 - lag)))
+        const angle = pull * pull * Math.PI * (2.2 + p.row * .09)
+        const shrink = 1 - Math.pow(pull, 1.5)
         const repel = reduced ? 0 : Math.max(0, 1 - Math.hypot(x - pointer.x * w, y - pointer.y * h) / 180)
-        ctx.fillStyle = p.row % 3 === 0 ? '#a34f36' : '#52614a'
-        ctx.globalAlpha = (.16 + Math.abs(p.row - 6.5) * .045) * (1 - collapse)
-        ctx.fillText(p.c, w * .5 + (dx * Math.cos(angle) - dy * Math.sin(angle)) * shrink, h * .44 + (dx * Math.sin(angle) + dy * Math.cos(angle)) * shrink + repel * 32)
+        ctx.fillStyle = collapse > .25 ? '#ebc48f' : p.row % 3 === 0 ? '#a34f36' : '#52614a'
+        ctx.globalAlpha = (.16 + Math.abs(p.row - 6.5) * .045) * (1 - Math.pow(pull, 4))
+        ctx.fillText(p.c, w * .5 + (dx * Math.cos(angle) - dy * Math.sin(angle)) * shrink, h * .43 + (dx * Math.sin(angle) * .55 + dy * Math.cos(angle)) * shrink + repel * 32)
       }
       ctx.globalAlpha = 1
     }

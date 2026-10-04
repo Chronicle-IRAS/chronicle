@@ -6,6 +6,22 @@ const surface = (autoAlpha: number) => ({ autoAlpha, querySelector: () => null, 
 afterEach(() => gsap.globalTimeline.clear())
 
 describe('prologue boundary visibility', () => {
+  it('grows the actual welcome hole continuously and settles at its native scale', () => {
+    const hole = { scale: 1 }
+    const paper = surface(1)
+    const welcome = { ...surface(0), querySelector: (selector: string) => selector === '[data-enter-grid-orb]' ? hole : null }
+    const enter = preludeToWelcome({ from: paper as unknown as HTMLElement, to: welcome as unknown as HTMLElement, reducedMotion: false })
+    enter.time(.5)
+    const earlyScale = hole.scale
+    expect(earlyScale).toBeGreaterThan(.46)
+    expect(earlyScale).toBeLessThan(1)
+    enter.time(2)
+    expect(hole.scale).toBeGreaterThan(earlyScale)
+    enter.progress(1)
+    expect(hole.scale).toBe(1)
+    enter.progress(0).progress(1)
+    expect(hole.scale).toBe(1)
+  })
   for (const reducedMotion of [false, true]) {
     it(`supports repeated entry and a separate return (reduced=${reducedMotion})`, () => {
       const paper = surface(1), welcome = surface(0)
