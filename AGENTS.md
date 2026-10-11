@@ -6,7 +6,7 @@ Role-specific permissions live in `docs/` — see [Agent-Specific Rules](#agent-
 ## Project Overview
 
 - CHRONICLE (`chronicle-skeleton`): a high-interaction personal website built with React + TypeScript, Vite, Tailwind CSS, Zustand, GSAP (+ ScrollTrigger), and `@xyflow/react`. `package.json` and the lockfile are the authority for exact versions.
-- The site is one scroll journey: seven scenes (`src/scenes/scene-01-welcome` … `scene-07-goodbye`) with one scroll-triggered, automatically completed transition per boundary (`src/transitions/*`).
+- The site is one scroll journey: eight scenes starting with Prelude (`src/scenes/scene-00-prelude` … `scene-07-goodbye`) with one scroll-triggered, automatically completed transition per boundary (`src/transitions/*`).
 - The current stage and phase scope are recorded in `README.md`. Never assume which optional libraries are installed — inspect `package.json` and the lockfile. Deferred technologies (3D / R3F, physics, smooth scroll, motion libraries) must not be introduced unless the current task or the project phase explicitly permits them.
 - Module ownership (also in `README.md`): `src/app/` scene order, DOM ownership, ScrollTrigger wiring; `src/scenes/` content; `src/transitions/` one animation per boundary; `src/features/stack-composer/` engine + store + React Flow components; `src/stores/` low-frequency state; `src/hooks/`; `src/assets/characters/`; `src/styles/`.
 
@@ -41,7 +41,7 @@ Role-specific permissions live in `docs/` — see [Agent-Specific Rules](#agent-
 - Scenes render content and do not listen to scrolling. Scroll and ScrollTrigger wiring belongs to `src/app/`.
 - A scene must not query or mutate another scene's DOM, and must not communicate through implicit globals.
 - The cross-module contract is: `sceneRegistry` order, the `[data-scene-id]` / `[data-scene-content]` attributes, and the transition factories. Renaming or reordering those is an architecture change, not a styling change.
-- One scene directory = one exported `XxxScene` component (`WelcomeScene` … `GoodbyeScene`), mounted once by the director and kept mounted for the whole journey.
+- One scene directory = one exported `XxxScene` component (`PreludeScene`, `WelcomeScene` … `GoodbyeScene`), mounted once by the director and kept mounted for the whole journey.
 - Full Journey V1 uses fixed viewport content with section-owned scroll distance. The director sets non-active sections inert / aria-hidden. `features/space/` owns the single native WebGL canvas and mutable camera ref, connected to the existing transition timelines by the director.
 - Scene ↔ transition coupling goes through `TransitionFactory` in `src/transitions/types.ts`: `({ from, to, reducedMotion }) => gsap.timeline`. One folder per boundary, one `index.ts` entry file.
 - Keep transition animation decoupled from scene business logic.

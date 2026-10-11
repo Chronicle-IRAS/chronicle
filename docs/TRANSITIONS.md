@@ -1,6 +1,6 @@
 # Transitions
 
-The six scene boundaries of CHRONICLE plus the restart loop, described as intent.
+The seven scene boundaries of CHRONICLE (0.5→01, 01→02, 02→03, 03→04, 04→05, 05→06, 06→07) plus the restart loop, described as intent.
 
 This file says **what should happen**, not how it is currently implemented. Do not bind these descriptions to function names or module internals; the implementation lives in `src/transitions/` and may be replaced module by module.
 
@@ -9,19 +9,19 @@ Status tags: `LOCKED` (decided, do not change unilaterally) · `DIRECTION` (stro
 Cross-cutting requirements:
 
 - `LOCKED` By the latest user request, every boundary triggers on scrolling, then plays its complete animation automatically with input temporarily locked. Reverse crossings also play fully to completion. Stopping or reversing wheel/touch/key input must not stop an animation halfway.
-- `LOCKED` 07 → 01 is an explicit Restart action rather than a scroll-driven boundary. It follows its own closing-animation contract.
+- `LOCKED` 07 → 0.5 is an explicit Restart action rather than a scroll-driven boundary. It follows its own closing-animation contract.
 - `LOCKED` A boundary must not destroy scene state — in particular the Scene 02 graph must survive a push-out and a return.
 - `LOCKED` Reduced-motion preferences must be respected by every boundary.
 
 ## Current implementation — Full Journey V1
 
-All six boundaries run on a fixed viewport stage. The transition factory contract is preserved; the registry can provide a separate return factory for a boundary. Scroll thresholds are now 18svh for Welcome, 50svh for Composer, and 30svh for scenes 03–06, independently of animation duration.
+All seven boundaries run on a fixed viewport stage. The transition factory contract is preserved; the registry can provide a separate return factory for a boundary. Scroll thresholds are now 22.5svh (15% holdFraction) for Prelude, 18svh (12%) for Welcome, 50svh (25%) for Composer, and 30svh (20%) for scenes 03–06, independently of animation duration.
 
 - Ensemble and impact poses use the existing production PNGs through the character registry. Push holds for a friction beat; roles have separate motion tracks.
 - Impact text uses a separate deterministic ballistic sampler, responding at the impact point. No physics or text-layout dependency has been added; the same progress restores all pieces on reverse.
 - Portal entry uses a page mask and nested depth rings to expose the shared star world. Native WebGL point projection supplies 3D camera travel; exit shrinks the same world back into a hole.
 - Space continuation retains one seeded point cloud, canvas, and camera ref across both space scenes. It does not create a new renderer at scene boundaries.
-- Restart gathers the outro beneath a closing veil, returns to Welcome, and restores keyboard focus without clearing graph state.
+- Restart gathers the outro beneath a closing veil, returns to Prelude (Scene 0.5), and restores keyboard focus without clearing graph state.
 - Reduced motion bypasses spatial travel, character action, and scattering in favor of fades. Personal information and destination URLs remain empty by user request.
 
 ---
@@ -31,7 +31,7 @@ All six boundaries run on a fixed viewport stage. The transition factory contrac
 - Latest user direction replaces the former typography zoom with a sphere-led traversal.
 - Welcome typography keeps its original scale and fades early alongside the scroll cue.
 - The eclipse grows toward the viewer; an expanding circular iris reveals the fixed Composer canvas behind it.
-- The background and incoming canvas overlap, then the Composer heading settles in. Duration: 3.1 seconds.
+- The background and incoming canvas overlap, then the Composer heading settles in. Duration: 4.8 seconds (accelerating accretion disk spin and iris expansion).
 - Return reverses the iris and restores the sphere and original typography; input stays locked until completion.
 - Reduced motion uses a fully open iris, a stationary sphere, and short fades.
 
@@ -110,11 +110,11 @@ All six boundaries run on a fixed viewport stage. The transition factory contrac
   - the portal shrinks,
   - the visitor is back in the 2D page world, in Scene 07.
 
-## 07 → 01 — RESTART (Goodbye → Welcome)
+## 07 → 0.5 — RESTART (Goodbye → Prelude)
 
 - Trigger: `LOCKED` the RESTART action in Scene 07.
-- Concept: `LOCKED` a closing animation completes the loop and returns to WELCOME. It must not be a hard instantaneous jump.
-- Current state: `DIRECTION` the Skeleton implementation is a simple return to the top; the final closing animation is `TBD`.
+- Concept: `LOCKED` a closing animation completes the loop and returns to PRELUDE (Scene 0.5). It must not be a hard instantaneous jump.
+- Current state: `LOCKED` gathers the outro beneath a roughly 1.6s closing veil, resets scroll to Prelude at the top, and restores keyboard focus without clearing graph state.
 
 ## Character choreography revision
 
@@ -132,6 +132,12 @@ Welcome ambient motion now runs continuously: differential disk rotation, two or
 
 ## Prelude boundary (0.5 ↔ 01)
 
-Entry: 5.2 seconds. Ink spirals inward, invitation blocks converge, and a growing aperture removes the paper to reveal Welcome's existing WebGL black hole. Return: a separate 3.3-second timeline settles paper from the perimeter, releases the ink outward and restores the invitation. Both finish autonomously with the director input lock. Reduced motion uses a short opacity handoff. Restart's destination is now 0.5.
+Entry: 5.2 seconds. Ink spirals inward, invitation blocks converge, and the paper dissolves to reveal Welcome's complete WebGL black hole. Return: a separate 3.3-second timeline restores paper, releases the ink outward and restores the invitation. Both finish autonomously with the director input lock. Reduced motion uses a short opacity handoff. Restart's destination is now 0.5.
 
-The prologue now reveals the real Welcome black hole from the start of entry, scaling that same host from 0.46 to 1 with no replacement at the boundary. The synthetic circular hole has been removed. Individual title words follow staggered elliptical capture paths; background ink has row-dependent delays and angular speeds. Welcome labels appear only after capture.
+The prologue reveals the real Welcome black hole from the start of entry, scaling that same host from 0.82 to 1 with no replacement at the boundary. Paper opacity exposes the whole accretion disk together, without a circular mask that could read as a separate hole. Shader camera roll acts around its optical axis to keep the horizon aligned with the ink capture center.
+
+Entry choreography: page chrome fades first; individual heading glyphs loosen, warm from ink to gold, then travel along staggered elliptical paths into the actual measured black-hole center. Background text shares the capture curve, with fine tangent trails and independent release timing. Glyphs fade before reaching the center, leaving a short unobstructed view of the disk before Welcome copy appears. No shader clock reset, extra renderer, or per-frame layout measurements are involved. Return gently recedes the same hole under the returning paper, releases the background ribbons and typesets the heading in a short center-out wave; it is not a reversed capture. Both sequences restore their start state for repeated entry. The readable heading remains one accessible label despite its visual glyph spans.
+
+Rendering budget: the shared space renderer targets 60 draws per second with cadence remainder preserved. Black-hole buffers are capped at 448 px on narrow windows and 640 px on larger windows, with a 320 px floor under sustained frame pressure and slow recovery to prevent resolution flicker. Ray bending retains its 180-step limit; expensive disk noise is skipped outside the emitting volume and LOADING texture reads are skipped when hidden. Prelude ink uses a cached glyph atlas, bypasses capture transforms when resting and stops redrawing a static reduced-motion page. Local development exposes frame intervals and draw frequency on the canvas dataset; production sends and collects no diagnostics.
+
+Viewport refresh preserves the settled chapter and suppresses boundary playback while scroll geometry is recalculated. During an existing transition, its completion still owns the destination. The shared star background paints below Destinations and above the paper outro; its aperture exactly matches the destination content in both directions. The final section reserves eight extra scroll pixels so the forward landing crosses the boundary end, allowing the next upward gesture to trigger the return.

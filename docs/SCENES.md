@@ -1,6 +1,6 @@
 # Scenes
 
-The seven scenes of CHRONICLE, in fixed order. This file records design intent, not implementation detail.
+The scenes of CHRONICLE (Scene 0.5 Prelude + Scenes 01–07), in fixed order. This file records design intent, not implementation detail.
 
 Status tags: `LOCKED` (decided, do not change unilaterally) · `DIRECTION` (strong intent, reviewable) · `TBD` (not decided — propose, do not invent).
 
@@ -8,6 +8,7 @@ Scene map (stable identifiers):
 
 | # | Scene id | Theme |
 | --- | --- | --- |
+| 0.5 | `prelude` | Prelude |
 | 01 | `welcome` | Welcome |
 | 02 | `composer` | Stack Composer |
 | 03 | `currently` | Currently |
@@ -34,16 +35,18 @@ Scene map (stable identifiers):
 - Core component: `LOCKED` a React Flow canvas.
 - Visual hierarchy: `LOCKED` Scene 02 is **node-first**, not text-first. The graph itself is the visual center: technology nodes and their relationships must dominate the viewport. The scene should feel like entering a working interactive canvas, not landing on another content section.
 - Text role: `LOCKED` text is allowed only as secondary UI / context — a small scene label, a concise instruction, lightweight status / control text — and must stay visually subordinate to the nodes. Large hero-style headings, explanatory copy, or centered textual introductions must not compete with the graph. Exact position, font size, typography, and control layout remain `TBD`.
-- Technology nodes: `LOCKED` the vocabulary is React, Vue, TypeScript, Node.js, ESP32, AI. `DIRECTION` this set may grow.
+- Technology nodes: React, Vue, TypeScript, Node.js, ESP32, AI, C++, Qt. This set may grow with verified project recipes.
 - Interaction: `LOCKED` drag technology nodes; connect two technology nodes.
 - Viewport: `LOCKED` user-requested fixed blueprint. No user zoom, background pan, viewport controls, or auto-pan while editing. Only the initial layout and a display resize may fit the canvas; composition creation must preserve the existing viewport.
 - Connection semantics: `LOCKED` a connection means composition, not direction — "Vue + ESP32", not "Vue → ESP32". The composition key must be order-independent, so `['vue','esp32']` and `['esp32','vue']` yield the same composition.
 - Results: `LOCKED` a composition may produce a **Project** result (a real, existing project) or a **Concept** result (a what-if / experimental concept the user has not actually built). Real projects and concepts must remain clearly distinguishable.
 - Result behavior: `LOCKED` result nodes are draggable, not connectable, and derived from the current composition. Result nodes never take part in a further composition.
 - Removal: `LOCKED` if the composition is broken, the derived result disappears automatically.
-- Known recipes: `DIRECTION`, extensible. `vue + esp32` → ESP32 Monitor; `react + typescript` → Blueprint Editor; any unknown combination → Experimental Concept.
+- Known recipes: `vue + esp32` → [ESP32 Monitor](https://github.com/Chronicle-IRAS/monitor); `cpp + qt` → [Qt Blueprint Generator](https://github.com/Chronicle-IRAS/qt-blueprint-generator); `typescript + ai` → [PaLM Netlify Proxy](https://github.com/Chronicle-IRAS/palm-netlify-proxy). Pairings were checked against public repository READMEs. Unknown combinations, including React + TypeScript, produce “A new possibility” without a project link.
+- Project access: real result titles and their Explore project action open the corresponding repository in a new tab. Link hit areas do not start node dragging. The collapsed workbench also exposes a full-size shortcut to the latest real project.
+- Visual direction: dreamy organic capsules, pastel gradients, serif labels, breathing halos and curved connections. Free nodes roam over a wider area; connected nodes and results have a smaller idle range. Oval collision bodies separate and transfer momentum, including when visitors drag one node into others. Hover or keyboard focus holds a node still. Swept drag steps prevent fast gestures from tunnelling through neighbours; soft boundary bounces keep autonomous nodes inside the usable canvas. Connection gestures briefly freeze motion for precise targeting. A GSAP ticker updates DOM translations and matching edge paths without per-frame React/store updates; motion pauses outside the scene and respects reduced motion.
 - Implementation note: node types in the current implementation are `tech`, `project`, and `concept`; the design terms ProjectNode / ConceptNode refer to the two result kinds. Composition rules stay pure and direction-independent.
-- Open: `TBD` the full recipe list, node styling, result presentation design.
+- Open: additional verified recipes and optional live demo URLs.
 - Boundary to Scene 03: see `docs/TRANSITIONS.md` (02 → 03).
 
 ## Scene 03 — CURRENTLY
@@ -89,9 +92,9 @@ Scene map (stable identifiers):
 - Primary element: `LOCKED` GOODBYE.
 - Current outro: a full-width typographic playground with a living glyph bloom, spring-driven letter physics, a perspective text tunnel, and a full-letter reading surface using Pretext. Pointer movement repels letters; holding attracts them; RELEASE LETTERS scatters them radially. Keyboard controls, reduced-motion fallback and the Restart loop remain available.
 - Possible contents: `DIRECTION` friends, friends' websites, blogroll, special thanks, other outbound links.
-- Closing action: `LOCKED` RESTART. It is part of the narrative loop, not a plain back-to-top, and returns to Scene 01.
+- Closing action: `LOCKED` RESTART. It is part of the narrative loop, not a plain back-to-top, and returns to Scene 0.5 (Prelude).
 - Open: `TBD` the closing animation (e.g. text gathering / convergence).
-- Boundary to Scene 01: see `docs/TRANSITIONS.md` (07 → 01).
+- Boundary to Scene 0.5: see `docs/TRANSITIONS.md` (07 → 0.5).
 
 ## Interactive chapter revision
 
@@ -99,4 +102,4 @@ The user authorized expanding interaction while preserving the seven-scene outli
 
 ## Scene 0.5 — Prelude (user-authorized addition)
 
-Appears after the first-visit loader, before Welcome. A paper-colored Pretext ribbon field accompanies an invitation and STEP INSIDE. Click/scroll triggers the director boundary; Welcome exposes BACK TO THE PREFACE and supports upward scrolling. Original Scene 01–07 labels remain stable. The loader and Scene 07 share this ink palette. Restart returns to 0.5. Scene 07's reading surface is now a scrollable editorial letter without the circular exclusion, while its LIVING LETTER field uses the source text once.
+Appears after the first-visit loader, before Welcome. Every fresh document load or reload starts at 0.5: the entry bootstrap disables automatic scroll restoration, clears a chapter fragment while preserving query parameters, and resets scroll before the director mounts. A paper-colored Pretext ribbon field accompanies an invitation and STEP INSIDE. Click/scroll triggers the director boundary; Welcome exposes BACK TO THE PREFACE and supports upward scrolling. Original Scene 01–07 labels remain stable. The loader and Scene 07 share this ink palette. Restart returns to 0.5. Scene 07's reading surface uses Pretext line-by-line geometry around a quiet circular margin seal. STRAIGHT MARGINS switches to a full-width reading layout; neither layout moves or reflows on pointer movement. Text stays selectable and the complete letter scrolls independently. Its LIVING LETTER field uses the source text once.

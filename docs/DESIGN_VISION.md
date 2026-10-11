@@ -11,7 +11,7 @@ Status tags used in this document and in `docs/SCENES.md`, `docs/TRANSITIONS.md`
 ## Product Identity
 
 - `LOCKED` CHRONICLE is a scroll-driven interactive narrative about one person's work, tools, and interests.
-- `LOCKED` It is composed of 7 scenes joined by 6 scene boundaries plus a restart loop.
+- `LOCKED` It is composed of 8 scenes (Scene 0.5 Prelude + Scenes 01–07) joined by 7 scene boundaries plus a restart loop.
 - `LOCKED` It is not a conventional portfolio. There is no Hero / Projects / Skills / About / Contact stack.
 - `DIRECTION` It reads closer to an interactive web experience / digital narrative than to a resume website.
 - `DIRECTION` Character: technical, playful, experimental, cinematic.
@@ -21,7 +21,7 @@ Status tags used in this document and in `docs/SCENES.md`, `docs/TRANSITIONS.md`
 - `LOCKED` The visitor's primary input is scroll.
 - `LOCKED` Scrolling down advances the narrative. Scrolling up should restore the previous state naturally.
 - `LOCKED` A scene is the content unit. The transition itself is part of the experience, not a page swap.
-- `LOCKED` The arc closes into a loop: Welcome → … → Goodbye → Restart → Welcome.
+- `LOCKED` The arc closes into a loop: Prelude → Welcome → … → Goodbye → Restart → Prelude.
 - `LOCKED` High-complexity motion is driven by scroll progress (scrubbed), not by manually accumulated wheel deltas.
 - `DIRECTION` Keywords: immersive, scroll-driven, reversible, scene-based, transition-heavy, interactive, cinematic, playful, technical, experimental.
 
@@ -43,6 +43,7 @@ Status tags used in this document and in `docs/SCENES.md`, `docs/TRANSITIONS.md`
 
 | Scene | Theme | Function |
 | --- | --- | --- |
+| 0.5 | Prelude | Paper ink prologue; spirals into Welcome black hole |
 | 01 | Welcome | Quiet entry; grid foreshadows Scene 02 |
 | 02 | Stack Composer | Main interactive scene; where project information is expressed |
 | 03 | Currently | Deliberate deceleration; text-led |
@@ -51,7 +52,7 @@ Status tags used in this document and in `docs/SCENES.md`, `docs/TRANSITIONS.md`
 | 06 | Destinations | Same continuous space; external destinations |
 | 07 | Goodbye | Back to 2D; outro and Restart |
 
-- `LOCKED` Seven scenes in this order. Scene numbers 01–07 are stable identifiers.
+- `LOCKED` Scenes 01–07 are stable chapter identifiers, preceded by Scene 0.5 Prelude. Scene order is strictly preserved.
 - `DIRECTION` Scene 03 + 04 share one visual chapter. Scene 05 + 06 share one continuous space.
 - `LOCKED` Project information is concentrated in Scene 02 rather than spread across scenes.
 

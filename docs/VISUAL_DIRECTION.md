@@ -61,6 +61,10 @@ The following must not be fixed by an agent. Each needs a later design review:
 
 ## Implementation Principles
 
+### Global expression refinement
+
+The current user-authorized refinement keeps the existing scene layouts and their narrative roles. Loading, Prelude and Goodbye share fine paper texture and rust-colored interaction accents. Currently and Profile share a deep blue surface, muted contour ribbons, and grounded sculptural details. Composer remains node-led, with light travelling along real connections; Space/Destinations retain the single star world with route drawing and clearer planet selection. Utility buttons use small magnetic offsets and transient click echoes. Decorative layers pause off-scene, and reduced motion disables added spatial feedback. Personal content and unconfigured destinations remain as supplied.
+
 - `LOCKED` Never break readability for the sake of a complex effect.
 - `LOCKED` A "technological feel" does not default to neon everywhere, excessive glow, a cyberpunk HUD, heavy scanlines, heavy glitch, or meaningless glass cards. None of these are confirmed directions.
 - `LOCKED` If an agent has no design basis for a visual decision, do not invent a visual language. Propose options and wait for user / design review.
