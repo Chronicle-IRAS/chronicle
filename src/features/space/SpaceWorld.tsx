@@ -3,6 +3,7 @@ import { gsap } from '../../lib/gsap'
 import { createStarField } from './field'
 import type { SpaceCamera } from './field'
 import { createBlackHolePass } from './blackHole'
+import { createRenderBudget } from './renderBudget'
 
 const vertex = `
 attribute vec3 aPosition;
@@ -54,6 +55,8 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
     if (!canvas) return
     const home = canvas.parentElement!
     const hole = home.closest('main')?.querySelector<HTMLElement>('[data-enter-grid-orb]')
+    const welcome = hole?.closest('[data-scene-id]')
+    const prelude = home.closest('main')?.querySelector('[data-scene-id="prelude"]')
     const loadingLabel = hole?.querySelector('[data-enter-grid-loading]')
     let dispose = () => {}
     const initialize = () => {
@@ -80,6 +83,7 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
       if (!gl.getProgramParameter(program, gl.LINK_STATUS)) { release(); canvas.dataset.renderer = 'fallback'; return }
       canvas.dataset.renderer = 'webgl'
       const blackHole = createBlackHolePass(gl)
+      const budget = createRenderBudget(window.innerWidth < 700 ? 448 : 640)
       gl.useProgram(program)
       gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
       const count = window.innerWidth < 700 ? 1300 : 2400
@@ -115,26 +119,41 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
       let lastPan = NaN
       let lastWarp = NaN
       let lastFrame = -1
+      // Local development diagnostics; no collection or transport in production.
+      let sampleStart = performance.now(), previousTick = sampleStart, frameSum = 0, frameCount = 0, frameMax = 0, drawCount = 0
       const draw = (elapsed: number) => {
-        const welcome = hole?.closest('[data-scene-id]')
-        const inPrelude = home.closest('main')?.querySelector('[data-scene-id="prelude"]')?.getAttribute('data-transitioning') === 'true'
+        if (import.meta.env.DEV) {
+          const now = performance.now(), interval = now - previousTick
+          previousTick = now
+          if (!document.hidden && interval < 250) { frameSum += interval; frameCount++; frameMax = Math.max(frameMax, interval) }
+          if (now - sampleStart > 1500) {
+            canvas.dataset.frameMs = (frameSum / Math.max(1, frameCount)).toFixed(1)
+            canvas.dataset.frameMaxMs = frameMax.toFixed(1)
+            canvas.dataset.renderFps = (drawCount * 1000 / (now - sampleStart)).toFixed(1)
+            sampleStart = now; frameSum = 0; frameCount = 0; frameMax = 0; drawCount = 0
+          }
+        }
+        if (document.hidden || gl.isContextLost()) { budget.reset(); return }
+        const inPrelude = prelude?.getAttribute('data-transitioning') === 'true'
         const inHole = !!hole && (inPrelude || welcome?.getAttribute('data-active') === 'true' || welcome?.getAttribute('data-transitioning') === 'true')
         if (inHole && blackHole.valid) {
-          if (canvas.parentElement !== hole) { hole.appendChild(canvas); dirty = true }
-          if (gl.isContextLost() || document.hidden || (reducedMotion && !dirty) || (!dirty && elapsed - lastFrame < 1 / 30)) return
-          const resolution = window.innerWidth < 700 ? 560 : 960
+          if (canvas.parentElement !== hole) { hole.appendChild(canvas); dirty = true; budget.reset() }
+          if (!reducedMotion) budget.sample(performance.now())
+          if ((reducedMotion && !dirty) || (!dirty && elapsed - lastFrame < 1 / 60)) return
+          const resolution = budget.resolution
           if (canvas.width !== resolution || canvas.height !== resolution) canvas.width = canvas.height = resolution
           gl.viewport(0, 0, canvas.width, canvas.height)
-          lastFrame = elapsed
+          lastFrame = elapsed - Math.max(0, (elapsed - lastFrame) % (1 / 60))
           dirty = false
           blackHole.draw(reducedMotion ? 0 : elapsed, loadingLabel ? Number(gsap.getProperty(loadingLabel, 'opacity')) : 0, reducedMotion ? 0 : Number(gsap.getProperty(hole, '--hole-spin')) || 0)
+          drawCount++
           return
         }
         if (canvas.parentElement !== home) { home.appendChild(canvas); gl.useProgram(program); resize() }
         if (gl.isContextLost() || document.hidden || camera.visible === 0) return
         if (reducedMotion && !dirty && lastDepth === camera.depth && lastTurn === camera.turn && lastPan === camera.pan && lastWarp === camera.warp) return
-        if (!dirty && elapsed - lastFrame < 1 / 30) return
-        lastFrame = elapsed
+        if (!dirty && elapsed - lastFrame < 1 / 60) return
+        lastFrame = elapsed - Math.max(0, (elapsed - lastFrame) % (1 / 60))
         lastDepth = camera.depth; lastTurn = camera.turn; lastPan = camera.pan; lastWarp = camera.warp; dirty = false
         gl.clearColor(0, 0, 0, 0)
         gl.clear(gl.COLOR_BUFFER_BIT)
@@ -149,6 +168,7 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
         gl.uniform1f(warp, camera.warp)
         gl.uniform1f(time, reducedMotion ? 0 : elapsed)
         gl.drawArrays(gl.POINTS, 0, count)
+        drawCount++
       }
       resize()
       window.addEventListener('resize', resize)

@@ -7,6 +7,8 @@ export const initialTechNodes: TechNode[] = [
   { id: 'tech:esp32', type: 'tech', position: { x: 290, y: 205 }, data: { label: 'ESP32', techId: 'esp32' }, deletable: false },
   { id: 'tech:nodejs', type: 'tech', position: { x: 540, y: 55 }, data: { label: 'Node.js', techId: 'nodejs' }, deletable: false },
   { id: 'tech:ai', type: 'tech', position: { x: 540, y: 205 }, data: { label: 'AI', techId: 'ai' }, deletable: false },
+  { id: 'tech:cpp', type: 'tech', position: { x: 790, y: 55 }, data: { label: 'C++', techId: 'cpp' }, deletable: false },
+  { id: 'tech:qt', type: 'tech', position: { x: 790, y: 205 }, data: { label: 'Qt', techId: 'qt' }, deletable: false },
 ]
 
 export function createInitialTechNodes(viewportWidth: number): TechNode[] {
@@ -14,7 +16,7 @@ export function createInitialTechNodes(viewportWidth: number): TechNode[] {
     ...node,
     data: { ...node.data },
     position: viewportWidth < 700
-      ? { x: 40 + (index % 2) * 230, y: 40 + Math.floor(index / 2) * 170 }
+      ? { x: 40 + (index % 2) * 250, y: 40 + Math.floor(index / 2) * 145 }
       : { ...node.position },
   }))
 }

@@ -7,14 +7,14 @@ export function ChapterExplorer({ entries, chapter }: { entries: Entry[]; chapte
   const [angle, setAngle] = useState(20)
   const [playing, setPlaying] = useState(true)
   const details = chapter === 'currently'
-    ? ['A canvas for connecting technologies. Try React + TypeScript in the previous chapter to reveal the Blueprint Editor.', 'A space to explore how tools, context and decisions come together in an agent.', 'An open page for the next thing to learn. This entry is intentionally unwritten.']
+    ? ['A visual blueprint editor for Qt 6 projects. Connect C++ + Qt in the previous chapter to discover its public repository.', 'A space to explore how tools, context and decisions come together in an agent.', 'An open page for the next thing to learn. This entry is intentionally unwritten.']
     : ['A space for projects shared with others. Personal details will be added here.', 'The story behind the work. This chapter is still being written.', 'A place for the questions that deserve more time. Details are coming later.', 'The tools behind the ideas. Explore the interactive stack in chapter 02.']
   return <div className="chapter-explorer">
     <dl className="text-list explorer-list">{entries.map(({ label, value }, index) => <div key={label} data-impact-piece>
-      <dt><button type="button" aria-pressed={selected === index} onClick={() => setSelected(index)}><span>0{index + 1}</span>{label}<b aria-hidden="true">{selected === index ? '−' : '+'}</b></button></dt>
+      <dt><button type="button" aria-label={`${label}: ${value || 'To be written'}`} aria-controls={`${chapter}-detail`} aria-pressed={selected === index} onClick={() => setSelected(index)}><span>0{index + 1}</span>{label}<b aria-hidden="true">{selected === index ? '−' : '+'}</b></button></dt>
       <dd>{value || 'To be written'}</dd>
     </div>)}</dl>
-    <aside className="chapter-detail" aria-label="Selected chapter detail">
+    <aside className="chapter-detail" id={`${chapter}-detail`} aria-label="Selected chapter detail">
       <div className="chapter-sculpture" data-playing={playing} data-form={selected} style={{ '--instrument-angle': `${angle}deg`, '--chapter-index': selected } as CSSProperties} aria-hidden="true">
         <div className="sculpture-object">{Array.from({length: 12}, (_, i) => <div className="sculpture-rib" key={i} style={{ '--rib': i } as CSSProperties} />)}</div>
         <div className="sculpture-coordinate">EXPERIMENT / 0{selected + 1}</div>

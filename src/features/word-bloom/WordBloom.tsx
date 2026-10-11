@@ -38,6 +38,7 @@ export function WordBloom() {
     const ctx = canvas?.getContext('2d')
     if (!canvas || !ctx) return
     let width = 0, height = 0, size = 12, time = 0, previous = 0, seenImpulse = impulse.current
+    let drawnMode: Mode | undefined
     let glyphs: Glyph[] = []
     const pointer = { x: 0, y: 0, inside: false, down: false }
     const resize = () => {
@@ -74,7 +75,7 @@ export function WordBloom() {
     const draw = (dt: number) => {
       ctx.clearRect(0, 0, width, height)
       const { mode } = settings.current
-      const motion = !reduced
+      const motion = !reduced && !settings.current.paused
       const explode = seenImpulse !== impulse.current
       seenImpulse = impulse.current
       const radius = Math.min(width * .38, height * .42)
@@ -131,10 +132,13 @@ export function WordBloom() {
       }
     }
     const tick = (now: number) => {
+      if (now - previous < 1 / 60) return
       const dt = previous ? Math.min(now - previous, .033) : .016
       previous = now
-      if (document.hidden || settings.current.reading || settings.current.paused) return
-      if (!reduced) time += dt
+      if (document.hidden || settings.current.reading) return
+      if ((settings.current.paused || reduced) && drawnMode === settings.current.mode) return
+      drawnMode = settings.current.mode
+      if (!reduced && !settings.current.paused) time += dt
       draw(dt)
     }
     const move = (event: PointerEvent) => {
@@ -159,13 +163,13 @@ export function WordBloom() {
     }
   }, [active, reduced])
 
-  return <div className="type-playground" data-reading={reading}>
+  return <div className="type-playground" data-reading={reading} data-mode={mode}>
     <div className="type-heading"><h2>Nothing ends.<br /><em>Everything becomes.</em></h2><p>A playground for the words we leave behind.</p></div>
     <canvas ref={canvasRef} className="type-field" role="img" aria-label="Interactive letter sculpture. Move to scatter letters, hold to attract them. Use the release letters button for a keyboard-accessible burst." />
     <div className="type-caption" aria-live="polite">{reduced ? 'STILL COMPOSITION / REDUCED MOTION' : paused ? 'MOTION PAUSED' : 'MOVE TO SCATTER · HOLD TO ATTRACT'}{bursts > 0 && ` / ${bursts} RELEASED`}</div>
     <div className="type-controls" inert={reading} aria-label="Text playground controls">
       <div className="type-modes">{MODES.map((item) => <button key={item.id} type="button" aria-pressed={mode === item.id} onClick={() => setMode(item.id)}>{item.label}</button>)}</div>
-      <div className="type-actions"><button type="button" onClick={burst} disabled={reduced || paused}>RELEASE LETTERS ↗</button><button type="button" onClick={() => setPaused(!paused)} disabled={reduced}>{paused ? 'PLAY' : 'PAUSE'}</button><button ref={readRef} type="button" onClick={() => setReading(true)}>READ THE LETTER</button></div>
+      <div className="type-actions"><button type="button" onClick={burst} disabled={reduced || paused}>RELEASE LETTERS ↗</button><button type="button" aria-pressed={paused} onClick={() => setPaused(!paused)} disabled={reduced}>{paused ? 'PLAY' : 'PAUSE'}</button><button ref={readRef} type="button" onClick={() => setReading(true)}>READ THE LETTER</button></div>
     </div>
     {reading && <div className="paper-letter-overlay type-letter" role="dialog" aria-modal="true" aria-label="A note before you go" onKeyDown={(event) => { if (event.key === 'Escape') close(); if (event.key === 'Tab') { const stops = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('button, [tabindex="0"]')); const index = stops.indexOf(document.activeElement as HTMLElement); event.preventDefault(); stops[(index + (event.shiftKey ? -1 : 1) + stops.length) % stops.length]?.focus() } }}><div className="paper-letter-heading"><h3>A NOTE BEFORE YOU GO</h3><button className="quiet-control" ref={closeRef} type="button" onClick={close}>CLOSE ×</button></div><FlowLetter text={siteContent.goodbye.letter} /></div>}
   </div>

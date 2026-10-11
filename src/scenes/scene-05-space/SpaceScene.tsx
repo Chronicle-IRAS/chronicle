@@ -15,7 +15,10 @@ export function SpaceScene() {
       <h2 className="scene-title">Chart the unknown.</h2>
       <p className="atlas-instruction">Choose stars. Make your own constellation.</p>
       <div className="constellation-map">
-        <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polyline points={route.map((index) => positions[index].join(',')).join(' ')} /></svg>
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <polyline points={route.map((index) => positions[index].join(',')).join(' ')} />
+          {route.length > 1 && <polyline key={route.join('-')} className="atlas-route-reveal" pathLength="1" points={route.map(index => positions[index].join(',')).join(' ')} />}
+        </svg>
         {siteContent.future.map((topic, index) => <button type="button" className="atlas-star" style={{ left: `${positions[index][0]}%`, top: `${positions[index][1]}%`, '--star-order': index } as CSSProperties} key={topic} aria-pressed={route.includes(index)} onClick={() => choose(index)}><span className="atlas-star-core" /><small>0{index + 1}</small><strong>{topic}</strong></button>)}
       </div>
       <div className="atlas-footer"><div aria-live="polite"><small>{route.length} / 4 STARS CONNECTED</small><p>{selected === null ? 'There is no prescribed route.' : notes[selected]}</p></div><button type="button" className="quiet-control" onClick={() => { setRoute([]); setSelected(null) }} disabled={!route.length}>CLEAR ROUTE ↺</button></div>

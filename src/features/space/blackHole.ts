@@ -12,29 +12,35 @@ export function createBlackHolePass(gl: WebGLRenderingContext) {
     void main(){
       vec3 ro=vec3(sin(time*.18)*1.05,1.8+sin(time*.23)*.28,7.5+sin(time*.16)*.16);
       vec3 forward=normalize(-ro), right=normalize(cross(forward,vec3(0.,1.,0.))), up=cross(right,forward);
-      vec3 rd=normalize(forward+uv.x*right*.72+uv.y*up*.72);
       float roll=.13+sin(time*.21)*.055; mat2 rot=mat2(cos(roll),-sin(roll),sin(roll),cos(roll));
-      rd.xy=rot*rd.xy;
+      // Roll the image plane around the optical axis, keeping the horizon centered.
+      vec2 screen=rot*uv;
+      vec3 rd=normalize(forward+screen.x*right*.72+screen.y*up*.72);
       vec3 pos=ro, col=vec3(0.); float trans=1.;
       for(int i=0;i<180;i++){
         float r=length(pos);
         if(r<.88){trans=0.;break;}
         float stepSize=clamp(r*.025,.025,.15);
-        rd=normalize(rd-normalize(pos)*(.65/(r*r))*stepSize);
+        rd=normalize(rd-normalize(pos)*(.9/(r*r))*stepSize);
         vec3 previous=pos;
         pos+=rd*stepSize;
         float radial=length(pos.xz);
-        float disk=exp(-abs(pos.y)*18.)*smoothstep(1.25,1.65,radial)*(1.-smoothstep(3.1,4.3,radial));
-        float angle=atan(pos.z,pos.x);
-        float turbulence=noise(vec2(radial*9.,angle*7.-time*.5))+ .5*noise(vec2(radial*23.,angle*13.-time*.8));
-        float flow=.55+.45*turbulence;
-        float filaments=.83+.17*sin(radial*62.+turbulence*4.);
-        float doppler=clamp(1.-pos.x*.18,.45,1.8);
-        vec3 heat=mix(vec3(.95,.33,.07),vec3(1.,.88,.64),exp(-(radial-1.3)*.55));
-        col+=trans*disk*heat*flow*filaments*doppler*stepSize*.65;
+        float disk=0.;
+        // Density beyond this band is below exp(-9): skip invisible volume noise.
+        if(abs(pos.y)<.5 && radial>1.25 && radial<4.3){
+          disk=exp(-abs(pos.y)*18.)*smoothstep(1.25,1.65,radial)*(1.-smoothstep(3.1,4.3,radial));
+          float angle=atan(pos.z,pos.x);
+          float turbulence=noise(vec2(radial*9.,angle*7.-time*.5))+ .5*noise(vec2(radial*23.,angle*13.-time*.8));
+          float flow=.55+.45*turbulence;
+          float filaments=.83+.17*sin(radial*62.+turbulence*4.);
+          float doppler=clamp(1.-pos.x*.18,.45,1.8);
+          vec3 heat=mix(vec3(.95,.33,.07),vec3(1.,.88,.64),exp(-(radial-1.3)*.55));
+          col+=trans*disk*heat*flow*filaments*doppler*stepSize*.65;
+        }
         if(previous.y*pos.y<0.) {
           vec3 surface=mix(previous,pos,previous.y/(previous.y-pos.y));
           float sr=length(surface.xz), sa=atan(surface.z,surface.x);
+          if(sr>1.25 && sr<4.3){
           float orbit=sa-time*2.6/pow(max(sr,1.),1.5)-spin;
           float inflow=sr+.035*sin(orbit*3.+sr*5.-time*.8);
           vec2 turbulenceUV=vec2(inflow*15.,sin(orbit)*4.);
@@ -50,13 +56,13 @@ export function createBlackHolePass(gl: WebGLRenderingContext) {
           vec3 temperature=mix(vec3(.62,.13,.025),vec3(1.,.85,.61),exp(-max(sr-1.5,0.)*.7));
           col+=trans*temperature*density*rim*brightness*(1.65+.12*sin(time*.85));
           float ringV=(sr-2.45)/.55;
-          if(ringV>0. && ringV<1.) {
+          if(loading>.001 && ringV>0. && ringV<1.) {
             float ink=texture2D(lettering,vec2(fract((atan(surface.z,surface.x)-spin)/6.283185-time*.035),ringV)).r;
             col+=trans*ink*vec3(1.,.97,.84)*loading*2.5;
           }
+          }
         }
-        trans*=exp(-disk*stepSize*.55);
-        col+=vec3(1.,.73,.37)*exp(-abs(r-1.03)*75.)*.012;
+        if(disk>0.) trans*=exp(-disk*stepSize*.55);
         if(length(pos)>12.)break;
       }
       col=1.-exp(-col*1.25);

@@ -1,0 +1,112 @@
+/* Shared finish over the existing scene designs. Motion stays inside decorative layers. */
+:root { --expression-ease: cubic-bezier(.16, 1, .3, 1); }
+.scene-title, .display-title { animation: none; text-shadow: none; }
+.section-number, .composer-heading, .paper-header, .prelude-header { font-variant-numeric: tabular-nums; }
+.journey-signature { opacity: .8; }
+.scene-title, .destination-heading, .type-heading h2 { text-wrap: balance; }
+
+/* Luminous depth with a quieter foreground. */
+.ambient-haze { animation-duration: 18s; opacity: .65; }
+.ambient-haze-b { animation-duration: 26s; }
+.ambient-orbit { border-color: rgba(var(--ambient-color), .12); animation-duration: 36s; }
+.ambient-orbit-b { animation-duration: 49s; }
+.ambient-trace, .ambient-wave, .ambient-streaks { display: none; }
+.ambient-mote { width: 2px; height: 2px; background: rgba(var(--ambient-color), .5); animation-duration: calc(10s + var(--i) * .45s); }
+.ambient-pointer { opacity: .65; }
+.ambient-contours { display: none; position: absolute; inset: -8%; width: 116%; height: 116%; fill: none; color: #c4e3df; pointer-events: none; }
+.ambient-contours path { stroke: currentColor; stroke-width: .7; opacity: .08; }
+.ambient-contours .ambient-contour-light { stroke-width: 1.2; stroke-dasharray: 80 1800; opacity: .32; animation: contour-flow 24s linear infinite; animation-delay: calc(var(--contour-index) * -5s); }
+@keyframes contour-flow { to { stroke-dashoffset: -1880; } }
+.scene-currently .ambient-contours, .scene-profile .ambient-contours { display: block; transform: translate3d(calc((var(--ambient-x, 50) - 50) * -.04vw), calc((var(--ambient-y, 50) - 50) * -.03vh), 0); }
+.scene-currently .scene-content, .scene-profile .page-sheet { background: #14212b; }
+.scene-currently .ambient-haze-a, .scene-profile .ambient-haze-a { background: radial-gradient(ellipse, #879eca24, transparent 68%); }
+.scene-currently .ambient-haze-b, .scene-profile .ambient-haze-b { background: radial-gradient(ellipse, #75bda420, transparent 68%); }
+.scene-space .ambient-orbit, .scene-destinations .ambient-orbit { opacity: .4; }
+.scene-space .ambient-mote, .scene-destinations .ambient-mote { display: none; }
+.welcome-meta { color: #c2b5a0; }
+.welcome-content .scene-subtitle { color: #d1c5b1; }
+.welcome-content .welcome-side-note { color: #d3bea1; }
+.welcome-content .display-title { text-shadow: 0 3px 28px #0009; }
+.welcome-content .welcome-floor { opacity: .35; }
+
+/* Shared sculptural chapter, with a grounded object and clearer selection. */
+.chapter-sculpture::before { content: ''; position: absolute; left: 50%; top: 50%; width: 75%; max-width: 380px; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; background: radial-gradient(ellipse, #a5e3cc15, transparent 70%); border: 1px solid #b7d5cc14; }
+.chapter-sculpture::after { content: ''; position: absolute; bottom: 5%; left: 18%; right: 18%; height: 12%; background: radial-gradient(ellipse, #030c1670, transparent 70%); pointer-events: none; }
+.sculpture-object { animation-duration: 32s; }
+.sculpture-rib { box-shadow: none; }
+.chapter-explorer .explorer-list > div { border-color: #b5d0c528; }
+.chapter-explorer .explorer-list > div:has([aria-pressed="true"]) { background: linear-gradient(90deg, #c4dfc612, transparent 90%); border-color: #c6e6bf99; }
+.explorer-list dt button { color: #9cbbb4; }
+.explorer-list dt button[aria-pressed="true"] { color: #e2eccd; }
+.chapter-detail-copy { animation: expression-detail .65s var(--expression-ease); }
+.chapter-detail-copy p { color: #b6c6c4; }
+.chapter-detail-copy h3 { color: #edf0df; }
+.chapter-detail-copy small { color: #a9c6bb; }
+@keyframes expression-detail { from { opacity: 0; translate: 0 10px; } to { opacity: 1; translate: 0 0; } }
+.text-list > div::after { opacity: .3; animation-duration: 12s; }
+
+/* Signals are visual only; their paths follow the live collision simulation. */
+.scene-composer .react-flow__edge-path { animation: none; stroke-opacity: .65; }
+.composition-signal { stroke: #f5e5c9; stroke-width: 2; stroke-dasharray: 16 110; stroke-linecap: round; opacity: .7; animation: composition-current 5s linear infinite; }
+@keyframes composition-current { to { stroke-dashoffset: -126; } }
+.scene-composer .composer-canvas::after { animation-duration: 22s; opacity: .3; }
+.scene-composer .result-node { box-shadow: inset 0 1px 2px #fff3, 0 12px 35px #070b1440, 0 0 35px #d8c6e00b; }
+
+/* Constellations reveal their route; planets settle when selected. */
+.constellation-map::before { border-color: #c3d6ea25; }
+.constellation-map .atlas-route-reveal { stroke: #fff2bf; stroke-width: 2; stroke-dasharray: 1; animation: atlas-route-draw .9s var(--expression-ease) both; }
+@keyframes atlas-route-draw { from { stroke-dashoffset: 1; opacity: 1; } to { stroke-dashoffset: 0; opacity: .38; } }
+.atlas-star-core { transition: scale .45s var(--expression-ease), background .3s, box-shadow .3s; }
+.atlas-star-core::after { width: 62px; height: 62px; translate: -24px -24px; }
+.atlas-star[aria-pressed="true"] .atlas-star-core::after { border-color: #e1dcb373; scale: 1.3; }
+.atlas-star[aria-pressed="true"] strong { color: #f8edcc; }
+.atlas-star strong { text-shadow: 0 2px 16px #050812; }
+.atlas-footer { border-top-color: #c5d6ee32; }
+.planet { transition: scale .6s var(--expression-ease), box-shadow .5s; }
+.destination[aria-pressed="true"] .planet { scale: 1.15; animation-play-state: paused; box-shadow: 0 0 0 1px #f1ddb850, 0 0 0 9px #d7d9bc0a, 0 0 40px #b0c1db32; }
+.destination-inspector { transition: border-color .4s, background-color .4s; }
+.destination-inspector[data-selected="true"] { border-color: #dedbb78c; background: linear-gradient(90deg, #d6d8ba06, transparent 70%); }
+.destination-detail-copy { animation: expression-detail .55s var(--expression-ease); }
+.planet-label small { letter-spacing: .1em; }
+
+/* Paper surfaces carry the same fine printed texture from opening to closing. */
+.prelude-paper::after, .opening-loader::before, .paper-goodbye::before { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .22; background-image: radial-gradient(#74684c3b .6px, transparent .8px), radial-gradient(#74684c30 .5px, transparent .7px); background-size: 7px 9px, 11px 13px; background-position: 0 0, 3px 5px; }
+.prelude-copy p, .type-heading p { color: #78674f; }
+.prelude-header, .paper-header { border-color: #74684c40; }
+.prelude-footer button { border-radius: 2px; border-color: #82715973; box-shadow: 0 3px 0 #74684c0a; }
+.paper-layout .paper-restart { border-color: #8f765861; font-weight: 400; letter-spacing: .12em; }
+.type-controls button { transition: color .25s, border-color .25s, background-color .25s; }
+.type-controls button[aria-pressed="true"] { border-bottom-width: 2px; background: linear-gradient(0deg, #a8452a08, transparent 70%); }
+.type-letter { box-shadow: 0 20px 70px #5d4d2624; border: 1px solid #8d765b29; }
+.ink-letter-scroll { scrollbar-color: #a8452a55 transparent; }
+
+/* Event-driven tactile feedback: no always-running cursor or extra renderer. */
+.interaction-feedback { position: fixed; inset: 0; z-index: 80; pointer-events: none; overflow: clip; }
+.interaction-echo { position: absolute; width: 64px; height: 64px; border: 1px solid #e3dec2; border-radius: 50%; pointer-events: none; }
+.interaction-echo[data-paper="true"] { border-color: #a8452a; }
+.quiet-control, .prelude-footer button, .paper-restart, .welcome-back, .opening-skip, .workbench-action > button,
+.workbench-project-link, .type-controls button, .sculpture-toggle { translate: calc(var(--tactile-x, 0) * 1px) calc(var(--tactile-y, 0) * 1px); }
+[data-tactile-hover="true"] { background-image: radial-gradient(circle at var(--tactile-light-x, 50%) var(--tactile-light-y, 50%), #e1dcc52b, transparent 85%); }
+.prelude-footer button[data-tactile-hover="true"], .paper-restart[data-tactile-hover="true"], .type-controls button[data-tactile-hover="true"] { background-image: radial-gradient(circle at var(--tactile-light-x, 50%) var(--tactile-light-y, 50%), #a8452a16, transparent 85%); }
+.scene:not([data-active="true"]) .composition-signal,
+.scene:not([data-active="true"]) .atlas-route-reveal { animation-play-state: paused; }
+main[data-traversing="true"] .scene-atmosphere * { animation-play-state: paused; }
+
+@media (max-width: 700px) {
+  .ambient-contours { opacity: .6; }
+  .ambient-contours g:nth-child(n+3) { display: none; }
+  .ambient-haze { opacity: .45; }
+  .scene-currently .scene-title, .scene-profile .scene-title { line-height: 1.04; }
+  .chapter-sculpture::before { width: 96%; }
+  .chapter-sculpture::after { bottom: 12%; }
+  .composition-signal { stroke-width: 2.4; }
+  .type-letter { box-shadow: 0 12px 35px #5d4d261a; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ambient-contour-light, .composition-signal, .atlas-route-reveal, .chapter-detail-copy, .destination-detail-copy { animation: none !important; }
+  .ambient-contours { transform: none !important; }
+  .interaction-feedback { display: none; }
+  .quiet-control, .prelude-footer button, .paper-restart, .welcome-back, .opening-skip, .workbench-action > button,
+  .workbench-project-link, .type-controls button, .sculpture-toggle { translate: none; }
+  .planet, .atlas-star-core, .destination-inspector { transition: none; }
+}

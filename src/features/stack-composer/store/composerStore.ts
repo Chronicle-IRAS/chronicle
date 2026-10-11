@@ -50,6 +50,6 @@ export const useComposerStore = create<ComposerState>((set) => ({
       return a && b && normalizeComposition([a.data.techId, b.data.techId]) === key
     })
     if (exists) return state
-    return { edges: addEdge({ ...connection, id: `composition:${key}`, type: 'smoothstep', animated: false }, state.edges) }
+    return { edges: addEdge({ ...connection, id: `composition:${key}`, type: 'default', animated: false }, state.edges) }
   }),
 }))

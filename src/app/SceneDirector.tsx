@@ -38,6 +38,7 @@ export function SceneDirector() {
     }
     root.addEventListener('click', navigate)
     let cancelTraversal = () => {}
+    let removeRefreshListeners = () => {}
     const context = gsap.context(() => {
       const world = root.querySelector<HTMLElement>('[data-space-world]')
       const contents = sections.map((section) => section.querySelector<HTMLElement>('[data-scene-content]')!)
@@ -51,6 +52,20 @@ export function SceneDirector() {
       let activeScene: SceneId | undefined
       let interactive = false
       let traversing = false
+      let refreshing = false
+      let refreshScene = -1
+      let viewportWidth = window.innerWidth
+      let viewportHeight = window.innerHeight
+      const beginRefresh = () => {
+        if (refreshing) return
+        refreshing = true
+        refreshScene = traversing ? -1 : sceneRegistry.findIndex(scene => scene.id === activeScene)
+      }
+      const isRefreshing = () => {
+        // Some browsers deliver the resized document's scroll event before resize.
+        if (window.innerWidth !== viewportWidth || window.innerHeight !== viewportHeight) beginRefresh()
+        return refreshing
+      }
       let flight: gsap.core.Tween | undefined
       let releaseInput = () => {}
       const unlock = () => {
@@ -62,7 +77,7 @@ export function SceneDirector() {
       }
       cancelTraversal = () => { flight?.kill(); unlock() }
       const syncActive = () => {
-        if (traversing) return
+        if (traversing || isRefreshing()) return
         const activeIndex = sections.reduce((last, section, i) => section.offsetTop <= window.scrollY + 1 ? i : last, 0)
         const id = sceneRegistry[activeIndex].id
         if (activeScene !== id) {
@@ -133,26 +148,45 @@ export function SceneDirector() {
           start: () => section.offsetTop + section.offsetHeight * sceneRegistry[index].holdFraction,
           end: 'bottom top',
           onEnter: (self) => {
-            if (traversing) return
+            if (traversing || isRefreshing()) return
             if (window.scrollY >= self.end) animation.progress(1)
             else traverse(animation, true, index)
           },
           onEnterBack: (self) => {
-            if (traversing) return
+            if (traversing || isRefreshing()) return
             if (window.scrollY <= self.start) animation.progress(0)
             else traverse(animation, false, index, returnAnimation)
           },
-          onLeave: () => { if (!traversing) animation.progress(1) },
-          onLeaveBack: () => { if (!traversing) animation.progress(0) },
+          onLeave: () => { if (!traversing && !isRefreshing()) animation.progress(1) },
+          onLeaveBack: () => { if (!traversing && !isRefreshing()) animation.progress(0) },
         })
       })
       ScrollTrigger.create({ start: 0, end: 'max', onUpdate: syncActive, onRefresh: syncActive })
       syncActive()
+      const finishRefresh = () => {
+        // Viewport resizing changes every section's document position. Keep the
+        // current chapter and its visual state instead of crossing old boundaries.
+        if (refreshScene >= 0 && !traversing) window.scrollTo(0, sections[refreshScene].offsetTop + (refreshScene ? 2 : 0))
+        ScrollTrigger.update()
+        viewportWidth = window.innerWidth
+        viewportHeight = window.innerHeight
+        refreshing = false
+        syncActive()
+      }
+      window.addEventListener('resize', beginRefresh)
+      ScrollTrigger.addEventListener('refreshInit', beginRefresh)
+      ScrollTrigger.addEventListener('refresh', finishRefresh)
+      removeRefreshListeners = () => {
+        window.removeEventListener('resize', beginRefresh)
+        ScrollTrigger.removeEventListener('refreshInit', beginRefresh)
+        ScrollTrigger.removeEventListener('refresh', finishRefresh)
+      }
     }, root)
     ScrollTrigger.refresh()
     return () => {
       root.removeEventListener('click', navigate)
       cancelTraversal()
+      removeRefreshListeners()
       context.revert()
       progressRef.current.clear()
       setComposerReady(false)
@@ -163,7 +197,7 @@ export function SceneDirector() {
     <main ref={rootRef} id="journey">
       <SpaceWorld camera={camera.current} reducedMotion={reducedMotion} />
       {sceneRegistry.map(({ id, Component, scrollScreens }, index) => (
-        <section className={`scene scene-${id}`} style={{ zIndex: 10 - index, height: `${scrollScreens * 100}svh` }} data-scene-id={id} id={id} key={id} aria-label={`Scene ${id === 'prelude' ? '0.5' : String(index).padStart(2, '0')}: ${id}`}>
+        <section className={`scene scene-${id}`} style={{ zIndex: 10 - index, height: index === sceneRegistry.length - 1 ? `calc(${scrollScreens * 100}svh + 8px)` : `${scrollScreens * 100}svh` }} data-scene-id={id} id={id} key={id} aria-label={`Scene ${id === 'prelude' ? '0.5' : String(index).padStart(2, '0')}: ${id}`}>
           <Component />
         </section>
       ))}

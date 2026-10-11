@@ -10,7 +10,7 @@ export function ComposerScene() {
         <div className="scene-body composer-layout">
           <div className="composer-heading" data-enter-grid-heading>
             <h2 className="composer-label">02 / STACK COMPOSER</h2>
-            <p className="composer-hint">Fixed blueprint · Drag nodes · Connect technologies · Delete edges</p>
+            <p className="composer-hint">Drift & collide · Hover to pause · Drag to nudge · Connect to discover</p>
           </div>
           <div className="composer-reveal" data-enter-grid-canvas><StackComposer /></div>
         </div>

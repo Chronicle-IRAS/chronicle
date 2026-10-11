@@ -1,0 +1,93 @@
+/* Soft celestial forms, with stable geometry for dragging and connecting. */
+.scene-composer .composer-board {
+  background: radial-gradient(ellipse at 23% 27%, #53446622, transparent 47%), radial-gradient(ellipse at 75% 66%, #38636820, transparent 48%), #101419;
+}
+.scene-composer .flow-node {
+  --node-accent: #c8dcf3;
+  width: 210px;
+  min-width: 0;
+  height: 125px;
+  padding: 22px 24px 18px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid color-mix(in srgb, var(--node-accent) 38%, transparent);
+  border-radius: 46% 54% 49% 51% / 52% 43% 57% 48%;
+  background: radial-gradient(ellipse at 24% 16%, #ffffff18, transparent 55%), radial-gradient(ellipse at 70% 100%, color-mix(in srgb, var(--node-accent) 22%, transparent), transparent 75%), #222531ed;
+  box-shadow: inset 0 1px 2px #ffffff24, inset 0 -5px 18px #060f252e, 0 8px 26px #070b142e;
+  color: #f8f1f4;
+  animation: none;
+  transition: border-color .25s, background-color .25s, box-shadow .25s;
+}
+.scene-composer .flow-node::before {
+  inset: -9px;
+  height: auto;
+  width: auto;
+  border-radius: inherit;
+  background: radial-gradient(ellipse, transparent 49%, color-mix(in srgb, var(--node-accent) 9%, transparent) 68%, transparent 74%);
+  transform: none;
+  pointer-events: none;
+  animation: dream-halo 5s ease-in-out infinite alternate;
+}
+.scene-composer .flow-node:hover, .scene-composer .react-flow__node.selected .flow-node {
+  border-color: color-mix(in srgb, var(--node-accent) 84%, white);
+  box-shadow: inset 0 1px 4px #ffffff38, 0 0 25px color-mix(in srgb, var(--node-accent) 18%, transparent), 0 12px 30px #070b1440;
+}
+.scene-composer .tech-node strong { font: italic 26px/1.15 Georgia, serif; letter-spacing: -.025em; }
+.scene-composer .node-caption { color: #cbc5d4; font: 10px/1.5 Georgia, serif; letter-spacing: .03em; }
+.scene-composer .node-spark { position: absolute; left: 30px; top: 18px; font-size: 13px; color: var(--node-accent); opacity: .8; }
+.scene-composer .node-decoration { inset: 0; }
+.scene-composer .node-orbit { inset: 10px 13px; width: auto; height: auto; border: 1px solid #ffffff09; border-radius: inherit; opacity: 1; transform: rotate(-9deg); animation: none; }
+.scene-composer .node-decoration::after { display: none; }
+.scene-composer .tech-node[data-tech="react"] { --node-accent: #b6dfea; }
+.scene-composer .tech-node[data-tech="vue"], .scene-composer .tech-node[data-tech="qt"] { --node-accent: #bfd9bb; }
+.scene-composer .tech-node[data-tech="typescript"], .scene-composer .tech-node[data-tech="cpp"] { --node-accent: #c4c0f0; }
+.scene-composer .tech-node[data-tech="esp32"] { --node-accent: #edcbb0; }
+.scene-composer .tech-node[data-tech="nodejs"] { --node-accent: #b5ddd2; }
+.scene-composer .tech-node[data-tech="ai"] { --node-accent: #e9c4e3; }
+.scene-composer .react-flow__handle {
+  width: 14px;
+  height: 14px;
+  border: 3px solid #29313d;
+  background: var(--node-accent);
+  box-shadow: 0 0 0 3px #eee6fa0d, 0 0 12px color-mix(in srgb, var(--node-accent) 35%, transparent);
+  transition: box-shadow .2s;
+}
+.scene-composer .react-flow__handle:hover { box-shadow: 0 0 0 6px #eee6fa20, 0 0 16px var(--node-accent); }
+.scene-composer .react-flow__edge-path { stroke: #c5badf; stroke-width: 1.6px; }
+.scene-composer .react-flow__edge.selected .react-flow__edge-path { stroke: #fff1d4; stroke-width: 2.5px; }
+.scene-composer .result-node {
+  --node-accent: #ebcfa9;
+  width: 260px;
+  height: 176px;
+  border-radius: 40px 65px 40px 60px;
+  padding: 23px 25px;
+  text-align: center;
+  animation: dream-arrive .7s cubic-bezier(.2,.7,.2,1) both;
+}
+.scene-composer .concept-node { --node-accent: #c3c2e5; }
+.scene-composer .result-node strong { display: block; font: 23px/1.12 Georgia, serif; font-weight: 400; letter-spacing: -.025em; }
+.scene-composer .flow-node-kind { color: var(--node-accent); font: 8px/1.5 monospace; letter-spacing: .1em; }
+.scene-composer .result-node small { font: 10px/1.4 monospace; color: #c8c5d4; }
+.project-link { display: flex; flex-direction: column; gap: 10px; color: inherit; text-decoration: none; border-radius: 16px; }
+.project-link-action { display: inline-flex; align-self: center; align-items: center; gap: 18px; color: #f3dcbc; font: 11px/1.4 monospace; }
+.project-link-action > span { transition: transform .2s; }
+.project-link:hover .project-link-action > span { transform: translate(2px, -2px); }
+.project-link:hover strong { color: #ffe4bb; }
+.project-link:focus-visible { outline: 2px solid #f3dcbc; outline-offset: 7px; }
+.scene-composer .react-flow__node:focus-visible { border-radius: 48%; outline-color: #dfc9f1; }
+.scene-composer .composer-workbench { background: #202330ee; border: 1px solid #d5c7e830; border-radius: 25px; box-shadow: 0 15px 40px #090c182e; }
+.scene-composer .workbench-techs button { border-radius: 20px; border-color: #d2c4e527; background: #d6c5e509; color: #e6dfec; }
+.scene-composer .workbench-techs button[aria-pressed="true"] { background: #d9c6ed; color: #292234; border-color: #e4d6f2; }
+.scene-composer .workbench-toggle, .scene-composer .workbench-action > button { border-radius: 18px; }
+.scene-composer .workbench-summary { color: #c8c3d5; }
+.workbench-project-link { display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 40px; margin-top: 8px; padding: 8px 12px; border-radius: 16px; background: #ebcfa910; color: #f3dcbc; text-decoration: none; font: 12px/1.5 Georgia, serif; }
+.workbench-project-link:hover { background: #ebcfa920; }
+.scene-composer .workbench-toggle { color: #e7d3f6; border-color: #d9c6ed44; }
+@keyframes dream-halo { from { opacity: .25; } to { opacity: .9; } }
+@keyframes dream-arrive { from { opacity: 0; filter: blur(4px); } to { opacity: 1; filter: blur(0); } }
+.scene-composer:not([data-active="true"]) .flow-node::before { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .scene-composer .result-node, .scene-composer .flow-node::before { animation: none; }
+  .project-link-action > span { transition: none; }
+}

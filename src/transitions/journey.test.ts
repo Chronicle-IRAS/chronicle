@@ -154,6 +154,26 @@ describe('Remaining scene boundaries', () => {
     expect(camera.warp).toBe(0)
   })
 
+  it('keeps the star field and destinations in the same aperture in both directions', () => {
+    const body = { scale: 1 }
+    const from = { autoAlpha: 1, clipPath: 'circle(150% at 70% 60%)', querySelector: () => body }
+    const to = { autoAlpha: 0 }
+    const world = { autoAlpha: 1, clipPath: 'circle(150% at 70% 60%)' }
+    const camera = { visible: 1, depth: 3900, turn: 0, pan: 0, warp: 0 }
+    const timeline = portalExit({ from: from as unknown as HTMLElement, to: to as unknown as HTMLElement, reducedMotion: false })
+    addSpaceMotion(timeline, 'destinations', world as unknown as HTMLElement, camera, false)
+    for (const progress of [0.2, 0.5, 0.8, 1, 0.8, 0.5, 0.2, 0, 1, 0]) {
+      timeline.progress(progress)
+      expect(from.clipPath).toBe(world.clipPath)
+      expect(from.autoAlpha).toBe(world.autoAlpha)
+    }
+    expect(from.autoAlpha).toBe(1)
+    expect(to.autoAlpha).toBe(0)
+    expect(body.scale).toBe(1)
+    expect(camera.visible).toBe(1)
+    expect(camera.depth).toBe(3900)
+  })
+
   it('keeps DeepSeek visibly descending before the delayed impact', () => {
     vi.stubGlobal('window', { innerHeight: 800, innerWidth: 1280 })
     const impact = { autoAlpha: 0 }

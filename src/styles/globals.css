@@ -137,7 +137,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid #8edec8; outline-offs
 .portal-mouth i { position: absolute; inset: -12%; border: 1px solid #758da75c; border-radius: 50%; transform: rotateX(35deg); }
 .portal-mouth i:nth-child(2) { inset: 14%; transform: rotateY(45deg); border-color: #bdcce365; }
 .portal-mouth i:nth-child(3) { inset: 28%; transform: rotateX(45deg); }
-.space-world { position: fixed; inset: 0; z-index: 5; pointer-events: none; background: #080d1d; visibility: hidden; opacity: 0; overflow: clip; }
+/* Destinations paints later at level 4; the paper chapter is underneath at 3. */
+.space-world { position: fixed; inset: 0; z-index: 4; pointer-events: none; background: #080d1d; visibility: hidden; opacity: 0; overflow: clip; }
 .space-world canvas, .space-nebula { position: absolute; inset: 0; width: 100%; height: 100%; }
 .space-nebula { background: radial-gradient(ellipse at 72% 39%, #344b682f, transparent 55%), radial-gradient(ellipse at 24% 73%, #65557522, transparent 48%); }
 .space-world .stars { opacity: .3; }

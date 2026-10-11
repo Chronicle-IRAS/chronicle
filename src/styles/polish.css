@@ -1,0 +1,119 @@
+/* Finishing details shared across the journey. No new continuous effects. */
+:root { --focus-ring: #e1d7a8; }
+button, a, input { -webkit-tap-highlight-color: transparent; }
+button, a { touch-action: manipulation; }
+:where(button, a, input):focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 5px; }
+.prelude-content, .paper-goodbye, .opening-loader { --focus-ring: #a8452a; }
+.prelude-footer button, .opening-skip, .welcome-back, .quiet-control, .sculpture-toggle,
+.type-controls button, .workbench-toggle { min-height: 44px; }
+.prelude-footer button, .opening-skip, .welcome-back { transition: color .2s, background-color .2s, border-color .2s; }
+.prelude-footer button:active, .quiet-control:active:not(:disabled), .type-controls button:active:not(:disabled) { scale: .98; }
+.welcome-back { padding-inline: 10px; margin-left: -10px; color: #ddd4c3; border-radius: 3px; }
+.welcome-back:hover { background: #ddc49e15; color: #fff2d7; }
+.opening-count { font-variant-numeric: tabular-nums; }
+.scene-subtitle, .composer-hint, .atlas-instruction, .chapter-detail p { text-wrap: pretty; }
+.journey-signature { bottom: max(12px, env(safe-area-inset-bottom)); }
+
+/* Nodes retain a fixed view; the tool shelf has its own bounded space. */
+.scene-composer .composer-layout { width: 100%; }
+.composer-workbench { bottom: max(36px, env(safe-area-inset-bottom)); max-height: 42svh; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #98b9a54d transparent; }
+.workbench-title { align-items: center; gap: 10px; margin-bottom: 0; }
+.workbench-title > span { margin-left: auto; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.workbench-toggle { flex-shrink: 0; padding: 0 10px; color: #d6eabc; border: 1px solid #c3d9b733; background: transparent; cursor: pointer; font: 9px monospace; letter-spacing: .06em; }
+.workbench-toggle:hover { background: #d3e8b912; border-color: #c3d9b788; }
+#workbench-editor:not([hidden]) { padding-top: 12px; }
+.workbench-summary { margin: 7px 0 0; color: #a9bcae; font: 10px/1.5 monospace; }
+.workbench-techs button { min-height: 38px; }
+.workbench-action p { min-height: 3em; display: flex; align-items: center; }
+.workbench-action > button { min-height: 42px; }
+.workbench-connections { padding: 4px; margin-inline: -4px; max-height: 56px; scrollbar-width: thin; }
+.react-flow__node:focus-visible { outline: 2px solid #e6dfb6; outline-offset: 7px; border-radius: 5px; }
+.react-flow__handle { min-width: 14px; min-height: 14px; }
+.react-flow__handle:hover { box-shadow: 0 0 0 5px #bde4cb25; }
+.react-flow__attribution { right: 12px !important; bottom: 7px !important; font-size: 9px !important; background: #101419 !important; color: #94a7a3; }
+.react-flow__attribution a { color: inherit; }
+
+/* A chapter row is one coherent hit area, including its large value. */
+.explorer-list > div { position: relative; }
+.explorer-list dt button::after { content: ''; position: absolute; inset: 0; }
+.explorer-list > div:focus-within { outline: 1px solid #d1e5bd80; outline-offset: 5px; }
+.explorer-list dt button:focus-visible { outline: 0; }
+.explorer-list dd { pointer-events: none; }
+.instrument-control input { height: 32px; }
+.chapter-detail p { line-height: 1.7; }
+
+/* Place the luminous core at the exact SVG route coordinate. */
+.atlas-star { translate: -50% -7px; padding-top: 25px; min-width: 110px; }
+.atlas-star-core { position: absolute; left: calc(50% - 7px); top: 0; }
+.atlas-star small { margin-top: 0; }
+.atlas-star:focus-visible { outline-offset: 10px; border-radius: 3px; }
+.atlas-footer { width: 100%; min-height: 94px; }
+.atlas-footer > div { flex: 1; min-width: 0; }
+.atlas-footer .quiet-control { flex-shrink: 0; }
+.inspector-close { display: grid; place-items: center; width: 44px; height: 44px; top: 5px; right: -8px; border-radius: 50%; transition: background .2s, color .2s; }
+.inspector-close:hover { background: #bbccea18; color: white; }
+.destination-inspector { padding-right: 52px; }
+.destination-empty { font-size: 10px; letter-spacing: .02em; }
+.destination:focus-visible { border-radius: 8px; outline-color: #dbe4bd; }
+.destination-content .orbit-control { position: absolute; }
+.destination:hover .planet-label small, .destination:focus-visible .planet-label small { color: #e6ddb8; }
+
+/* Reading mode removes competing actions and leaves a comfortable text measure. */
+.paper-layout:has([data-reading="true"]) > .paper-restart { visibility: hidden; }
+.paper-letter-heading { gap: 18px; align-items: center; }
+.paper-letter-heading h3 { line-height: 1.5; }
+.ink-letter-scroll { scroll-padding-block: 16px; }
+.ink-letter-scroll:focus-visible { outline: 1px solid #a8452a77; outline-offset: 4px; }
+.type-caption { line-height: 1.6; max-width: 90%; }
+.type-controls button { white-space: nowrap; }
+
+@media (max-width: 700px) {
+  .welcome-content .welcome-kicker { display: none; }
+  .welcome-back { top: 9svh; font-size: 10px; }
+  .welcome-content .scene-subtitle { font-size: 10px; }
+  .composer-hint { max-width: 34ch; font-size: 10px; line-height: 1.6; }
+  .composer-workbench { width: calc(100% - 28px); padding: 10px 12px; max-height: 43svh; }
+  .workbench-title { flex-wrap: wrap; gap: 6px 10px; font-size: 8px; letter-spacing: .06em; }
+  .workbench-toggle { min-height: 36px; font-size: 9px; padding-inline: 8px; }
+  .workbench-summary { font-size: 10px; }
+  .workbench-techs { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .workbench-techs button { padding: 7px 5px; font-size: 11px; min-height: 38px; }
+  .workbench-techs button span { margin-left: 5px; }
+  .workbench-action p { font-size: 11px; }
+  .chapter-explorer .explorer-list > div { gap: 12px; align-items: center; }
+  .chapter-explorer .explorer-list dt { flex: 0 0 37%; }
+  .chapter-explorer .explorer-list dd { flex: 1; font-size: clamp(17px, 4.7vw, 22px); }
+  .explorer-list dt button { gap: 7px; min-height: 44px; font-size: 9px; }
+  .explorer-list dt button b { font-size: 18px; }
+  .chapter-detail p { font-size: 12px; }
+  .sculpture-toggle, .instrument-control { font-size: 9px; }
+  .atlas-star { min-width: 86px; max-width: 115px; padding-inline: 4px; }
+  .atlas-star strong { font-size: 13px; line-height: 1.4; }
+  .atlas-footer { gap: 12px; align-items: flex-start; padding-top: 16px; }
+  .atlas-footer p { font-size: 12px; }
+  .atlas-footer .quiet-control { font-size: 9px; padding: 10px; }
+  .destination-inspector { display: grid; grid-template-columns: 1fr; gap: 12px; bottom: 6%; padding-top: 12px; min-height: 130px; }
+  .destination-inspector h3 { margin: 3px 0; }
+  .destination-content .destination-orbits { bottom: 43%; }
+  .destination-content .orbit-control { top: 21%; }
+  .destination-empty { font-size: 10px; max-width: none; }
+  .type-modes, .type-actions { gap: 8px; }
+  .type-controls button { font-size: 9px; min-height: 44px; letter-spacing: 0; }
+  .paper-letter-heading h3 { font-size: 10px; letter-spacing: .08em; }
+  .paper-letter-heading .quiet-control { font-size: 10px; padding: 10px 12px; }
+}
+@media (max-height: 700px) and (max-width: 700px) {
+  .scene-currently .content-column, .scene-profile .content-column { padding-top: 5svh; padding-bottom: 48px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #7a959960 transparent; }
+  .scene-currently .section-number, .scene-profile .section-number { margin-bottom: 18px; }
+  .scene-currently .scene-title, .scene-profile .scene-title { margin-bottom: 18px; }
+  .chapter-explorer { gap: 14px; padding-bottom: 14px; }
+  .chapter-explorer .explorer-list > div { padding-block: 5px; }
+  .chapter-sculpture { height: 115px; }
+  .type-heading { top: 11%; }
+  .type-heading p { margin-top: 10px; }
+  .type-controls { bottom: 10%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .prelude-footer button:active, .quiet-control:active, .type-controls button:active { scale: none; }
+  .workbench-toggle, .inspector-close, .welcome-back { transition: none; }
+}
