@@ -15,9 +15,9 @@ export function FlowLetter({ text }: { text: string }) {
       const width = root.clientWidth
       if (!width || (!force && width === previousWidth)) return
       previousWidth = width
-      const fontSize = width < 500 ? 19 : 25
-      const font = `${fontSize}px Georgia`
-      const lineHeight = fontSize * 1.65
+      const fontSize = width < 500 ? 21 : 27
+      const font = `${fontSize}px "Instrument Serif", Georgia, serif`
+      const lineHeight = Math.round(fontSize * 1.55)
       const radius = Math.min(78, width * .16)
       const centerY = lineHeight * 2.8
       const sentences = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g) ?? [text]
@@ -26,7 +26,6 @@ export function FlowLetter({ text }: { text: string }) {
         const block = document.createElement('p'); block.className = 'ink-paragraph'
         const prepared = prepareWithSegments(paragraph.trim(), font)
         block.style.font = font
-        block.setAttribute('aria-label', paragraph.trim())
         let cursor: LayoutCursor = { segmentIndex: 0, graphemeIndex: 0 }
         let row = 0
         for (;;) {
@@ -43,7 +42,6 @@ export function FlowLetter({ text }: { text: string }) {
           span.textContent = `${line.text.trimEnd()}\n`
           span.style.width = `${lineWidth}px`
           span.style.lineHeight = `${lineHeight}px`
-          span.setAttribute('aria-hidden', 'true')
           block.append(span)
           cursor = line.end
           row++

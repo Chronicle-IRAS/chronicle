@@ -3,12 +3,14 @@ import type { RefObject } from 'react'
 import { gsap } from '../lib/gsap'
 import { useSceneStore } from '../stores/sceneStore'
 
-const tactileTargets = '.quiet-control, .prelude-footer button, .paper-restart, .welcome-back, .opening-skip, .workbench-action > button, .workbench-project-link, .type-controls button, .sculpture-toggle'
+const tactileTargets = '.quiet-control, .prelude-footer button, .paper-restart, .welcome-back, .opening-skip, .workbench-action > button, .workbench-project-link, .type-controls button, .sculpture-toggle, .journey-contrast'
 
 export function InteractionFeedback({ surface }: { surface: RefObject<HTMLDivElement | null> }) {
   const layer = useRef<HTMLDivElement>(null)
+  const resetRef = useRef<() => void>(() => {})
   const reduced = useSceneStore(state => state.reducedMotion)
   const scene = useSceneStore(state => state.currentScene)
+  useEffect(() => { resetRef.current() }, [scene])
   useEffect(() => {
     const root = surface.current, overlay = layer.current
     if (!root || !overlay || reduced) return
@@ -23,6 +25,11 @@ export function InteractionFeedback({ surface }: { surface: RefObject<HTMLDivEle
         current.removeAttribute('data-tactile-hover')
       }
       current = null; rect = undefined
+    }
+    resetRef.current = () => {
+      reset()
+      echoes.forEach((tween, el) => { tween.kill(); el.remove() })
+      echoes.clear()
     }
     const move = (event: PointerEvent) => {
       if (event.pointerType !== 'mouse' || !(event.target instanceof Element)) return
@@ -68,6 +75,7 @@ export function InteractionFeedback({ surface }: { surface: RefObject<HTMLDivEle
     root.addEventListener('click', click, true)
     window.addEventListener('blur', reset)
     return () => {
+      resetRef.current = () => {}
       root.removeEventListener('pointermove', move)
       root.removeEventListener('pointerleave', reset)
       root.removeEventListener('click', click, true)
@@ -79,6 +87,7 @@ export function InteractionFeedback({ surface }: { surface: RefObject<HTMLDivEle
       })
       echoes.forEach((tween, el) => { tween.kill(); el.remove() })
     }
-  }, [surface, reduced, scene])
+  }, [surface, reduced])
   return <div className="interaction-feedback" ref={layer} aria-hidden="true" />
 }
+

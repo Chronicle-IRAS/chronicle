@@ -1,91 +1,169 @@
-/* Soft celestial forms, with stable geometry for dragging and connecting. */
+/* Bauhaus / Wodniack architectural cards & In Pieces polygon facets, with stable geometry for dragging and connecting. */
 .scene-composer .composer-board {
-  background: radial-gradient(ellipse at 23% 27%, #53446622, transparent 47%), radial-gradient(ellipse at 75% 66%, #38636820, transparent 48%), #101419;
+  background:
+    radial-gradient(ellipse at 22% 24%, #f40c3f18, transparent 46%),
+    radial-gradient(ellipse at 78% 68%, #f2c97d14, transparent 48%),
+    #0e080b;
 }
 .scene-composer .flow-node {
-  --node-accent: #c8dcf3;
+  --node-accent: #f2c97d;
   width: 210px;
   min-width: 0;
   height: 125px;
-  padding: 22px 24px 18px;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  border: 1px solid color-mix(in srgb, var(--node-accent) 38%, transparent);
-  border-radius: 46% 54% 49% 51% / 52% 43% 57% 48%;
-  background: radial-gradient(ellipse at 24% 16%, #ffffff18, transparent 55%), radial-gradient(ellipse at 70% 100%, color-mix(in srgb, var(--node-accent) 22%, transparent), transparent 75%), #222531ed;
-  box-shadow: inset 0 1px 2px #ffffff24, inset 0 -5px 18px #060f252e, 0 8px 26px #070b142e;
-  color: #f8f1f4;
+  padding: 18px 20px 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 5px;
+  border: 1.5px solid color-mix(in srgb, var(--node-accent) 58%, #ffffff18);
+  border-radius: 3px;
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--node-accent) 12%, #1d1217), #120b0ef2);
+  box-shadow: 6px 6px 0 #050204, inset 0 1px 0 #ffffff1f;
+  color: #fdfaf5;
   animation: none;
-  transition: border-color .25s, background-color .25s, box-shadow .25s;
+  transition: border-color .22s, background-color .22s, box-shadow .22s;
 }
 .scene-composer .flow-node::before {
-  inset: -9px;
-  height: auto;
-  width: auto;
-  border-radius: inherit;
-  background: radial-gradient(ellipse, transparent 49%, color-mix(in srgb, var(--node-accent) 9%, transparent) 68%, transparent 74%);
+  inset: auto 0 0 0;
+  height: 3px;
+  width: 100%;
+  border-radius: 0;
+  background: linear-gradient(90deg, var(--node-accent), transparent 85%);
   transform: none;
   pointer-events: none;
-  animation: dream-halo 5s ease-in-out infinite alternate;
+  animation: dream-halo 4s ease-in-out infinite alternate;
 }
 .scene-composer .flow-node:hover, .scene-composer .react-flow__node.selected .flow-node {
-  border-color: color-mix(in srgb, var(--node-accent) 84%, white);
-  box-shadow: inset 0 1px 4px #ffffff38, 0 0 25px color-mix(in srgb, var(--node-accent) 18%, transparent), 0 12px 30px #070b1440;
+  border-color: var(--node-accent);
+  box-shadow: 8px 8px 0 color-mix(in srgb, var(--node-accent) 42%, #050204), 0 0 26px color-mix(in srgb, var(--node-accent) 22%, transparent);
 }
-.scene-composer .tech-node strong { font: italic 26px/1.15 Georgia, serif; letter-spacing: -.025em; }
-.scene-composer .node-caption { color: #cbc5d4; font: 10px/1.5 Georgia, serif; letter-spacing: .03em; }
-.scene-composer .node-spark { position: absolute; left: 30px; top: 18px; font-size: 13px; color: var(--node-accent); opacity: .8; }
+.scene-composer .node-topline {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.scene-composer .tech-node strong { font: 600 24px/1.1 Inter, ui-sans-serif, system-ui, sans-serif; letter-spacing: -.045em; color: #fdfaf5; }
+.scene-composer .node-caption { color: #cbbec2; font: 700 8px/1.4 ui-monospace, monospace; letter-spacing: .16em; text-transform: uppercase; }
+.scene-composer .node-spark { position: relative; left: auto; top: auto; font: 700 9px/1.2 ui-monospace, monospace; letter-spacing: .12em; color: var(--node-accent); opacity: .9; }
 .scene-composer .node-decoration { inset: 0; }
-.scene-composer .node-orbit { inset: 10px 13px; width: auto; height: auto; border: 1px solid #ffffff09; border-radius: inherit; opacity: 1; transform: rotate(-9deg); animation: none; }
-.scene-composer .node-decoration::after { display: none; }
-.scene-composer .tech-node[data-tech="react"] { --node-accent: #b6dfea; }
-.scene-composer .tech-node[data-tech="vue"], .scene-composer .tech-node[data-tech="qt"] { --node-accent: #bfd9bb; }
-.scene-composer .tech-node[data-tech="typescript"], .scene-composer .tech-node[data-tech="cpp"] { --node-accent: #c4c0f0; }
-.scene-composer .tech-node[data-tech="esp32"] { --node-accent: #edcbb0; }
-.scene-composer .tech-node[data-tech="nodejs"] { --node-accent: #b5ddd2; }
-.scene-composer .tech-node[data-tech="ai"] { --node-accent: #e9c4e3; }
-.scene-composer .react-flow__handle {
-  width: 14px;
-  height: 14px;
-  border: 3px solid #29313d;
-  background: var(--node-accent);
-  box-shadow: 0 0 0 3px #eee6fa0d, 0 0 12px color-mix(in srgb, var(--node-accent) 35%, transparent);
-  transition: box-shadow .2s;
+.scene-composer .node-shard {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 58px;
+  height: 58px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--node-accent) 34%, transparent), transparent 75%);
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
+  pointer-events: none;
 }
-.scene-composer .react-flow__handle:hover { box-shadow: 0 0 0 6px #eee6fa20, 0 0 16px var(--node-accent); }
-.scene-composer .react-flow__edge-path { stroke: #c5badf; stroke-width: 1.6px; }
-.scene-composer .react-flow__edge.selected .react-flow__edge-path { stroke: #fff1d4; stroke-width: 2.5px; }
+.scene-composer .result-node .node-shard {
+  width: 84px;
+  height: 84px;
+  clip-path: polygon(100% 0, 18% 0, 100% 82%);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--node-accent) 42%, transparent), transparent 78%);
+}
+.scene-composer .node-orbit {
+  inset: 8px;
+  width: auto;
+  height: auto;
+  border: 1px dashed color-mix(in srgb, var(--node-accent) 20%, transparent);
+  border-radius: 2px;
+  opacity: 1;
+  transform: none;
+  animation: none;
+}
+.scene-composer .node-decoration::after { display: none; }
+.scene-composer .tech-node[data-tech="react"] { --node-accent: #7ce0ec; }
+.scene-composer .tech-node[data-tech="vue"], .scene-composer .tech-node[data-tech="qt"] { --node-accent: #95e0a8; }
+.scene-composer .tech-node[data-tech="typescript"], .scene-composer .tech-node[data-tech="cpp"] { --node-accent: #a6b4f7; }
+.scene-composer .tech-node[data-tech="esp32"] { --node-accent: #f2c97d; }
+.scene-composer .tech-node[data-tech="nodejs"] { --node-accent: #7fdac2; }
+.scene-composer .tech-node[data-tech="ai"] { --node-accent: #f40c3f; }
+.scene-composer .react-flow__handle {
+  width: 13px;
+  height: 13px;
+  border-radius: 2px;
+  border: 2px solid #12090d;
+  background: var(--node-accent);
+  box-shadow: 2px 2px 0 #050204, 0 0 10px color-mix(in srgb, var(--node-accent) 45%, transparent);
+  transition: box-shadow .2s, scale .2s;
+}
+.scene-composer .react-flow__handle:hover { scale: 1.2; box-shadow: 0 0 0 5px #f40c3f33, 0 0 16px var(--node-accent); }
+.scene-composer .react-flow__edge-path { stroke: #f40c3f; stroke-width: 1.8px; }
+.scene-composer .react-flow__edge.selected .react-flow__edge-path { stroke: #f2c97d; stroke-width: 2.6px; }
 .scene-composer .result-node {
-  --node-accent: #ebcfa9;
+  --node-accent: #f40c3f;
   width: 260px;
   height: 176px;
-  border-radius: 40px 65px 40px 60px;
-  padding: 23px 25px;
-  text-align: center;
-  animation: dream-arrive .7s cubic-bezier(.2,.7,.2,1) both;
+  border-radius: 4px;
+  padding: 20px 22px;
+  align-items: flex-start;
+  justify-content: space-between;
+  text-align: left;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--node-accent) 18%, #210e15), #13090df5);
+  box-shadow: 7px 7px 0 #050204, 0 0 30px color-mix(in srgb, var(--node-accent) 20%, transparent);
+  animation: dream-arrive .6s cubic-bezier(.16, 1, .3, 1) both;
 }
-.scene-composer .concept-node { --node-accent: #c3c2e5; }
-.scene-composer .result-node strong { display: block; font: 23px/1.12 Georgia, serif; font-weight: 400; letter-spacing: -.025em; }
-.scene-composer .flow-node-kind { color: var(--node-accent); font: 8px/1.5 monospace; letter-spacing: .1em; }
-.scene-composer .result-node small { font: 10px/1.4 monospace; color: #c8c5d4; }
-.project-link { display: flex; flex-direction: column; gap: 10px; color: inherit; text-decoration: none; border-radius: 16px; }
-.project-link-action { display: inline-flex; align-self: center; align-items: center; gap: 18px; color: #f3dcbc; font: 11px/1.4 monospace; }
+.scene-composer .concept-node { --node-accent: #f2c97d; }
+.scene-composer .result-node strong { display: block; font: 600 21px/1.14 Georgia, serif; letter-spacing: -.025em; color: #fdfaf5; }
+.scene-composer .flow-node-kind { color: var(--node-accent); font: 700 8px/1.4 ui-monospace, monospace; letter-spacing: .14em; }
+.scene-composer .result-node small { font: 9px/1.45 ui-monospace, monospace; color: #d8ccd0; }
+.project-link { display: flex; flex-direction: column; justify-content: center; flex: 1; width: 100%; gap: 8px; color: inherit; text-decoration: none; border-radius: 2px; }
+.project-link-action { display: inline-flex; align-self: flex-start; align-items: center; gap: 12px; padding: 3px 8px; border: 1px solid color-mix(in srgb, var(--node-accent) 60%, transparent); background: #0c050888; color: var(--node-accent); font: 700 9px/1.4 ui-monospace, monospace; letter-spacing: .12em; }
 .project-link-action > span { transition: transform .2s; }
+.project-link:hover .project-link-action { background: var(--node-accent); color: #12080c; }
 .project-link:hover .project-link-action > span { transform: translate(2px, -2px); }
-.project-link:hover strong { color: #ffe4bb; }
-.project-link:focus-visible { outline: 2px solid #f3dcbc; outline-offset: 7px; }
-.scene-composer .react-flow__node:focus-visible { border-radius: 48%; outline-color: #dfc9f1; }
-.scene-composer .composer-workbench { background: #202330ee; border: 1px solid #d5c7e830; border-radius: 25px; box-shadow: 0 15px 40px #090c182e; }
-.scene-composer .workbench-techs button { border-radius: 20px; border-color: #d2c4e527; background: #d6c5e509; color: #e6dfec; }
-.scene-composer .workbench-techs button[aria-pressed="true"] { background: #d9c6ed; color: #292234; border-color: #e4d6f2; }
-.scene-composer .workbench-toggle, .scene-composer .workbench-action > button { border-radius: 18px; }
-.scene-composer .workbench-summary { color: #c8c3d5; }
-.workbench-project-link { display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 40px; margin-top: 8px; padding: 8px 12px; border-radius: 16px; background: #ebcfa910; color: #f3dcbc; text-decoration: none; font: 12px/1.5 Georgia, serif; }
-.workbench-project-link:hover { background: #ebcfa920; }
-.scene-composer .workbench-toggle { color: #e7d3f6; border-color: #d9c6ed44; }
-@keyframes dream-halo { from { opacity: .25; } to { opacity: .9; } }
-@keyframes dream-arrive { from { opacity: 0; filter: blur(4px); } to { opacity: 1; filter: blur(0); } }
+.project-link:hover strong { color: #f2c97d; }
+.project-link:focus-visible { outline: 2px solid #f2c97d; outline-offset: 6px; }
+.scene-composer .react-flow__node:focus-visible { border-radius: 4px; outline-color: #f40c3f; }
+.scene-composer .composer-workbench {
+  background: #14090df2;
+  border: 1.5px solid #f40c3f55;
+  border-top: 3px solid #f40c3f;
+  border-radius: 4px;
+  box-shadow: 8px 8px 0 #050204;
+}
+.scene-composer .workbench-techs button {
+  border-radius: 2px;
+  border-color: #fdfaf524;
+  background: #fdfaf508;
+  color: #fdfaf5;
+  font-family: ui-monospace, monospace;
+}
+.scene-composer .workbench-techs button[aria-pressed="true"] {
+  background: #f40c3f;
+  color: #fdfaf5;
+  border-color: #fdfaf5;
+  box-shadow: 3px 3px 0 #050204;
+}
+.scene-composer .workbench-toggle, .scene-composer .workbench-action > button { border-radius: 2px; }
+.scene-composer .workbench-action > button {
+  background: #f2c97d;
+  color: #160000;
+  border: 1px solid #fdfaf5;
+  box-shadow: 3px 3px 0 #050204;
+}
+.scene-composer .workbench-summary { color: #d5c7cb; }
+.workbench-project-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  min-height: 40px;
+  margin-top: 8px;
+  padding: 8px 12px;
+  border-radius: 2px;
+  border: 1px solid #f2c97d55;
+  background: #f2c97d14;
+  color: #f2c97d;
+  text-decoration: none;
+  font: 12px/1.5 Georgia, serif;
+}
+.workbench-project-link:hover { background: #f40c3f; color: #fdfaf5; border-color: #fdfaf5; }
+.scene-composer .workbench-toggle { color: #f2c97d; border-color: #f2c97d55; }
+@keyframes dream-halo { from { opacity: .45; } to { opacity: 1; } }
+@keyframes dream-arrive { from { opacity: 0; transform: translateY(8px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
 .scene-composer:not([data-active="true"]) .flow-node::before { animation-play-state: paused; }
 @media (prefers-reduced-motion: reduce) {
   .scene-composer .result-node, .scene-composer .flow-node::before { animation: none; }

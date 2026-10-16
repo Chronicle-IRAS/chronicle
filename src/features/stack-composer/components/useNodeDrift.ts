@@ -30,21 +30,42 @@ export function useNodeDrift(
     resize.observe(canvas)
     if (toolbar) resize.observe(toolbar)
 
+    const nodeElements = new Map<string, HTMLElement>()
+    const edgeElements = new Map<string, { el: SVGGElement; paths: NodeListOf<SVGPathElement> }>()
+    let cachedNodeCount = -1, cachedEdgeCount = -1
+    let hoveredId: string | undefined, focusedId: string | undefined
+
+    const syncDomCache = () => {
+      if (cachedNodeCount === latest.current.nodes.length && cachedEdgeCount === latest.current.edges.length) return
+      cachedNodeCount = latest.current.nodes.length
+      cachedEdgeCount = latest.current.edges.length
+      nodeElements.clear()
+      canvas.querySelectorAll<HTMLElement>('.react-flow__node').forEach(el => {
+        if (el.dataset.id) nodeElements.set(el.dataset.id, el)
+      })
+      edgeElements.clear()
+      canvas.querySelectorAll<SVGGElement>('[data-drift-edge]').forEach(el => {
+        const id = el.dataset.driftEdge
+        if (id) edgeElements.set(id, { el, paths: el.querySelectorAll('path') })
+      })
+    }
+
     const offset = (id: string) => {
       const node = latest.current.nodes.find(item => item.id === id), body = bodies.get(id)
       return node && body ? { x: body.x - body.rx - node.position.x, y: body.y - body.ry - node.position.y } : { x: 0, y: 0 }
     }
     const render = () => {
-      canvas.querySelectorAll<HTMLElement>('.react-flow__node').forEach(el => {
-        const delta = offset(el.dataset.id ?? '')
+      syncDomCache()
+      nodeElements.forEach((el, id) => {
+        const delta = offset(id)
         el.style.translate = `${delta.x}px ${delta.y}px`
       })
-      canvas.querySelectorAll<SVGGElement>('[data-drift-edge]').forEach(el => {
+      edgeElements.forEach(({ el, paths }) => {
         const a = offset(el.dataset.source ?? ''), b = offset(el.dataset.target ?? '')
         const [path] = getBezierPath({ sourceX: Number(el.dataset.sx) + a.x, sourceY: Number(el.dataset.sy) + a.y,
           targetX: Number(el.dataset.tx) + b.x, targetY: Number(el.dataset.ty) + b.y,
           sourcePosition: el.dataset.sp as Position, targetPosition: el.dataset.tp as Position })
-        el.querySelectorAll('path').forEach(p => p.setAttribute('d', path))
+        paths.forEach(p => p.setAttribute('d', path))
       })
     }
     const commit = () => {
@@ -52,11 +73,15 @@ export function useNodeDrift(
         const body = bodies.get(node.id)
         return body ? [{ id: node.id, type: 'position' as const, position: { x: body.x - body.rx, y: body.y - body.ry } }] : []
       })
-      canvas.querySelectorAll<HTMLElement>('.react-flow__node').forEach(el => { el.style.translate = '' })
+      nodeElements.forEach(el => { el.style.translate = '' })
       if (changes.length) useComposerStore.getState().onNodesChange(changes)
     }
     const down = (event: Event) => {
       if (!(event.target instanceof Element)) return
+      if (event.target.closest('.workbench-action > button')) {
+        flushSync(commit)
+        return
+      }
       const el = event.target.closest<HTMLElement>('.react-flow__node')
       if (!el) return
       held = el.dataset.id
@@ -67,7 +92,7 @@ export function useNodeDrift(
     }
     const up = () => {
       const body = held && bodies.get(held)
-      const node = latest.current.nodes.find(item => item.id === held)
+      const node = held ? latest.current.nodes.find(item => item.id === held) : undefined
       if (body && node) {
         body.x = node.position.x + body.rx; body.y = node.position.y + body.ry
         body.anchorX = body.x; body.anchorY = body.y
@@ -75,16 +100,27 @@ export function useNodeDrift(
       }
       held = undefined; connecting = false
     }
+    const onPointerOver = (event: Event) => {
+      const el = event.target instanceof Element ? event.target.closest<HTMLElement>('.react-flow__node') : null
+      hoveredId = el?.dataset.id
+    }
+    const onFocusIn = (event: Event) => {
+      const el = event.target instanceof Element ? event.target.closest<HTMLElement>('.react-flow__node') : null
+      focusedId = el?.dataset.id
+    }
+    const onFocusOut = () => { focusedId = undefined }
     const keydown = (event: KeyboardEvent) => {
       if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) down(event)
+      if ((event.key === 'Enter' || event.key === ' ') && event.target instanceof Element && event.target.closest('.workbench-action > button')) {
+        flushSync(commit)
+      }
     }
     const tick = (time: number) => {
       const dt = lastTime ? Math.min(time - lastTime, .04) : 0
       lastTime = time
       if (document.hidden || connecting) return
+      syncDomCache()
       const linked = new Set(latest.current.edges.flatMap(edge => [edge.source, edge.target]))
-      const elements = new Map<string, HTMLElement>()
-      canvas.querySelectorAll<HTMLElement>('.react-flow__node').forEach(el => { if (el.dataset.id) elements.set(el.dataset.id, el) })
       const ids = new Set(latest.current.nodes.map(node => node.id))
       for (const id of bodies.keys()) if (!ids.has(id)) bodies.delete(id)
       for (const node of latest.current.nodes) {
@@ -101,8 +137,7 @@ export function useNodeDrift(
         if (nowLinked !== body.linked) { body.anchorX = body.x; body.anchorY = body.y }
         body.linked = nowLinked
         body.rx = rx; body.ry = ry
-        const el = elements.get(node.id)
-        body.fixed = node.id === held || !!el?.matches(':hover, :focus-visible') || !!el?.querySelector(':focus-visible')
+        body.fixed = node.id === held || node.id === hoveredId || node.id === focusedId
         if (body.fixed && node.id !== held) { body.vx = 0; body.vy = 0 }
       }
       const view = flowRef.current?.getViewport()
@@ -116,6 +151,9 @@ export function useNodeDrift(
       render()
     }
     canvas.addEventListener('pointerdown', down, true)
+    canvas.addEventListener('pointerover', onPointerOver, { passive: true })
+    canvas.addEventListener('focusin', onFocusIn)
+    canvas.addEventListener('focusout', onFocusOut)
     canvas.addEventListener('keydown', keydown, true)
     window.addEventListener('pointerup', up)
     window.addEventListener('pointercancel', up)
@@ -126,6 +164,9 @@ export function useNodeDrift(
       gsap.ticker.remove(tick)
       resize.disconnect()
       canvas.removeEventListener('pointerdown', down, true)
+      canvas.removeEventListener('pointerover', onPointerOver)
+      canvas.removeEventListener('focusin', onFocusIn)
+      canvas.removeEventListener('focusout', onFocusOut)
       canvas.removeEventListener('keydown', keydown, true)
       window.removeEventListener('pointerup', up)
       window.removeEventListener('pointercancel', up)
@@ -135,3 +176,4 @@ export function useNodeDrift(
     }
   }, [canvasRef, flowRef, enabled])
 }
+

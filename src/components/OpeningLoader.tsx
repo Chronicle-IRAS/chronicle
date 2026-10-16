@@ -14,15 +14,26 @@ export function OpeningLoader({ onComplete }: { onComplete: () => void }) {
     const journey = document.getElementById('journey')
     if (!root || !journey) return
     const release = lockJourneyInput(journey)
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reduced = reducedMotion
     const number = root.querySelector('[data-loading-number]')!
     const bar = root.querySelector('[data-loading-bar]')!
     const progress = { value: 0 }
     let disposed = false, closing = false, settled = 0, minimumElapsed = false
     let closeTween: gsap.core.Tween | undefined
+    const warmRemainingCast = () => {
+      const urls = Object.values(characterAssets).flatMap((group) => Object.values(group))
+      const schedule = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 120))
+      schedule(() => {
+        for (const src of urls) {
+          const img = new Image()
+          img.src = src
+        }
+      })
+    }
     const finish = () => {
       if (closing || disposed) return
       closing = true
+      warmRemainingCast()
       closeTween = gsap.to(root, { autoAlpha: 0, scale: reduced ? 1 : 1.035, duration: reduced ? 0.15 : 0.65, ease: 'power2.inOut', onComplete: () => { release(); onComplete() } })
     }
     skipRef.current = finish
@@ -53,13 +64,13 @@ export function OpeningLoader({ onComplete }: { onComplete: () => void }) {
       closeTween?.kill()
       release()
     }
-  }, [onComplete])
+  }, [onComplete, reducedMotion])
 
   return <div className="opening-loader" data-ink-surface ref={rootRef}>
-    <div className="opening-top"><span>CHRONICLE / C.</span><span>AN INTERACTIVE JOURNEY</span></div>
+    <div className="opening-top"><span>CHRONICLE // AW-IN-PIECES</span><span>01000011 · AN INTERACTIVE JOURNEY</span></div>
     <div className="opening-center">
       <InkRibbons active reduced={reducedMotion} />
-      <p className="opening-eyebrow">GATHERING THE THREADS</p>
+      <p className="opening-eyebrow">GATHERING THE THREADS · #00-INIT</p>
       <p className="opening-title">A little ink.<br /><em>A world to come.</em></p>
       <p className="opening-status" role="status">Preparing the first page</p>
     </div>
@@ -70,3 +81,4 @@ export function OpeningLoader({ onComplete }: { onComplete: () => void }) {
     </div>
   </div>
 }
+

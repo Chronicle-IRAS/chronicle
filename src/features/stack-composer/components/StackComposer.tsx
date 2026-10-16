@@ -16,7 +16,13 @@ const edgeTypes = { default: DriftEdge }
 
 function BoardFit({ fit }: { fit: () => void }) {
   const ready = useNodesInitialized()
-  useEffect(() => { if (ready) fit() }, [ready, fit])
+  const fitted = useRef(false)
+  useEffect(() => {
+    if (ready && !fitted.current) {
+      fitted.current = true
+      fit()
+    }
+  }, [ready, fit])
   return null
 }
 
@@ -55,12 +61,18 @@ export function StackComposer() {
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
-    const observer = new ResizeObserver(fitBoard)
+    let lastW = canvas.clientWidth
+    let lastH = canvas.clientHeight
+    const observer = new ResizeObserver(() => {
+      if (canvas.clientWidth === lastW && canvas.clientHeight === lastH) return
+      lastW = canvas.clientWidth
+      lastH = canvas.clientHeight
+      fitBoard()
+    })
     observer.observe(canvas)
-    const toolbar = canvas.querySelector('.composer-workbench')
-    if (toolbar) observer.observe(toolbar)
     return () => observer.disconnect()
   }, [fitBoard])
+
 
   return (
     <div ref={canvasRef} className="composer-canvas" aria-label="Stack Composer canvas" inert={!interactive} data-interactive={interactive}>

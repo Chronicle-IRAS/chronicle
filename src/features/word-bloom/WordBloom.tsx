@@ -27,9 +27,13 @@ export function WordBloom() {
   const wasReading = useRef(false)
   const close = () => setReading(false)
   useEffect(() => {
+    const layout = canvasRef.current?.closest('.paper-layout')
+    const siblings = layout ? Array.from(layout.querySelectorAll<HTMLElement>('.paper-header, .paper-restart')) : []
+    siblings.forEach((el) => { el.inert = reading })
     if (reading) closeRef.current?.focus()
     else if (wasReading.current && active) readRef.current?.focus()
     wasReading.current = reading
+    return () => { siblings.forEach((el) => { el.inert = false }) }
   }, [reading, active])
   useEffect(() => { if (!active) setReading(false) }, [active])
 
@@ -37,8 +41,10 @@ export function WordBloom() {
     const canvas = canvasRef.current
     const ctx = canvas?.getContext('2d')
     if (!canvas || !ctx) return
-    let width = 0, height = 0, size = 12, time = 0, previous = 0, seenImpulse = impulse.current
+    const appRoot = canvas.closest('[data-contrast]')
+    let width = 0, height = 0, size = 12, time = 0, previous = 0, seenImpulse = impulse.current, cancelled = false
     let drawnMode: Mode | undefined
+    let drawnInverted: boolean | undefined
     let glyphs: Glyph[] = []
     const pointer = { x: 0, y: 0, inside: false, down: false }
     const resize = () => {
@@ -51,10 +57,11 @@ export function WordBloom() {
       const textTop = width >= 900 ? height * .34 : 0
       const maxWidth = width * .86
       size = width < 600 ? 17 : 24
-      let layout = layoutWithLines(prepareWithSegments(siteContent.goodbye.letter, `${size}px monospace`), maxWidth, size * 1.65)
+      const fontSpec = (s: number) => `${s}px "JetBrains Mono", monospace`
+      let layout = layoutWithLines(prepareWithSegments(siteContent.goodbye.letter, fontSpec(size)), maxWidth, size * 1.65)
       while (layout.height > height - textTop - 40 && size > 11) {
         size--
-        layout = layoutWithLines(prepareWithSegments(siteContent.goodbye.letter, `${size}px monospace`), maxWidth, size * 1.65)
+        layout = layoutWithLines(prepareWithSegments(siteContent.goodbye.letter, fontSpec(size)), maxWidth, size * 1.65)
       }
       const lineHeight = size * 1.65
       glyphs = []
@@ -75,12 +82,15 @@ export function WordBloom() {
     const draw = (dt: number) => {
       ctx.clearRect(0, 0, width, height)
       const { mode } = settings.current
+      const inverted = appRoot?.getAttribute('data-contrast') === 'inverted'
+      const inkColor = inverted ? '#fdfaf5' : '#160000'
+      const dimColor = inverted ? '#b8a99a' : '#8f8474'
       const motion = !reduced && !settings.current.paused
       const explode = seenImpulse !== impulse.current
       seenImpulse = impulse.current
       const radius = Math.min(width * .38, height * .42)
       const step = Math.min(dt * 60, 2)
-      ctx.font = `${mode === 'letter' ? size : Math.min(size, 14)}px monospace`
+      ctx.font = `${mode === 'letter' ? size : Math.min(size, 14)}px "JetBrains Mono", monospace`
       ctx.textAlign = 'center'
       for (let i = 0; i < glyphs.length; i++) {
         const p = glyphs[i]
@@ -122,13 +132,13 @@ export function WordBloom() {
           p.vy = (p.vy + ay * step) * Math.pow(.88, step)
           p.x += p.vx * step; p.y += p.vy * step
         }
-        ctx.fillStyle = mode === 'letter' ? '#344d40' : depth > .15 ? '#b64b2d' : depth < -.2 ? '#9a9677' : '#435b43'
-        ctx.globalAlpha = mode === 'letter' ? .8 : .45 + (depth + 1) * .24
+        ctx.fillStyle = mode === 'letter' ? inkColor : depth > .15 ? '#f40c3f' : depth < -.2 ? dimColor : inkColor
+        ctx.globalAlpha = mode === 'letter' ? .88 : .48 + (depth + 1) * .25
         ctx.fillText(p.char, p.x, p.y)
       }
       ctx.globalAlpha = 1
       if (pointer.inside && motion) {
-        ctx.strokeStyle = '#a34f3655'; ctx.beginPath(); ctx.arc(pointer.x, pointer.y, pointer.down ? 32 : 65, 0, Math.PI * 2); ctx.stroke()
+        ctx.strokeStyle = '#f40c3f66'; ctx.beginPath(); ctx.arc(pointer.x, pointer.y, pointer.down ? 32 : 65, 0, Math.PI * 2); ctx.stroke()
       }
     }
     const tick = (now: number) => {
@@ -136,8 +146,10 @@ export function WordBloom() {
       const dt = previous ? Math.min(now - previous, .033) : .016
       previous = now
       if (document.hidden || settings.current.reading) return
-      if ((settings.current.paused || reduced) && drawnMode === settings.current.mode) return
+      const inverted = appRoot?.getAttribute('data-contrast') === 'inverted'
+      if ((settings.current.paused || reduced) && drawnMode === settings.current.mode && drawnInverted === inverted) return
       drawnMode = settings.current.mode
+      drawnInverted = inverted
       if (!reduced && !settings.current.paused) time += dt
       draw(dt)
     }
@@ -155,8 +167,10 @@ export function WordBloom() {
     canvas.addEventListener('pointerleave', leave)
     const observer = new ResizeObserver(resize)
     observer.observe(canvas)
+    void document.fonts?.ready.then(() => { if (!cancelled) resize() })
     if (active) gsap.ticker.add(tick)
     return () => {
+      cancelled = true
       observer.disconnect(); gsap.ticker.remove(tick)
       canvas.removeEventListener('pointermove', move); canvas.removeEventListener('pointerdown', down)
       canvas.removeEventListener('pointerup', up); canvas.removeEventListener('pointercancel', leave); canvas.removeEventListener('pointerleave', leave)

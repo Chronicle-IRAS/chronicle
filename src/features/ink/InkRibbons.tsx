@@ -12,7 +12,7 @@ export function InkRibbons({ active, reduced = false }: { active: boolean; reduc
     const canvas = ref.current
     const ctx = canvas?.getContext('2d')
     if (!canvas || !ctx) return
-    let w = 0, h = 0, phase = 0, last = 0, lastDraw = 0, dpr = 1
+    let w = 0, h = 0, phase = 0, last = 0, lastDraw = 0, dpr = 1, cancelled = false
     let atlas: ReturnType<typeof createInkAtlas> | undefined
     let letters: { c: string; glyph: number; x: number; row: number }[] = []
     const pointer = { x: .5, y: .5 }
@@ -63,10 +63,11 @@ export function InkRibbons({ active, reduced = false }: { active: boolean; reduc
     }
     const resize = () => {
       const rect = canvas.getBoundingClientRect(); w = rect.width; h = rect.height
+      if (!w || !h) return
       dpr = Math.min(devicePixelRatio || 1, 1.5)
       canvas.width = w * dpr; canvas.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       const size = w < 600 ? 11 : 13
-      const font = `${size}px monospace`
+      const font = `${size}px "JetBrains Mono", monospace`
       atlas = createInkAtlas(WORDS, size, dpr)
       const result = layoutWithLines(prepareWithSegments(WORDS.repeat(32), font), w * 1.4, size * 2)
       const chars = atlas.chars
@@ -84,9 +85,10 @@ export function InkRibbons({ active, reduced = false }: { active: boolean; reduc
     }
     const move = (event: PointerEvent) => { const rect = canvas.getBoundingClientRect(); pointer.x = (event.clientX - rect.left) / w; pointer.y = (event.clientY - rect.top) / h }
     const observer = new ResizeObserver(resize); observer.observe(canvas)
+    void document.fonts?.ready.then(() => { if (!cancelled) resize() })
     canvas.addEventListener('pointermove', move)
     gsap.ticker.add(tick)
-    return () => { observer.disconnect(); gsap.ticker.remove(tick); canvas.removeEventListener('pointermove', move) }
+    return () => { cancelled = true; observer.disconnect(); gsap.ticker.remove(tick); canvas.removeEventListener('pointermove', move) }
   }, [active, reduced])
   return <canvas className="ink-ribbons" ref={ref} aria-hidden="true" />
 }
