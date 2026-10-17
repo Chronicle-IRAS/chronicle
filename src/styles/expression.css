@@ -37,6 +37,132 @@
 .journey-signature { opacity: .92; }
 .scene-title, .destination-heading, .type-heading h2 { text-wrap: balance; }
 
+/* Prelude Architectural Blueprint Frame, Rotating Seal & Hollow Watermark */
+.prelude-blueprint {
+  position: absolute;
+  inset: 3.5vh 4.5vw;
+  border: 1px solid #16000022;
+  pointer-events: none;
+  z-index: 1;
+}
+.prelude-crosshair {
+  position: absolute;
+  font: 700 15px/1 var(--font-mono);
+  color: #f40c3f;
+}
+.prelude-ch-tl { top: -8px; left: -5px; }
+.prelude-ch-tr { top: -8px; right: -5px; }
+.prelude-ch-bl { bottom: -8px; left: -5px; }
+.prelude-ch-br { bottom: -8px; right: -5px; }
+.prelude-rail-left, .prelude-rail-right {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  writing-mode: vertical-rl;
+  font: 700 8px/1 var(--font-mono);
+  letter-spacing: .24em;
+  color: #16000066;
+}
+.prelude-rail-left { left: 10px; }
+.prelude-rail-right { right: 10px; rotate: 180deg; }
+.prelude-seal {
+  position: absolute;
+  right: 2.5vw;
+  top: 5.5vh;
+  width: clamp(84px, 8.5vw, 122px);
+  aspect-ratio: 1;
+  overflow: visible;
+  animation: aw-star-spin 22s linear infinite;
+}
+.prelude-seal-ring {
+  fill: #fdfaf599;
+  stroke: #f40c3f66;
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+.prelude-seal text {
+  font: 700 8.5px var(--font-mono);
+  letter-spacing: 2.1px;
+  fill: #160000;
+}
+.prelude-seal-star { fill: #f40c3f; }
+.prelude-watermark {
+  position: absolute;
+  top: -.75em;
+  left: 50%;
+  translate: -50% 0;
+  white-space: nowrap;
+  font: 800 clamp(21px, 6.8vw, 112px)/.85 var(--font-display);
+  letter-spacing: -.06em;
+  color: transparent;
+  -webkit-text-stroke: 1.2px #16000018;
+  user-select: none;
+}
+
+/* Welcome Scene Monumental Hero Lockup & SVG Astrolabe HUD */
+.welcome-astrolabe {
+  position: absolute;
+  inset: -14%;
+  width: 128%;
+  height: 128%;
+  z-index: 2;
+  pointer-events: none;
+  overflow: visible;
+  animation: aw-star-spin 54s linear infinite reverse;
+}
+.astrolabe-ring-outer { fill: none; stroke: #f40c3f45; stroke-width: 1; }
+.astrolabe-ring-ticks { fill: none; stroke: #f2c97d66; stroke-width: 4; stroke-dasharray: 1.5 11.6; }
+.astrolabe-ring-inner { fill: none; stroke: #fdfaf524; stroke-width: 1; stroke-dasharray: 6 10; }
+.astrolabe-axis { stroke: #f40c3f66; stroke-width: 1.2; }
+.astrolabe-marker { fill: #f40c3f; }
+.welcome-content .welcome-orbital-field { display: block; opacity: .34; }
+.welcome-content .welcome-manifesto {
+  display: block;
+  bottom: auto;
+  top: 22vh;
+  right: 4.5vw;
+  left: auto;
+  text-align: right;
+  font-family: var(--font-display);
+  font-size: clamp(18px, 2.1vw, 30px);
+  font-weight: 600;
+  color: #fdfaf5;
+}
+.welcome-content .welcome-manifesto em {
+  color: #f40c3f;
+  font-size: 1.18em;
+}
+.welcome-content .display-title {
+  position: absolute;
+  bottom: 7.5vh;
+  left: 4.5vw;
+  right: 4.5vw;
+  margin: 0;
+  font-size: min(9vw, 10rem);
+  font-weight: 800;
+  letter-spacing: -.065em;
+  line-height: .9;
+  color: #fdfaf5;
+  text-shadow: 5px 5px 0 #f40c3f, 0 12px 40px #000c;
+}
+.welcome-content .welcome-word { white-space: nowrap; }
+.welcome-content .scene-subtitle {
+  position: absolute;
+  left: 4.8vw;
+  bottom: 4.2vh;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: #f2c97d;
+}
+.welcome-content .welcome-side-note { bottom: 26vh; color: #d8c7b4; font-size: clamp(16px, 1.5vw, 23px); }
+.welcome-content .scroll-cue { right: 4.5vw; bottom: 3.8vh; margin: 0; flex-direction: row; gap: 12px; line-height: 1.4; }
+.welcome-content .scroll-cue::before { width: 28px; height: 1px; background: linear-gradient(90deg, transparent, #f40c3f); }
+.welcome-content .scroll-cue span { font-size: 16px; line-height: 1; }
+.welcome-content .welcome-floor { display: block; opacity: .28; background-image: linear-gradient(#f40c3f26 1px, transparent 1px), linear-gradient(90deg, #f40c3f26 1px, transparent 1px); }
+
 /* Antoine Wodniack perspective architectural wireframe grid & binary/stripe separator. */
 .aw-perspective-grid {
   position: absolute;
@@ -45,26 +171,26 @@
   height: 100%;
   fill: none;
   pointer-events: none;
-  opacity: .52;
+  opacity: .56;
   transform: translate3d(calc((var(--ambient-x, 50) - 50) * -.03vw), calc((var(--ambient-y, 50) - 50) * -.02vh), 0);
 }
 .aw-grid-frame path {
   stroke: #f40c3f;
   stroke-width: .75;
-  opacity: .22;
+  opacity: .24;
   vector-effect: non-scaling-stroke;
 }
 .aw-grid-rays path {
   stroke: #f2c97d;
   stroke-width: .65;
-  opacity: .16;
+  opacity: .18;
   stroke-dasharray: 4 6;
   vector-effect: non-scaling-stroke;
 }
 .aw-grid-wave {
   stroke: #f40c3f;
-  stroke-width: 1.25;
-  opacity: .38;
+  stroke-width: 1.35;
+  opacity: .42;
   stroke-dasharray: 110 1500;
   animation: contour-flow 22s linear infinite;
 }
@@ -78,9 +204,9 @@
   align-items: center;
   gap: 10px;
   padding: 0 8px;
-  border-top: 1px solid #f40c3f38;
-  border-bottom: 1px solid #f40c3f38;
-  opacity: .62;
+  border-top: 1px solid #f40c3f44;
+  border-bottom: 1px solid #f40c3f44;
+  opacity: .68;
   pointer-events: none;
 }
 .aw-triangle { font: 8px/1 var(--font-mono); color: #f40c3f; }
@@ -98,7 +224,7 @@
   width: 15px;
   height: 15px;
   fill: #f40c3f;
-  opacity: .68;
+  opacity: .72;
   pointer-events: none;
   animation: aw-star-spin 16s linear infinite;
 }
@@ -119,17 +245,13 @@
 .ambient-contours .ambient-contour-light { stroke-width: 1.3; stroke-dasharray: 80 1800; opacity: .38; animation: contour-flow 24s linear infinite; animation-delay: calc(var(--contour-index) * -5s); }
 @keyframes contour-flow { to { stroke-dashoffset: -1880; } }
 .scene-currently .ambient-contours, .scene-profile .ambient-contours { display: block; transform: translate3d(calc((var(--ambient-x, 50) - 50) * -.04vw), calc((var(--ambient-y, 50) - 50) * -.03vh), 0); }
-.scene-currently, .scene-currently .scene-content, .scene-profile .page-sheet { background: #13090d; }
-.chronicle-app[data-contrast="inverted"] .scene-currently { background: #fdfaf5; }
+:root, body, .scene-currently .scene-content, .scene-profile .page-sheet { background: #13090d; }
+.scene-currently[data-transitioning="true"] > .scene-content > .scene-atmosphere { opacity: 0; transition: opacity .22s ease; }
 .scene-currently .ambient-haze-a, .scene-profile .ambient-haze-a { background: radial-gradient(ellipse, #f40c3f1c, transparent 68%); }
 .scene-currently .ambient-haze-b, .scene-profile .ambient-haze-b { background: radial-gradient(ellipse, #f2c97d18, transparent 68%); }
 .scene-space .ambient-orbit, .scene-destinations .ambient-orbit { opacity: .4; }
 .scene-space .ambient-mote, .scene-destinations .ambient-mote { display: none; }
 .welcome-meta { color: #f2c97d; }
-.welcome-content .scene-subtitle { color: #e8dcd0; }
-.welcome-content .welcome-side-note { color: #d8c7b4; font-size: clamp(16px, 1.5vw, 23px); }
-.welcome-content .display-title { text-shadow: 4px 4px 0 #f40c3f55, 0 3px 28px #0009; }
-.welcome-content .welcome-floor { opacity: .35; }
 
 /* Optical integration of 2D Character Art & Transition Impact Physics (Scenes 02→03, 03→04, 04→05) */
 .cast-actor, .impact-actor {
@@ -181,13 +303,13 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 76%;
-  max-width: 360px;
+  width: 78%;
+  max-width: 370px;
   aspect-ratio: 1;
   translate: -50% -50%;
   border-radius: 50%;
-  background: radial-gradient(ellipse, #f40c3f16, transparent 70%);
-  border: 1px dashed #f2c97d33;
+  background: radial-gradient(ellipse, #f40c3f1c, transparent 70%);
+  border: 1px dashed #f2c97d38;
 }
 .chapter-sculpture::after {
   content: '';
@@ -202,7 +324,7 @@
 .sculpture-object { animation-duration: 24s; }
 .chapter-explorer .explorer-list > div { border-color: #fdfaf522; }
 .chapter-explorer .explorer-list > div:has([aria-pressed="true"]) {
-  background: linear-gradient(90deg, #f40c3f1f, transparent 90%);
+  background: linear-gradient(90deg, #f40c3f22, transparent 90%);
   border-color: #f40c3f;
 }
 .explorer-list dt button { color: #bcaeac; }
@@ -220,21 +342,63 @@
 @keyframes composition-current { to { stroke-dashoffset: -126; } }
 .scene-composer .composer-canvas::after { animation-duration: 22s; opacity: .25; }
 
-/* Constellations reveal their route; planets settle with faceted rings when selected. */
-.constellation-map::before { border-color: #f40c3f30; }
-.constellation-map .atlas-route-reveal { stroke: #f40c3f; stroke-width: 2.2; stroke-dasharray: 1; animation: atlas-route-draw .9s var(--expression-ease) both; }
-@keyframes atlas-route-draw { from { stroke-dashoffset: 1; opacity: 1; } to { stroke-dashoffset: 0; opacity: .55; } }
-.atlas-star-core { background: #fdfaf5; box-shadow: 0 0 16px #f40c3f88, 0 0 40px #f2c97d44; transition: scale .45s var(--expression-ease), background .3s, box-shadow .3s; }
-.atlas-star-core::after { width: 62px; height: 62px; translate: -24px -24px; border-color: #f2c97d40; }
+/* Constellations reveal their route; planets settle with faceted low-poly rings when selected. */
+.atlas-radar-grid line {
+  stroke: #f40c3f28;
+  stroke-width: 1;
+  stroke-dasharray: 3 7;
+  vector-effect: non-scaling-stroke;
+}
+.constellation-map::before { border-color: #f40c3f38; }
+.constellation-map .atlas-route-reveal { stroke: #f40c3f; stroke-width: 2.4; stroke-dasharray: 1; animation: atlas-route-draw .9s var(--expression-ease) both; }
+@keyframes atlas-route-draw { from { stroke-dashoffset: 1; opacity: 1; } to { stroke-dashoffset: 0; opacity: .62; } }
+.atlas-star-core {
+  border-radius: 2px;
+  transform: rotate(45deg);
+  background: #fdfaf5;
+  box-shadow: 0 0 16px #f40c3f88, 0 0 40px #f2c97d44;
+  transition: scale .45s var(--expression-ease), background .3s, box-shadow .3s;
+}
+.atlas-star-core::after { width: 62px; height: 62px; translate: -24px -24px; border-radius: 4px; border-color: #f2c97d45; }
 .atlas-star[aria-pressed="true"] .atlas-star-core { background: #f40c3f; box-shadow: 0 0 28px #f40c3f; }
 .atlas-star[aria-pressed="true"] .atlas-star-core::after { border-color: #f40c3f; scale: 1.3; }
 .atlas-star[aria-pressed="true"] strong { color: #f2c97d; }
+.atlas-star small { font-family: var(--font-mono); letter-spacing: .08em; color: #f2c97d; opacity: .8; }
 .atlas-star strong { text-shadow: 0 2px 16px #050812; font-family: var(--font-display); }
 .atlas-footer { border-top-color: #f40c3f45; }
 .planet {
-  border: 1.5px solid #fdfaf544;
-  box-shadow: 6px 6px 0 #040206, 0 0 25px #f40c3f22;
+  border: 1.5px solid #fdfaf555;
+  box-shadow: 6px 6px 0 #040206, 0 0 28px #f40c3f28;
   transition: scale .6s var(--expression-ease), box-shadow .5s, border-color .4s;
+}
+.planet-facet {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: transform .55s var(--expression-ease);
+}
+.planet-facet-a {
+  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+  background: linear-gradient(135deg, #ffffff42, transparent 65%);
+}
+.planet-facet-b {
+  clip-path: polygon(50% 0%, 100% 38%, 50% 68%, 0% 38%);
+  background: linear-gradient(180deg, #f2c97d55, transparent);
+}
+.planet-facet-c {
+  clip-path: polygon(18% 100%, 50% 68%, 82% 100%);
+  background: linear-gradient(0deg, #05020699, transparent);
+}
+.planet-ring {
+  position: absolute;
+  inset: 26% -34%;
+  border: 1px dashed #f2c97d88;
+  border-radius: 50%;
+  transform: rotate(-24deg);
+  pointer-events: none;
+}
+.destination:hover .planet-facet-b, .destination[aria-pressed="true"] .planet-facet-b {
+  transform: scale(1.12) rotate(12deg);
 }
 .planet-0 { background: radial-gradient(circle at 30% 28%, #f40c3f, #7a0924 52%, #18060c 88%); }
 .planet-1 { background: radial-gradient(circle at 30% 28%, #f2c97d, #8c6428 52%, #1c1308 88%); }
@@ -251,7 +415,7 @@
 .destination-inspector[data-selected="true"] { border-color: #f40c3f; background: linear-gradient(90deg, #f40c3f14, transparent 75%); }
 .destination-detail-copy { animation: expression-detail .55s var(--expression-ease); }
 .destination-inspector small { color: #f40c3f; font-weight: 700; font-family: var(--font-mono); }
-.planet-label { font-family: var(--font-display); }
+.planet-label { font-family: var(--font-display); font-weight: 600; }
 .planet-label small { letter-spacing: .12em; color: #f2c97d; font-family: var(--font-mono); }
 
 /* Paper surfaces carry the same fine architectural vellum texture from opening to closing. */
@@ -303,6 +467,22 @@
   background: #12080c;
   color: #fdfaf5;
 }
+.chronicle-app[data-contrast="inverted"] .prelude-blueprint {
+  border-color: #fdfaf522;
+}
+.chronicle-app[data-contrast="inverted"] .prelude-rail-left,
+.chronicle-app[data-contrast="inverted"] .prelude-rail-right {
+  color: #fdfaf566;
+}
+.chronicle-app[data-contrast="inverted"] .prelude-seal-ring {
+  fill: #12080ccc;
+}
+.chronicle-app[data-contrast="inverted"] .prelude-seal text {
+  fill: #fdfaf5;
+}
+.chronicle-app[data-contrast="inverted"] .prelude-watermark {
+  -webkit-text-stroke-color: #fdfaf51c;
+}
 .chronicle-app[data-contrast="inverted"] .prelude-copy h1 {
   color: #fdfaf5;
   text-shadow: 0 2px 24px #12080c;
@@ -342,16 +522,72 @@
   color: #160000;
 }
 .chronicle-app[data-contrast="inverted"] .chapter-detail-copy p,
-.chronicle-app[data-contrast="inverted"] .explorer-list dt button {
+.chronicle-app[data-contrast="inverted"] .explorer-list dt button,
+.chronicle-app[data-contrast="inverted"] .instrument-control,
+.chronicle-app[data-contrast="inverted"] .sculpture-coordinate {
   color: #4f3d36;
 }
+.chronicle-app[data-contrast="inverted"] .sculpture-toggle {
+  color: #4f3d36;
+  border-color: #4f3d3655;
+}
+.chronicle-app[data-contrast="inverted"] .sculpture-toggle:hover,
+.chronicle-app[data-contrast="inverted"] .sculpture-toggle[aria-pressed="true"] {
+  color: #a3092d;
+  border-color: #a3092d;
+}
+.chronicle-app[data-contrast="inverted"] .reticle-ring-inner { stroke: #86602570; }
+.chronicle-app[data-contrast="inverted"] .reticle-axis { stroke: #16000026; }
 .chronicle-app[data-contrast="inverted"] .chapter-explorer .explorer-list > div {
   border-color: #16000026;
 }
 
-/* Event-driven tactile feedback: no always-running cursor or extra renderer. */
+/* Event-driven tactile feedback: magnetic architectural reticle + polygon click echoes. */
 .interaction-feedback { position: fixed; inset: 0; z-index: 80; pointer-events: none; overflow: clip; }
-.interaction-echo { position: absolute; width: 64px; height: 64px; border: 1.5px solid #f40c3f; border-radius: 50%; pointer-events: none; }
+.cursor-reticle {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 28px;
+  height: 28px;
+  margin: -14px 0 0 -14px;
+  border: 1px solid #f40c3f88;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: width .22s var(--expression-ease), height .22s var(--expression-ease), margin .22s var(--expression-ease), border-radius .22s, border-color .22s, background-color .22s, opacity .2s;
+}
+.cursor-reticle[data-visible="true"] { opacity: 1; }
+.cursor-reticle[data-paper="true"] { border-color: #16000066; }
+.cursor-reticle[data-engaged="true"] {
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  border-radius: 3px;
+  border-color: #f40c3f;
+  background: #f40c3f14;
+}
+.reticle-diamond {
+  width: 5px;
+  height: 5px;
+  background: #f40c3f;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  transition: transform .22s var(--expression-ease), background-color .22s;
+}
+.cursor-reticle[data-engaged="true"] .reticle-diamond {
+  transform: scale(1.6) rotate(45deg);
+  background: #f2c97d;
+}
+.interaction-echo {
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  border: 1.5px solid #f40c3f;
+  border-radius: 4px;
+  pointer-events: none;
+}
 .interaction-echo[data-paper="true"] { border-color: #160000; }
 .quiet-control, .prelude-footer button, .paper-restart, .welcome-back, .opening-skip, .workbench-action > button,
 .workbench-project-link, .type-controls button, .sculpture-toggle, .journey-contrast { translate: calc(var(--tactile-x, 0) * 1px) calc(var(--tactile-y, 0) * 1px); }
@@ -360,10 +596,20 @@
 .scene:not([data-active="true"]) .composition-signal,
 .scene:not([data-active="true"]) .atlas-route-reveal,
 .scene:not([data-active="true"]) .aw-grid-wave,
-.scene:not([data-active="true"]) .aw-star { animation-play-state: paused; }
+.scene:not([data-active="true"]) .aw-star,
+.scene:not([data-active="true"]) .prelude-seal,
+.scene:not([data-active="true"]) .welcome-astrolabe { animation-play-state: paused; }
 main[data-traversing="true"] .scene-atmosphere * { animation-play-state: paused; }
 
 @media (max-width: 700px) {
+  .prelude-blueprint, .cursor-reticle { display: none; }
+  .prelude-footer { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px 12px; align-items: center; }
+  .prelude-footer > span { max-width: none; }
+  .prelude-footer small { grid-column: 1/-1; width: auto; margin-top: 0; }
+  .welcome-content .welcome-manifesto { top: 18vh; right: 6vw; font-size: 18px; }
+  .welcome-content .display-title { bottom: 16vh; left: 6vw; right: 6vw; font-size: 8.8vw; text-shadow: 3px 3px 0 #f40c3f, 0 12px 40px #000c; }
+  .welcome-content .scene-subtitle { bottom: 13vh; left: 6.5vw; font-size: 8px; }
+  .welcome-content .scroll-cue { right: 6vw; bottom: 8svh; }
   .ambient-contours { opacity: .6; }
   .ambient-contours g:nth-child(n+3) { display: none; }
   .ambient-haze { opacity: .45; }
@@ -376,10 +622,10 @@ main[data-traversing="true"] .scene-atmosphere * { animation-play-state: paused;
   .type-letter { box-shadow: 6px 6px 0 #160000; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ambient-contour-light, .composition-signal, .atlas-route-reveal, .chapter-detail-copy, .destination-detail-copy, .aw-grid-wave, .aw-star { animation: none !important; }
+  .ambient-contour-light, .composition-signal, .atlas-route-reveal, .chapter-detail-copy, .destination-detail-copy, .aw-grid-wave, .aw-star, .prelude-seal, .welcome-astrolabe { animation: none !important; }
   .ambient-contours, .aw-perspective-grid { transform: none !important; }
   .interaction-feedback { display: none; }
   .quiet-control, .prelude-footer button, .paper-restart, .welcome-back, .opening-skip, .workbench-action > button,
   .workbench-project-link, .type-controls button, .sculpture-toggle, .journey-contrast { translate: none; }
-  .planet, .atlas-star-core, .destination-inspector { transition: none; }
+  .planet, .planet-facet, .atlas-star-core, .destination-inspector { transition: none; }
 }

@@ -14,49 +14,85 @@
 .quiet-control:hover:not(:disabled) { background: #f40c3f; color: #fdfaf5; border-color: #f40c3f; box-shadow: 4px 4px 0 #f2c97d44; translate: -2px -2px; }
 .welcome-content .welcome-kicker { writing-mode: vertical-rl; top: 22vh; left: 3vw; letter-spacing: .2em; }
 .welcome-content .welcome-side-note { bottom: 9vh; font-family: Georgia,serif; font-style: italic; font-size: clamp(13px,1.25vw,19px); line-height: 1.45; color: #d8c7b4; }
-.welcome-content .display-title { font-weight: 500; letter-spacing: -.07em; }
+.welcome-content .display-title { font-weight: 700; letter-spacing: -.07em; }
 .welcome-content .scroll-cue::before { height: 38px; background: linear-gradient(transparent,#f40c3f); }
 .welcome-content .scroll-cue { color: #f2c97d; }
 .scene-currently .content-column, .scene-profile .content-column { max-width: 1320px; justify-content: flex-start; padding-top: 8svh; padding-bottom: 7svh; }
-.scene-currently .scene-title, .scene-profile .scene-title { font-size: clamp(48px,7.8vw,118px); font-weight: 500; line-height: .94; margin-bottom: 5svh; letter-spacing: -.075em; position: relative; }
+.scene-currently .scene-title, .scene-profile .scene-title { font-size: clamp(48px,7.8vw,118px); font-weight: 700; line-height: .92; margin-bottom: 4.5svh; letter-spacing: -.065em; position: relative; text-shadow: 4px 4px 0 #f40c3f38; }
 .scene-profile .scene-title { font-size: clamp(40px,6.7vw,100px); }
 .scene-currently .section-number, .scene-profile .section-number { width: 100%; padding-bottom: 16px; border-bottom: 1px solid #f40c3f45; font: 700 10px ui-monospace,monospace; letter-spacing: .16em; margin-bottom: 4svh; color: #f40c3f; }
-.chapter-explorer { grid-template-columns: 1.1fr 1fr; gap: 7vw; align-items: start; flex: 1; min-height: 0; }
-.chapter-explorer .explorer-list > div { padding: 18px 0; display: block; position: relative; transition: padding .35s, background .35s, border-color .35s; }
-.chapter-explorer .explorer-list > div:has([aria-pressed="true"]) { padding-left: 18px; background: linear-gradient(90deg,#f40c3f18,transparent); }
+.chapter-explorer { grid-template-columns: 1.05fr 1.05fr; gap: 6vw; align-items: start; flex: 1; min-height: 0; }
+.chapter-explorer .explorer-list > div { padding: 18px 12px 18px 0; display: block; position: relative; transition: padding .35s, background .35s, border-color .35s; }
+.chapter-explorer .explorer-list > div:has([aria-pressed="true"]) { padding-left: 18px; background: linear-gradient(90deg,#f40c3f24,transparent); border-left: 3px solid #f40c3f; }
 .explorer-list dt button { font: 700 11px ui-monospace,monospace; letter-spacing: .1em; padding-bottom: 12px; }
 .explorer-list dt button span { width: 22px; color: #f40c3f; }.explorer-list dt button b { transition: rotate .3s, color .3s; }.explorer-list dt button:hover b { rotate: 90deg; color: #f40c3f; }
-.chapter-explorer .explorer-list dd { font-size: clamp(22px,3.1vw,43px); letter-spacing: -.055em; font-weight: 400; line-height: 1.1; }
+.chapter-explorer .explorer-list dd { font-size: clamp(22px,3.1vw,43px); letter-spacing: -.05em; font-weight: 600; line-height: 1.08; }
 .chapter-detail { padding-left: 0; border: 0; display: grid; grid-template-columns: 1fr auto; align-items: start; column-gap: 20px; }
-.chapter-sculpture { width: 100%; height: clamp(165px,26svh,300px); max-width: none; margin: -3svh 0 12px; grid-column: 1/-1; perspective: 900px; transform: none; }
-.sculpture-object { position: absolute; left: 50%; top: 50%; width: min(23vw,280px); aspect-ratio: 1; translate: -50% -50%; transform-style: preserve-3d; transform: rotateZ(var(--instrument-angle)); animation: sculpture-tumble 20s ease-in-out infinite alternate; }
-/* Species In Pieces 18-shard polygon morphing engine */
-.sculpture-rib { position: absolute; inset: 0; border: 0; border-radius: 0; background: var(--shard-bg, #f40c3f); transform: translateZ(var(--shard-z, 0px)); opacity: .92; transition: clip-path .85s cubic-bezier(.16, 1, .3, 1), background-color .65s cubic-bezier(.16, 1, .3, 1), transform .85s cubic-bezier(.16, 1, .3, 1); }
-.sculpture-rib:nth-child(odd) { filter: brightness(1.06) contrast(1.04); }
-.sculpture-rib:nth-child(3n) { opacity: .84; }
+.chapter-sculpture { width: 100%; height: clamp(185px,29svh,330px); max-width: none; margin: -3svh 0 12px; grid-column: 1/-1; perspective: 950px; transform: none; cursor: pointer; }
+.sculpture-reticle { position: absolute; left: 50%; top: 50%; width: min(29vw, 340px); aspect-ratio: 1; translate: -50% -50%; pointer-events: none; overflow: visible; opacity: .7; }
+.sculpture-three-stage { position: absolute; left: 50%; top: 50%; width: min(30vw, 350px); aspect-ratio: 1; translate: -50% -50%; pointer-events: none; z-index: 2; mix-blend-mode: screen; }
+.sculpture-three-stage > canvas { width: 100%; height: 100%; display: block; pointer-events: none; }
+.reticle-ring-outer { fill: none; stroke: #f40c3f44; stroke-width: 1; stroke-dasharray: 4 8; transform-origin: center; animation: aw-star-spin 36s linear infinite; }
+.reticle-ring-inner { fill: none; stroke: #f2c97d38; stroke-width: 1; stroke-dasharray: 2 12; transform-origin: center; animation: aw-star-spin 24s linear infinite reverse; }
+.reticle-axis { stroke: #fdfaf518; stroke-width: 1; }
+.reticle-tick { fill: #f40c3f; }
+.sculpture-object { position: absolute; left: 50%; top: 50%; width: min(26vw,310px); aspect-ratio: 1; translate: -50% -50%; transform-style: preserve-3d; transform: rotateZ(var(--instrument-angle)); animation: sculpture-tumble 20s ease-in-out infinite alternate; z-index: 1; }
+/* Species In Pieces 18-shard staggered polygon morphing & 3D explosion engine */
+.sculpture-rib {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  border-radius: 0;
+  background: var(--shard-bg, #f40c3f);
+  transform: translate3d(0, 0, var(--shard-z, 0px));
+  opacity: .94;
+  transition:
+    clip-path .82s cubic-bezier(.16, 1, .3, 1),
+    background-color .65s cubic-bezier(.16, 1, .3, 1),
+    transform .78s cubic-bezier(.16, 1, .3, 1);
+  transition-delay: calc(var(--rib, 0) * 18ms);
+}
+.sculpture-rib:nth-child(odd) { filter: brightness(1.08) contrast(1.05); }
+.sculpture-rib:nth-child(3n) { opacity: .86; }
+.chapter-sculpture:hover .sculpture-rib {
+  transform: translate3d(
+    calc(var(--shard-dx, 0px) * .28),
+    calc(var(--shard-dy, 0px) * .28),
+    calc(var(--shard-z, 0px) * 1.35)
+  );
+}
+.chapter-sculpture[data-exploded="true"] .sculpture-rib {
+  transform: translate3d(
+    calc(var(--shard-dx, 0px) * 1.45),
+    calc(var(--shard-dy, 0px) * 1.45),
+    calc(var(--shard-z, 10px) * 2.5)
+  ) rotateX(calc((var(--rib, 0) - 9) * 4deg)) rotateY(calc((var(--rib, 0) - 9) * -5deg));
+}
 .chapter-sculpture[data-form="1"] .sculpture-object { animation-duration: 22s; }
 .chapter-sculpture[data-form="2"] .sculpture-object { animation-duration: 25s; }
 .chapter-sculpture[data-form="3"] .sculpture-object { animation-duration: 18s; }
 .sculpture-coordinate { position: absolute; bottom: 0; right: 0; color: #f2c97d; font: 700 8px ui-monospace,monospace; letter-spacing: .16em; }
+.sculpture-actions { display: flex; gap: 14px; align-items: center; justify-self: end; }
 @keyframes sculpture-tumble {
-  0% { transform: rotateZ(var(--instrument-angle)) rotateX(10deg) rotateY(-14deg) scale(0.98); }
-  50% { transform: rotateZ(var(--instrument-angle)) rotateX(-8deg) rotateY(16deg) scale(1.03); }
-  100% { transform: rotateZ(var(--instrument-angle)) rotateX(12deg) rotateY(-10deg) scale(1); }
+  0% { transform: rotateZ(var(--instrument-angle)) rotateX(12deg) rotateY(-16deg) scale(0.98); }
+  50% { transform: rotateZ(var(--instrument-angle)) rotateX(-10deg) rotateY(18deg) scale(1.04); }
+  100% { transform: rotateZ(var(--instrument-angle)) rotateX(14deg) rotateY(-12deg) scale(1); }
 }
-.chapter-sculpture[data-playing="false"] .sculpture-object, .scene:not([data-active="true"]) .sculpture-object { animation-play-state: paused; }
+.chapter-sculpture[data-playing="false"] :is(.sculpture-object, .reticle-ring-outer, .reticle-ring-inner),
+.scene:not([data-active="true"]) :is(.sculpture-object, .reticle-ring-outer, .reticle-ring-inner) { animation-play-state: paused; }
 .chapter-detail-copy { min-height: 130px; grid-column: 1/-1; border-top: 1px solid #f40c3f40; padding-top: 18px; }
 .chapter-detail h3 { font-size: 25px; letter-spacing: -.04em; margin: 9px 0; }.chapter-detail p { font-size: 12px; max-width: 450px; margin-bottom: 18px; }
 .instrument-control { align-self: center; }.instrument-control input { width: 100px; accent-color: #f40c3f; }
-.sculpture-toggle { background: none; border: 0; border-bottom: 1px solid #f2c97d88; padding: 9px 0; color: #f2c97d; font: 700 8px ui-monospace,monospace; letter-spacing: .1em; cursor: pointer; }.sculpture-toggle span { margin-left: 16px; color: #f40c3f; }.sculpture-toggle:hover { color: #fdfaf5; border-color: #f40c3f; }
+.sculpture-toggle { background: none; border: 0; border-bottom: 1px solid #f2c97d88; padding: 9px 0; color: #f2c97d; font: 700 8px ui-monospace,monospace; letter-spacing: .1em; cursor: pointer; }.sculpture-toggle span { margin-left: 10px; color: #f40c3f; }.sculpture-toggle:hover, .sculpture-toggle[aria-pressed="true"] { color: #fdfaf5; border-color: #f40c3f; }
 .composer-workbench { border-radius: 4px; border-top: 2px solid #f40c3f; background: #140b0eee; padding: 17px 22px; }
 .workbench-title strong { font-weight: 700; letter-spacing: .2em; }.workbench-techs button { border-radius: 2px; }.workbench-action > button { border-radius: 2px; transition: background .2s, color .2s, translate .2s, box-shadow .2s; }.workbench-action > button:hover:not(:disabled) { translate: -2px -2px; background: #f40c3f; color: #fdfaf5; box-shadow: 4px 4px 0 #fdfaf544; }
 .flow-node { border-radius: 4px; }.result-node { animation: result-materialize .65s cubic-bezier(.2,.8,.2,1) both; }
 @keyframes result-materialize { from { opacity: 0; clip-path: inset(0 100% 0 0); } to { opacity: 1; clip-path: inset(0); } }
-.scene-space .star-atlas .scene-title { font-weight: 500; letter-spacing: -.065em; }.atlas-instruction { font-family: Georgia,serif; font-style: italic; font-size: 16px; color: #f2c97d; }
+.scene-space .star-atlas .scene-title { font-weight: 700; letter-spacing: -.065em; }.atlas-instruction { font-family: Georgia,serif; font-style: italic; font-size: 16px; color: #f2c97d; }
 .constellation-map::before { content: ''; position: absolute; inset: 4% 12%; border: 1px solid #f40c3f26; border-radius: 50%; transform: rotate(-13deg); pointer-events: none; }
 .constellation-map::after { content: '✦'; position: absolute; left: 50%; top: 45%; color: #f40c3f66; font-size: 20px; pointer-events: none; }
 .atlas-star { transition: color .3s; }.atlas-star:hover .atlas-star-core { scale: 1.5; }.atlas-star-core::after { transition: scale .5s, border-color .5s; }.atlas-star:hover .atlas-star-core::after { scale: 1.4; border-color: #f40c3f; }.atlas-star strong { letter-spacing: -.035em; }
-.destination-heading { font-weight: 500; letter-spacing: -.06em; }.destination-inspector { padding-bottom: 14px; }.destination-inspector h3 { font-family: Georgia,serif; font-style: italic; font-size: 33px; }.planet-label { transition: translate .3s; }.destination:hover .planet-label { translate: 0 -5px; }
+.destination-heading { font-weight: 700; letter-spacing: -.06em; }.destination-inspector { padding-bottom: 14px; }.destination-inspector h3 { font-family: Georgia,serif; font-style: italic; font-size: 33px; }.planet-label { transition: translate .3s; }.destination:hover .planet-label { translate: 0 -5px; }
 .paper-plane svg { transition: transform .6s cubic-bezier(.2,.8,.2,1), filter .6s; }.paper-plane:hover:not(:disabled) svg { transform: translateY(-12px) rotate(-4deg); }.paper-route path { animation: paper-trail 25s linear infinite; }@keyframes paper-trail { to { stroke-dashoffset: -300; } }
 .scene:not([data-active="true"]) .paper-route path { animation-play-state: paused; }
 @media (max-width: 700px) {
@@ -65,19 +101,19 @@
   .scene-currently .content-column,.scene-profile .content-column { padding-top: 7svh; padding-bottom: 6svh; }
   .scene-currently .section-number,.scene-profile .section-number { margin-bottom: 24px; padding-bottom: 12px; font-size: 8px; }
   .scene-currently .scene-title { font-size: 13vw; margin-bottom: 24px; }.scene-profile .scene-title { font-size: 11vw; margin-bottom: 24px; }
-  .chapter-explorer { grid-template-columns: 1fr; gap: 20px; flex: 0; }.chapter-explorer .explorer-list > div { display: flex; padding: 10px 0; }.chapter-explorer .explorer-list > div:has([aria-pressed="true"]) { padding-left: 10px; }.explorer-list dt button { font-size: 9px; padding-bottom: 0; }.chapter-explorer .explorer-list dd { font-size: 18px; }
-  .chapter-detail { grid-template-columns: 110px 1fr; gap: 10px 16px; min-height: 0; }.chapter-sculpture { grid-column: 1; grid-row: 1; height: 140px; margin: 0; }.sculpture-object { width: 105px; }.sculpture-coordinate { font-size: 6px; right: 0; bottom: 0; }
+  .chapter-explorer { grid-template-columns: 1fr; gap: 20px; flex: 0 0 auto; }.chapter-explorer .explorer-list > div { display: flex; padding: 10px 0; }.chapter-explorer .explorer-list > div:has([aria-pressed="true"]) { padding-left: 10px; }.explorer-list dt button { font-size: 9px; padding-bottom: 0; }.explorer-list dt button b { flex-shrink: 0; }.chapter-explorer .explorer-list dd { font-size: 18px; }
+  .chapter-detail { grid-template-columns: 110px 1fr; gap: 10px 16px; min-height: 0; }.chapter-sculpture { grid-column: 1; grid-row: 1; height: 140px; margin: 0; }.sculpture-object { width: 105px; }.sculpture-reticle, .sculpture-three-stage { width: 120px; }.sculpture-coordinate { font-size: 6px; right: 0; bottom: 0; }
   .chapter-detail-copy { grid-column: 2; grid-row: 1; min-height: 0; padding-top: 8px; }.chapter-detail h3 { font-size: 19px; }.chapter-detail p { font-size: 10px; margin-bottom: 5px; line-height: 1.6; }.chapter-detail-copy small { font-size: 7px; }
-  .instrument-control { grid-column: 1/-1; font-size: 7px; }.sculpture-toggle { grid-column: 2; justify-self: end; font-size: 7px; padding: 6px 0; }
+  .instrument-control { grid-column: 1/-1; font-size: 7px; }.sculpture-actions { grid-column: 1/-1; justify-self: end; gap: 12px; }.sculpture-toggle { font-size: 7px; padding: 6px 0; white-space: nowrap; }
   .composer-workbench { padding: 12px; bottom: 25px; }.atlas-instruction { font-size: 13px; }.destination-inspector h3 { font-size: 26px; }
 }
-@media (max-height: 700px) and (min-width: 701px) { .scene-currently .scene-title,.scene-profile .scene-title { font-size: 64px; margin-bottom: 22px; }.chapter-sculpture { height: 170px; }.sculpture-object { width: 165px; }.chapter-detail-copy { min-height: 100px; }.chapter-explorer .explorer-list > div { padding: 12px 0; } }
-@media (prefers-reduced-motion: reduce) { .sculpture-object,.paper-route path,.result-node { animation: none; }.sculpture-rib,.quiet-control,.planet-label,.paper-plane svg,.journey-pupil { transition: none; }.quiet-control:hover:not(:disabled) { translate: none; } }
+@media (max-height: 700px) and (min-width: 701px) { .scene-currently .scene-title,.scene-profile .scene-title { font-size: 64px; margin-bottom: 22px; }.chapter-sculpture { height: 170px; }.sculpture-object { width: 165px; }.sculpture-reticle, .sculpture-three-stage { width: 190px; }.chapter-detail-copy { min-height: 100px; }.chapter-explorer .explorer-list > div { padding: 12px 0; } }
+@media (prefers-reduced-motion: reduce) { .sculpture-object,.paper-route path,.result-node,.reticle-ring-outer,.reticle-ring-inner { animation: none; }.sculpture-rib,.quiet-control,.planet-label,.paper-plane svg,.journey-pupil { transition: none; }.quiet-control:hover:not(:disabled) { translate: none; } }
 .scene-goodbye .paper-goodbye { background: #fdfaf5; color: #160000; }
 /* Full-viewport typographic playground: real letter layout + a spring-driven glyph field. */
 .type-playground { position: absolute; inset: 0; }
 .type-heading { position: absolute; z-index: 2; top: 12%; left: 5%; pointer-events: none; }
-.type-heading h2 { margin: 0; font-size: clamp(30px,4vw,64px); line-height: 1.04; font-weight: 500; letter-spacing: -.055em; color: #160000; }
+.type-heading h2 { margin: 0; font-size: clamp(34px,4.5vw,72px); line-height: 1.02; font-weight: 700; letter-spacing: -.055em; color: #160000; }
 .type-heading em { font-family: Georgia,serif; font-weight: 400; color: #f40c3f; }
 .type-heading p { margin-top: 18px; font: 12px Georgia,serif; color: #6e5d53; }
 .type-field { position: absolute; inset: 27% 0 18%; width: 100%; height: 55%; touch-action: none; }
@@ -90,5 +126,5 @@
 .type-controls button:focus-visible { outline: 2px solid #f40c3f; outline-offset: 5px; }
 .type-letter { inset: 10% 5% 15%; background: #fdfaf5; z-index: 8; }
 .paper-header,.paper-restart { z-index: 10; }
-@media (min-width: 900px) { .type-field { inset: 7% 0 19%; height: 74%; }.type-heading { top: 13%; }.type-heading h2 { font-size: 3.4vw; }.type-heading p { max-width: 160px; line-height: 1.6; } }
+@media (min-width: 900px) { .type-field { inset: 7% 0 19%; height: 74%; }.type-heading { top: 13%; }.type-heading h2 { font-size: 3.8vw; }.type-heading p { max-width: 180px; line-height: 1.6; } }
 @media (max-width: 700px) { .type-heading { top: 12%; left: 7%; }.type-heading h2 { font-size: 9vw; }.type-heading p { font-size: 10px; }.type-controls { bottom: 11%; flex-direction: column; align-items: flex-start; gap: 5px; left: 7%; right: 7%; }.type-controls button { font-size: 9px; padding: 9px 0; min-height: 40px; }.type-modes,.type-actions { width: 100%; justify-content: space-between; gap: 10px; }.type-caption { top: 72%; left: 7%; font-size: 8px; }.type-field { inset: 28% 0 27%; height: 45%; }.type-letter { inset: 10% 5% 19%; } }

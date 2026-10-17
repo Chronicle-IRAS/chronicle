@@ -1,94 +1,95 @@
 import { useState, type CSSProperties } from 'react'
 
 type Entry = { label: string; value: string }
-type Shard = { p: string; c: string; z: number }
+type Shard = { p: string; c: string; z: number; dx: number; dy: number }
 
 // Inspired by Bryan James' "Species in Pieces": every form is built from the exact same 18 triangles,
-// allowing native CSS interpolation of polygon(x1 y1, x2 y2, x3 y3) coordinates between chapters.
+// allowing native CSS interpolation of polygon(x1 y1, x2 y2, x3 y3) coordinates between chapters,
+// plus radial explosion vectors (dx, dy) for interactive 3D shard disassembly.
 const POLYGON_FORMS: Shard[][] = [
   // Form 0: Origami Peregrine Falcon (Building / Open Source)
   [
-    { p: '50% 6%, 41% 24%, 59% 24%', c: '#f40c3f', z: 18 },
-    { p: '41% 24%, 59% 24%, 50% 44%', c: '#c81e38', z: 14 },
-    { p: '41% 24%, 10% 14%, 31% 42%', c: '#fdfaf5', z: 10 },
-    { p: '59% 24%, 90% 14%, 69% 42%', c: '#e8e2d5', z: 10 },
-    { p: '10% 14%, 4% 38%, 31% 42%', c: '#f40c3f', z: 6 },
-    { p: '90% 14%, 96% 38%, 69% 42%', c: '#d11536', z: 6 },
-    { p: '31% 42%, 50% 44%, 38% 64%', c: '#294045', z: 12 },
-    { p: '69% 42%, 50% 44%, 62% 64%', c: '#1f3237', z: 12 },
-    { p: '31% 42%, 14% 58%, 38% 64%', c: '#f2c97d', z: 4 },
-    { p: '69% 42%, 86% 58%, 62% 64%', c: '#deb368', z: 4 },
-    { p: '50% 44%, 38% 64%, 62% 64%', c: '#fdfaf5', z: 16 },
-    { p: '38% 64%, 62% 64%, 50% 82%', c: '#f40c3f', z: 11 },
-    { p: '38% 64%, 26% 86%, 50% 82%', c: '#38575c', z: 5 },
-    { p: '62% 64%, 74% 86%, 50% 82%', c: '#2b454a', z: 5 },
-    { p: '50% 82%, 42% 96%, 58% 96%', c: '#f2c97d', z: 8 },
-    { p: '4% 38%, 14% 58%, 31% 42%', c: '#4d7378', z: 2 },
-    { p: '96% 38%, 86% 58%, 69% 42%', c: '#3b5d62', z: 2 },
-    { p: '50% 6%, 32% 18%, 41% 24%', c: '#f2c97d', z: 15 },
+    { p: '50% 4%, 39% 23%, 61% 23%', c: '#f40c3f', z: 24, dx: 0, dy: -36 },
+    { p: '39% 23%, 61% 23%, 50% 45%', c: '#c81e38', z: 18, dx: 0, dy: -16 },
+    { p: '39% 23%, 6% 10%, 28% 42%', c: '#fdfaf5', z: 14, dx: -38, dy: -22 },
+    { p: '61% 23%, 94% 10%, 72% 42%', c: '#e8e2d5', z: 14, dx: 38, dy: -22 },
+    { p: '6% 10%, 2% 38%, 28% 42%', c: '#f40c3f', z: 8, dx: -48, dy: -10 },
+    { p: '94% 10%, 98% 38%, 72% 42%', c: '#d11536', z: 8, dx: 48, dy: -10 },
+    { p: '28% 42%, 50% 45%, 36% 66%', c: '#294045', z: 16, dx: -18, dy: 4 },
+    { p: '72% 42%, 50% 45%, 64% 66%', c: '#1f3237', z: 16, dx: 18, dy: 4 },
+    { p: '28% 42%, 10% 60%, 36% 66%', c: '#f2c97d', z: 6, dx: -36, dy: 14 },
+    { p: '72% 42%, 90% 60%, 64% 66%', c: '#deb368', z: 6, dx: 36, dy: 14 },
+    { p: '50% 45%, 36% 66%, 64% 66%', c: '#fdfaf5', z: 22, dx: 0, dy: 10 },
+    { p: '36% 66%, 64% 66%, 50% 84%', c: '#f40c3f', z: 15, dx: 0, dy: 24 },
+    { p: '36% 66%, 22% 88%, 50% 84%', c: '#38575c', z: 7, dx: -22, dy: 32 },
+    { p: '64% 66%, 78% 88%, 50% 84%', c: '#2b454a', z: 7, dx: 22, dy: 32 },
+    { p: '50% 84%, 40% 98%, 60% 98%', c: '#f2c97d', z: 11, dx: 0, dy: 44 },
+    { p: '2% 38%, 10% 60%, 28% 42%', c: '#4d7378', z: 3, dx: -44, dy: 6 },
+    { p: '98% 38%, 90% 60%, 72% 42%', c: '#3b5d62', z: 3, dx: 44, dy: 6 },
+    { p: '50% 4%, 29% 16%, 39% 23%', c: '#f2c97d', z: 20, dx: -16, dy: -32 },
   ],
   // Form 1: Geometric Sentinel Fox (Exploring / Background)
   [
-    { p: '24% 8%, 18% 36%, 40% 28%', c: '#f40c3f', z: 14 },
-    { p: '76% 8%, 82% 36%, 60% 28%', c: '#d11536', z: 14 },
-    { p: '24% 8%, 32% 28%, 40% 28%', c: '#160000', z: 18 },
-    { p: '76% 8%, 68% 28%, 60% 28%', c: '#160000', z: 18 },
-    { p: '40% 28%, 60% 28%, 50% 48%', c: '#e85338', z: 16 },
-    { p: '18% 36%, 40% 28%, 32% 54%', c: '#f28b50', z: 10 },
-    { p: '82% 36%, 60% 28%, 68% 54%', c: '#d9743b', z: 10 },
-    { p: '40% 28%, 50% 48%, 32% 54%', c: '#f40c3f', z: 12 },
-    { p: '60% 28%, 50% 48%, 68% 54%', c: '#c81e38', z: 12 },
-    { p: '18% 36%, 12% 62%, 32% 54%', c: '#fdfaf5', z: 6 },
-    { p: '82% 36%, 88% 62%, 68% 54%', c: '#e8e2d5', z: 6 },
-    { p: '32% 54%, 50% 48%, 50% 78%', c: '#f40c3f', z: 15 },
-    { p: '68% 54%, 50% 48%, 50% 78%', c: '#b8142c', z: 15 },
-    { p: '12% 62%, 32% 54%, 38% 78%', c: '#fdfaf5', z: 8 },
-    { p: '88% 62%, 68% 54%, 62% 78%', c: '#ded7c8', z: 8 },
-    { p: '32% 54%, 38% 78%, 50% 78%', c: '#f2c97d', z: 11 },
-    { p: '68% 54%, 62% 78%, 50% 78%', c: '#deb368', z: 11 },
-    { p: '38% 78%, 62% 78%, 50% 93%', c: '#160000', z: 20 },
+    { p: '22% 6%, 16% 36%, 39% 27%', c: '#f40c3f', z: 18, dx: -28, dy: -34 },
+    { p: '78% 6%, 84% 36%, 61% 27%', c: '#d11536', z: 18, dx: 28, dy: -34 },
+    { p: '22% 6%, 31% 27%, 39% 27%', c: '#160000', z: 24, dx: -22, dy: -38 },
+    { p: '78% 6%, 69% 27%, 61% 27%', c: '#160000', z: 24, dx: 22, dy: -38 },
+    { p: '39% 27%, 61% 27%, 50% 49%', c: '#e85338', z: 21, dx: 0, dy: -14 },
+    { p: '16% 36%, 39% 27%, 30% 55%', c: '#f28b50', z: 13, dx: -32, dy: -6 },
+    { p: '84% 36%, 61% 27%, 70% 55%', c: '#d9743b', z: 13, dx: 32, dy: -6 },
+    { p: '39% 27%, 50% 49%, 30% 55%', c: '#f40c3f', z: 16, dx: -14, dy: 0 },
+    { p: '61% 27%, 50% 49%, 70% 55%', c: '#c81e38', z: 16, dx: 14, dy: 0 },
+    { p: '16% 36%, 10% 64%, 30% 55%', c: '#fdfaf5', z: 8, dx: -42, dy: 12 },
+    { p: '84% 36%, 90% 64%, 70% 55%', c: '#e8e2d5', z: 8, dx: 42, dy: 12 },
+    { p: '30% 55%, 50% 49%, 50% 80%', c: '#f40c3f', z: 20, dx: -10, dy: 18 },
+    { p: '70% 55%, 50% 49%, 50% 80%', c: '#b8142c', z: 20, dx: 10, dy: 18 },
+    { p: '10% 64%, 30% 55%, 37% 80%', c: '#fdfaf5', z: 10, dx: -30, dy: 26 },
+    { p: '90% 64%, 70% 55%, 63% 80%', c: '#ded7c8', z: 10, dx: 30, dy: 26 },
+    { p: '30% 55%, 37% 80%, 50% 80%', c: '#f2c97d', z: 14, dx: -12, dy: 28 },
+    { p: '70% 55%, 63% 80%, 50% 80%', c: '#deb368', z: 14, dx: 12, dy: 28 },
+    { p: '37% 80%, 63% 80%, 50% 95%', c: '#160000', z: 26, dx: 0, dy: 42 },
   ],
   // Form 2: Ascending Origami Crane (Learning / Focus)
   [
-    { p: '84% 12%, 66% 22%, 74% 28%', c: '#f40c3f', z: 18 },
-    { p: '66% 22%, 74% 28%, 54% 48%', c: '#fdfaf5', z: 14 },
-    { p: '54% 48%, 36% 44%, 46% 64%', c: '#e8e2d5', z: 12 },
-    { p: '36% 44%, 8% 16%, 28% 58%', c: '#f2c97d', z: 16 },
-    { p: '54% 48%, 88% 36%, 64% 62%', c: '#deb368', z: 8 },
-    { p: '8% 16%, 20% 42%, 36% 44%', c: '#f40c3f', z: 15 },
-    { p: '88% 36%, 96% 52%, 64% 62%', c: '#c81e38', z: 6 },
-    { p: '28% 58%, 46% 64%, 34% 78%', c: '#355459', z: 10 },
-    { p: '46% 64%, 64% 62%, 52% 80%', c: '#284145', z: 10 },
-    { p: '36% 44%, 54% 48%, 64% 62%', c: '#fdfaf5', z: 13 },
-    { p: '28% 58%, 12% 88%, 34% 78%', c: '#f40c3f', z: 9 },
-    { p: '34% 78%, 46% 64%, 52% 80%', c: '#f2c97d', z: 11 },
-    { p: '52% 80%, 44% 95%, 60% 92%', c: '#4d7378', z: 5 },
-    { p: '66% 22%, 52% 36%, 54% 48%', c: '#d8d0c1', z: 11 },
-    { p: '8% 16%, 4% 34%, 28% 58%', c: '#4d7378', z: 7 },
-    { p: '12% 88%, 24% 94%, 34% 78%', c: '#1f3237', z: 4 },
-    { p: '64% 62%, 78% 76%, 52% 80%', c: '#3b5d62', z: 6 },
-    { p: '84% 12%, 92% 16%, 74% 28%', c: '#160000', z: 19 },
+    { p: '86% 10%, 66% 21%, 75% 28%', c: '#f40c3f', z: 24, dx: 34, dy: -32 },
+    { p: '66% 21%, 75% 28%, 54% 48%', c: '#fdfaf5', z: 18, dx: 22, dy: -16 },
+    { p: '54% 48%, 35% 43%, 46% 65%', c: '#e8e2d5', z: 15, dx: -6, dy: 6 },
+    { p: '35% 43%, 4% 12%, 26% 58%', c: '#f2c97d', z: 22, dx: -40, dy: -18 },
+    { p: '54% 48%, 92% 34%, 65% 63%', c: '#deb368', z: 10, dx: 36, dy: -2 },
+    { p: '4% 12%, 18% 41%, 35% 43%', c: '#f40c3f', z: 19, dx: -36, dy: -24 },
+    { p: '92% 34%, 98% 53%, 65% 63%', c: '#c81e38', z: 8, dx: 44, dy: 8 },
+    { p: '26% 58%, 46% 65%, 33% 80%', c: '#355459', z: 13, dx: -20, dy: 22 },
+    { p: '46% 65%, 65% 63%, 52% 82%', c: '#284145', z: 13, dx: 8, dy: 24 },
+    { p: '35% 43%, 54% 48%, 65% 63%', c: '#fdfaf5', z: 17, dx: 4, dy: 2 },
+    { p: '26% 58%, 10% 90%, 33% 80%', c: '#f40c3f', z: 12, dx: -34, dy: 34 },
+    { p: '33% 80%, 46% 65%, 52% 82%', c: '#f2c97d', z: 14, dx: -6, dy: 28 },
+    { p: '52% 82%, 43% 97%, 61% 94%', c: '#4d7378', z: 7, dx: 4, dy: 42 },
+    { p: '66% 21%, 51% 35%, 54% 48%', c: '#d8d0c1', z: 14, dx: 12, dy: -14 },
+    { p: '4% 12%, 2% 33%, 26% 58%', c: '#4d7378', z: 9, dx: -46, dy: -8 },
+    { p: '10% 90%, 23% 96%, 33% 80%', c: '#1f3237', z: 5, dx: -28, dy: 40 },
+    { p: '65% 63%, 80% 78%, 52% 82%', c: '#3b5d62', z: 8, dx: 24, dy: 28 },
+    { p: '86% 10%, 95% 15%, 75% 28%', c: '#160000', z: 26, dx: 42, dy: -36 },
   ],
   // Form 3: Bauhaus Tessellated Crystal Monolith (Tools)
   [
-    { p: '50% 4%, 26% 22%, 50% 30%', c: '#fdfaf5', z: 16 },
-    { p: '50% 4%, 74% 22%, 50% 30%', c: '#e0d8c8', z: 16 },
-    { p: '26% 22%, 14% 46%, 50% 30%', c: '#f40c3f', z: 12 },
-    { p: '74% 22%, 86% 46%, 50% 30%', c: '#b8142c', z: 12 },
-    { p: '14% 46%, 50% 30%, 34% 58%', c: '#f2c97d', z: 18 },
-    { p: '86% 46%, 50% 30%, 66% 58%', c: '#d6ab5e', z: 18 },
-    { p: '50% 30%, 34% 58%, 66% 58%', c: '#fdfaf5', z: 22 },
-    { p: '14% 46%, 22% 74%, 34% 58%', c: '#355459', z: 8 },
-    { p: '86% 46%, 78% 74%, 66% 58%', c: '#243c40', z: 8 },
-    { p: '34% 58%, 66% 58%, 50% 76%', c: '#f40c3f', z: 19 },
-    { p: '22% 74%, 34% 58%, 50% 76%', c: '#4d7378', z: 14 },
-    { p: '78% 74%, 66% 58%, 50% 76%', c: '#325054', z: 14 },
-    { p: '22% 74%, 50% 76%, 50% 96%', c: '#f2c97d', z: 10 },
-    { p: '78% 74%, 50% 76%, 50% 96%', c: '#c4984a', z: 10 },
-    { p: '26% 22%, 8% 30%, 14% 46%', c: '#294045', z: 4 },
-    { p: '74% 22%, 92% 30%, 86% 46%', c: '#1b2d30', z: 4 },
-    { p: '14% 46%, 8% 64%, 22% 74%', c: '#f40c3f', z: 5 },
-    { p: '86% 46%, 92% 64%, 78% 74%', c: '#9e1126', z: 5 },
+    { p: '50% 3%, 24% 21%, 50% 30%', c: '#fdfaf5', z: 22, dx: -18, dy: -36 },
+    { p: '50% 3%, 76% 21%, 50% 30%', c: '#e0d8c8', z: 22, dx: 18, dy: -36 },
+    { p: '24% 21%, 12% 46%, 50% 30%', c: '#f40c3f', z: 16, dx: -34, dy: -14 },
+    { p: '76% 21%, 88% 46%, 50% 30%', c: '#b8142c', z: 16, dx: 34, dy: -14 },
+    { p: '12% 46%, 50% 30%, 33% 59%', c: '#f2c97d', z: 24, dx: -22, dy: -2 },
+    { p: '88% 46%, 50% 30%, 67% 59%', c: '#d6ab5e', z: 24, dx: 22, dy: -2 },
+    { p: '50% 30%, 33% 59%, 67% 59%', c: '#fdfaf5', z: 28, dx: 0, dy: -4 },
+    { p: '12% 46%, 20% 75%, 33% 59%', c: '#355459', z: 11, dx: -36, dy: 16 },
+    { p: '88% 46%, 80% 75%, 67% 59%', c: '#243c40', z: 11, dx: 36, dy: 16 },
+    { p: '33% 59%, 67% 59%, 50% 78%', c: '#f40c3f', z: 25, dx: 0, dy: 18 },
+    { p: '20% 75%, 33% 59%, 50% 78%', c: '#4d7378', z: 18, dx: -18, dy: 24 },
+    { p: '80% 75%, 67% 59%, 50% 78%', c: '#325054', z: 18, dx: 18, dy: 24 },
+    { p: '20% 75%, 50% 78%, 50% 97%', c: '#f2c97d', z: 14, dx: -16, dy: 38 },
+    { p: '80% 75%, 50% 78%, 50% 97%', c: '#c4984a', z: 14, dx: 16, dy: 38 },
+    { p: '24% 21%, 6% 29%, 12% 46%', c: '#294045', z: 6, dx: -44, dy: -18 },
+    { p: '76% 21%, 94% 29%, 88% 46%', c: '#1b2d30', z: 6, dx: 44, dy: -18 },
+    { p: '12% 46%, 6% 65%, 20% 75%', c: '#f40c3f', z: 8, dx: -44, dy: 20 },
+    { p: '88% 46%, 94% 65%, 80% 75%', c: '#9e1126', z: 8, dx: 44, dy: 20 },
   ],
 ]
 
@@ -98,6 +99,7 @@ export function ChapterExplorer({ entries, chapter }: { entries: Entry[]; chapte
   const [selected, setSelected] = useState(0)
   const [angle, setAngle] = useState(20)
   const [playing, setPlaying] = useState(true)
+  const [exploded, setExploded] = useState(false)
   const details = chapter === 'currently'
     ? ['A visual blueprint editor for Qt 6 projects. Connect C++ + Qt in the previous chapter to discover its public repository.', 'A space to explore how tools, context and decisions come together in an agent.', 'An open page for the next thing to learn. This entry is intentionally unwritten.']
     : ['A space for projects shared with others. Personal details will be added here.', 'The story behind the work. This chapter is still being written.', 'A place for the questions that deserve more time. Details are coming later.', 'The tools behind the ideas. Explore the interactive stack in chapter 02.']
@@ -110,7 +112,24 @@ export function ChapterExplorer({ entries, chapter }: { entries: Entry[]; chapte
       <dd>{value || 'To be written'}</dd>
     </div>)}</dl>
     <aside className="chapter-detail" id={`${chapter}-detail`} aria-label="Selected chapter detail">
-      <div className="chapter-sculpture" data-playing={playing} data-form={selected} style={{ '--instrument-angle': `${angle}deg`, '--chapter-index': selected } as CSSProperties} aria-hidden="true">
+      <div
+        className="chapter-sculpture"
+        data-playing={playing}
+        data-exploded={exploded}
+        data-form={selected}
+        style={{ '--instrument-angle': `${angle}deg`, '--chapter-index': selected } as CSSProperties}
+        onClick={() => setExploded((prev) => !prev)}
+        aria-hidden="true"
+      >
+        <svg className="sculpture-reticle" viewBox="0 0 320 320">
+          <circle cx="160" cy="160" r="148" className="reticle-ring-outer" />
+          <circle cx="160" cy="160" r="118" className="reticle-ring-inner" />
+          <line x1="160" y1="0" x2="160" y2="320" className="reticle-axis" />
+          <line x1="0" y1="160" x2="320" y2="160" className="reticle-axis" />
+          <polygon points="160,6 155,16 165,16" className="reticle-tick" />
+          <polygon points="160,314 155,304 165,304" className="reticle-tick" />
+        </svg>
+        <div className="sculpture-three-stage" data-sculpture-stage />
         <div className="sculpture-object">
           {shards.map((shard, i) => <div
             className="sculpture-rib"
@@ -119,16 +138,22 @@ export function ChapterExplorer({ entries, chapter }: { entries: Entry[]; chapte
               '--rib': i,
               '--shard-bg': shard.c,
               '--shard-z': `${shard.z}px`,
+              '--shard-dx': `${shard.dx}px`,
+              '--shard-dy': `${shard.dy}px`,
               clipPath: `polygon(${shard.p})`,
             } as CSSProperties}
           />)}
         </div>
-        <div className="sculpture-coordinate">IN PIECES // 18 SHARDS · {FORM_NAMES[formIndex]} · 0{selected + 1}</div>
+        <div className="sculpture-coordinate">
+          IN PIECES // 18 SHARDS · {FORM_NAMES[formIndex]} · {exploded ? 'EXPLODED VIEW' : `FORM 0${selected + 1}`}
+        </div>
       </div>
       <div className="chapter-detail-copy" key={selected} aria-live="polite"><small>SELECTED / 0{selected + 1} · #IP-000{selected + 1}</small><h3>{entries[selected].value || entries[selected].label}</h3><p>{details[selected]}</p></div>
       <label className="instrument-control">ROTATE THE IDEA <input aria-label="Rotate the chapter sculpture" type="range" min="0" max="360" value={angle} onChange={(event) => setAngle(Number(event.target.value))} /></label>
-      <button className="sculpture-toggle" type="button" aria-pressed={!playing} onClick={() => setPlaying(!playing)}>{playing ? 'Ⅱ FREEZE FORM' : '▷ SET IN MOTION'}<span aria-hidden="true">↗</span></button>
+      <div className="sculpture-actions">
+        <button className="sculpture-toggle" type="button" aria-pressed={exploded} onClick={() => setExploded(!exploded)}>{exploded ? '◈ ASSEMBLE SHARDS' : '◇ SHATTER SHARDS'}</button>
+        <button className="sculpture-toggle" type="button" aria-pressed={!playing} onClick={() => setPlaying(!playing)}>{playing ? 'Ⅱ FREEZE' : '▷ ORBIT'}<span aria-hidden="true">↗</span></button>
+      </div>
     </aside>
   </div>
 }
-

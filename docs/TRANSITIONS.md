@@ -21,6 +21,7 @@ All seven boundaries run on a fixed viewport stage. The transition factory contr
 - Impact text uses a separate deterministic ballistic sampler, responding at the impact point. No physics or text-layout dependency has been added; the same progress restores all pieces on reverse.
 - Portal entry uses a page mask and nested depth rings to expose the shared star world. Native WebGL point projection supplies 3D camera travel; exit shrinks the same world back into a hole.
 - Space continuation retains one seeded point cloud, canvas, and camera ref across both space scenes. It does not create a new renderer at scene boundaries.
+- The shared context prefers WebGL 2 for the Three.js sculpture and corridor layers. Native passes reset shared GL state before drawing; WebGL 1 uses the native effects without constructing Three, and unavailable WebGL falls back to CSS without blocking the journey.
 - Restart gathers the outro beneath a closing veil, returns to Prelude (Scene 0.5), and restores keyboard focus without clearing graph state.
 - Reduced motion bypasses spatial travel, character action, and scattering in favor of fades. Personal information and destination URLs remain empty by user request.
 

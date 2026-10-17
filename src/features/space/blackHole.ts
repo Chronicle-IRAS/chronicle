@@ -1,4 +1,4 @@
-/** A ray-marched volume: tilted disk emission, horizon occlusion and bent view rays. */
+/** A ray-marched volume: tilted disk emission, crimson-gold photon ring, horizon occlusion and bent view rays. */
 export function createBlackHolePass(gl: WebGLRenderingContext) {
   const program = gl.createProgram()!
   const shaders: WebGLShader[] = []
@@ -16,31 +16,39 @@ export function createBlackHolePass(gl: WebGLRenderingContext) {
       // Roll the image plane around the optical axis, keeping the horizon centered.
       vec2 screen=rot*uv;
       vec3 rd=normalize(forward+screen.x*right*.72+screen.y*up*.72);
-      vec3 pos=ro, col=vec3(0.); float trans=1.;
+      vec3 pos=ro, col=vec3(0.), photonCol=vec3(0.); float trans=1.;
+      bool captured=false;
       for(int i=0;i<180;i++){
         float r=length(pos);
-        if(r<.88){trans=0.;break;}
+        if(r<.88){captured=true;break;}
         float stepSize=clamp(r*.025,.025,.15);
         rd=normalize(rd-normalize(pos)*(.9/(r*r))*stepSize);
         vec3 previous=pos;
         pos+=rd*stepSize;
+        // Keep ring emission separate: captured rays must leave a dark horizon.
+        float photon=exp(-pow((r-1.08)/.055,2.))*stepSize*1.85;
+        photonCol+=trans*photon*mix(vec3(.96,.05,.25),vec3(1.,.92,.76),clamp(1.-pos.x*.35,0.,1.));
         float radial=length(pos.xz);
         float disk=0.;
         // Density beyond this band is below exp(-9): skip invisible volume noise.
-        if(abs(pos.y)<.5 && radial>1.25 && radial<4.3){
-          disk=exp(-abs(pos.y)*18.)*smoothstep(1.25,1.65,radial)*(1.-smoothstep(3.1,4.3,radial));
+        if(abs(pos.y)<.5 && radial>1.22 && radial<4.4){
+          disk=exp(-abs(pos.y)*18.)*smoothstep(1.22,1.62,radial)*(1.-smoothstep(3.15,4.4,radial));
           float angle=atan(pos.z,pos.x);
           float turbulence=noise(vec2(radial*9.,angle*7.-time*.5))+ .5*noise(vec2(radial*23.,angle*13.-time*.8));
           float flow=.55+.45*turbulence;
           float filaments=.83+.17*sin(radial*62.+turbulence*4.);
-          float doppler=clamp(1.-pos.x*.18,.45,1.8);
-          vec3 heat=mix(vec3(.95,.33,.07),vec3(1.,.88,.64),exp(-(radial-1.3)*.55));
-          col+=trans*disk*heat*flow*filaments*doppler*stepSize*.65;
+          float doppler=clamp(1.-pos.x*.22,.45,1.95);
+          vec3 outerCrimson=vec3(.96,.05,.25);
+          vec3 midGold=vec3(.96,.76,.42);
+          vec3 coreIvory=vec3(1.,.97,.90);
+          float heatFactor=exp(-(radial-1.28)*.62);
+          vec3 heat=mix(outerCrimson,mix(midGold,coreIvory,smoothstep(.45,1.,heatFactor)),heatFactor);
+          col+=trans*disk*heat*flow*filaments*doppler*stepSize*.72;
         }
         if(previous.y*pos.y<0.) {
           vec3 surface=mix(previous,pos,previous.y/(previous.y-pos.y));
           float sr=length(surface.xz), sa=atan(surface.z,surface.x);
-          if(sr>1.25 && sr<4.3){
+          if(sr>1.22 && sr<4.4){
           float orbit=sa-time*2.6/pow(max(sr,1.),1.5)-spin;
           float inflow=sr+.035*sin(orbit*3.+sr*5.-time*.8);
           vec2 turbulenceUV=vec2(inflow*15.,sin(orbit)*4.);
@@ -50,22 +58,24 @@ export function createBlackHolePass(gl: WebGLRenderingContext) {
           float spiral=pow(.5+.5*sin(orbit*3.+sr*5.),6.);
           float hotSpot=pow(.5+.5*cos(sa-time*.9-spin),24.)*exp(-pow((sr-1.9)/.3,2.));
           float outerSpot=pow(.5+.5*cos(sa-time*.48-spin+2.),18.)*exp(-pow((sr-3.)/.4,2.));
-          float density=(.12+coarse*.5+fine*.25+thread*.45+spiral*.5+hotSpot*1.2+outerSpot*.7);
-          float rim=smoothstep(1.25,1.5,sr)*(1.-smoothstep(3.1,4.3,sr));
-          float brightness=pow(clamp(1.-surface.x*.22,.35,1.9),2.);
-          vec3 temperature=mix(vec3(.62,.13,.025),vec3(1.,.85,.61),exp(-max(sr-1.5,0.)*.7));
-          col+=trans*temperature*density*rim*brightness*(1.65+.12*sin(time*.85));
+          float density=(.14+coarse*.52+fine*.26+thread*.48+spiral*.52+hotSpot*1.3+outerSpot*.75);
+          float rim=smoothstep(1.22,1.48,sr)*(1.-smoothstep(3.15,4.4,sr));
+          float brightness=pow(clamp(1.-surface.x*.24,.35,2.0),2.);
+          float tempFactor=exp(-max(sr-1.45,0.)*.72);
+          vec3 temperature=mix(vec3(.78,.04,.20),mix(vec3(.96,.78,.46),vec3(1.,.96,.88),smoothstep(.4,1.,tempFactor)),tempFactor);
+          col+=trans*temperature*density*rim*brightness*(1.72+.14*sin(time*.85));
           float ringV=(sr-2.45)/.55;
           if(loading>.001 && ringV>0. && ringV<1.) {
             float ink=texture2D(lettering,vec2(fract((atan(surface.z,surface.x)-spin)/6.283185-time*.035),ringV)).r;
-            col+=trans*ink*vec3(1.,.97,.84)*loading*2.5;
+            col+=trans*ink*vec3(1.,.97,.88)*loading*2.6;
           }
           }
         }
         if(disk>0.) trans*=exp(-disk*stepSize*.55);
         if(length(pos)>12.)break;
       }
-      col=1.-exp(-col*1.25);
+      if(!captured) col+=photonCol;
+      col=1.-exp(-col*1.32);
       gl_FragColor=vec4(col,1.);
     }`
   ]

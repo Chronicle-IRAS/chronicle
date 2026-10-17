@@ -4,20 +4,24 @@ import { gsap } from '../lib/gsap'
 import { useSceneStore } from '../stores/sceneStore'
 
 const tactileTargets = '.quiet-control, .prelude-footer button, .paper-restart, .welcome-back, .opening-skip, .workbench-action > button, .workbench-project-link, .type-controls button, .sculpture-toggle, .journey-contrast'
+const interactiveTargets = 'button:not(:disabled), a[href], input, .react-flow__node, .chapter-sculpture'
 
 export function InteractionFeedback({ surface }: { surface: RefObject<HTMLDivElement | null> }) {
   const layer = useRef<HTMLDivElement>(null)
+  const reticleRef = useRef<HTMLDivElement>(null)
   const resetRef = useRef<() => void>(() => {})
-  const reduced = useSceneStore(state => state.reducedMotion)
-  const scene = useSceneStore(state => state.currentScene)
+  const reduced = useSceneStore((state) => state.reducedMotion)
+  const scene = useSceneStore((state) => state.currentScene)
   useEffect(() => { resetRef.current() }, [scene])
   useEffect(() => {
-    const root = surface.current, overlay = layer.current
+    const root = surface.current, overlay = layer.current, reticle = reticleRef.current
     if (!root || !overlay || reduced) return
     let current: HTMLElement | null = null
     let rect: DOMRect | undefined
     const animations = new Map<HTMLElement, { x: ReturnType<typeof gsap.quickTo>; y: ReturnType<typeof gsap.quickTo> }>()
     const echoes = new Map<HTMLElement, gsap.core.Tween>()
+    const quickX = reticle ? gsap.quickTo(reticle, 'x', { duration: .18, ease: 'power3.out' }) : null
+    const quickY = reticle ? gsap.quickTo(reticle, 'y', { duration: .18, ease: 'power3.out' }) : null
     const reset = () => {
       if (current) {
         const motion = animations.get(current)
@@ -28,11 +32,22 @@ export function InteractionFeedback({ surface }: { surface: RefObject<HTMLDivEle
     }
     resetRef.current = () => {
       reset()
+      if (reticle) {
+        reticle.dataset.engaged = 'false'
+        reticle.dataset.visible = 'false'
+      }
       echoes.forEach((tween, el) => { tween.kill(); el.remove() })
       echoes.clear()
     }
     const move = (event: PointerEvent) => {
       if (event.pointerType !== 'mouse' || !(event.target instanceof Element)) return
+      if (reticle && quickX && quickY) {
+        reticle.dataset.visible = 'true'
+        quickX(event.clientX)
+        quickY(event.clientY)
+        reticle.dataset.engaged = event.target.closest(interactiveTargets) ? 'true' : 'false'
+        reticle.dataset.paper = event.target.closest('[data-ink-surface], .paper-goodbye, .opening-loader') ? 'true' : 'false'
+      }
       const target = event.target.closest<HTMLElement>(tactileTargets)
       if (!target || target.matches(':disabled') || target.closest('[inert], [data-traversing="true"]')) { reset(); return }
       if (current !== target) {
@@ -51,11 +66,14 @@ export function InteractionFeedback({ surface }: { surface: RefObject<HTMLDivEle
       target.style.setProperty('--tactile-light-x', `${(x + 1) * 50}%`)
       target.style.setProperty('--tactile-light-y', `${(y + 1) * 50}%`)
     }
+    const leave = () => {
+      reset()
+      if (reticle) reticle.dataset.visible = 'false'
+    }
     const click = (event: MouseEvent) => {
       if (!(event.target instanceof Element)) return
-      const target = event.target.closest<HTMLElement>('button, a')
+      const target = event.target.closest<HTMLElement>('button, a, .chapter-sculpture')
       if (!target || target.matches(':disabled') || target.closest('[inert]')) return
-      // One transient ring per action, capped even during repeated clicking.
       if (echoes.size >= 4) {
         const first = echoes.keys().next().value!
         echoes.get(first)?.kill(); first.remove(); echoes.delete(first)
@@ -66,21 +84,22 @@ export function InteractionFeedback({ surface }: { surface: RefObject<HTMLDivEle
       echo.dataset.paper = String(!!target.closest('[data-ink-surface], .paper-goodbye'))
       overlay.append(echo)
       gsap.set(echo, { x: (point ? point.left + point.width / 2 : event.clientX) - 32,
-        y: (point ? point.top + point.height / 2 : event.clientY) - 32, scale: .2, opacity: .65 })
-      echoes.set(echo, gsap.to(echo, { scale: 1.25, opacity: 0, duration: .65, ease: 'power2.out',
+        y: (point ? point.top + point.height / 2 : event.clientY) - 32, scale: .2, opacity: .65, rotate: 0 })
+      echoes.set(echo, gsap.to(echo, { scale: 1.35, opacity: 0, rotate: 45, duration: .65, ease: 'power2.out',
         onComplete: () => { echo.remove(); echoes.delete(echo) } }))
     }
     root.addEventListener('pointermove', move, { passive: true })
-    root.addEventListener('pointerleave', reset)
+    root.addEventListener('pointerleave', leave)
     root.addEventListener('click', click, true)
-    window.addEventListener('blur', reset)
+    window.addEventListener('blur', leave)
     return () => {
       resetRef.current = () => {}
       root.removeEventListener('pointermove', move)
-      root.removeEventListener('pointerleave', reset)
+      root.removeEventListener('pointerleave', leave)
       root.removeEventListener('click', click, true)
-      window.removeEventListener('blur', reset)
-      reset()
+      window.removeEventListener('blur', leave)
+      leave()
+      quickX?.tween.kill(); quickY?.tween.kill()
       animations.forEach((motion, el) => {
         motion.x.tween.kill(); motion.y.tween.kill()
         el.style.removeProperty('--tactile-x'); el.style.removeProperty('--tactile-y')
@@ -88,6 +107,11 @@ export function InteractionFeedback({ surface }: { surface: RefObject<HTMLDivEle
       echoes.forEach((tween, el) => { tween.kill(); el.remove() })
     }
   }, [surface, reduced])
-  return <div className="interaction-feedback" ref={layer} aria-hidden="true" />
+  return (
+    <div className="interaction-feedback" ref={layer} aria-hidden="true">
+      <div ref={reticleRef} className="cursor-reticle" data-visible="false" data-engaged="false">
+        <span className="reticle-diamond" />
+      </div>
+    </div>
+  )
 }
-

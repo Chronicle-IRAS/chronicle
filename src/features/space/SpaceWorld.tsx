@@ -4,6 +4,7 @@ import { createStarField } from './field'
 import type { SpaceCamera } from './field'
 import { createBlackHolePass } from './blackHole'
 import { createRenderBudget } from './renderBudget'
+import { createThreeStage } from './threeStage'
 
 const vertex = `
 attribute vec3 aPosition;
@@ -45,7 +46,7 @@ void main() {
   vec2 q = gl_PointCoord - vec2(0.5);
   float d = length(vec2(dot(q, vAxis), dot(q, vec2(-vAxis.y, vAxis.x)) * vStretch));
   float light = (1.0 - smoothstep(0.0, 0.5, d)) * vLight;
-  gl_FragColor = vec4(mix(vec3(0.65, 0.76, 1.0), vec3(1.0, 0.91, 0.76), vTint), light);
+  gl_FragColor = vec4(mix(vec3(0.96, 0.05, 0.25), vec3(1.0, 0.91, 0.76), vTint), light);
 }`
 
 export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; reducedMotion: boolean }) {
@@ -54,14 +55,20 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
     const canvas = canvasRef.current
     if (!canvas) return
     const home = canvas.parentElement!
-    const hole = home.closest('main')?.querySelector<HTMLElement>('[data-enter-grid-orb]')
+    const mainRoot = home.closest('main')
+    const hole = mainRoot?.querySelector<HTMLElement>('[data-enter-grid-orb]')
     const welcome = hole?.closest('[data-scene-id]')
-    const prelude = home.closest('main')?.querySelector('[data-scene-id="prelude"]')
+    const prelude = mainRoot?.querySelector('[data-scene-id="prelude"]')
+    const currently = mainRoot?.querySelector('[data-scene-id="currently"]')
+    const profile = mainRoot?.querySelector('[data-scene-id="profile"]')
+    const currentlyStage = currently?.querySelector<HTMLElement>('[data-sculpture-stage]')
+    const profileStage = profile?.querySelector<HTMLElement>('[data-sculpture-stage]')
     const loadingLabel = hole?.querySelector('[data-enter-grid-loading]')
     let dispose = () => {}
     const initialize = () => {
       dispose()
-      const gl = canvas.getContext('webgl', { alpha: true, antialias: false, powerPreference: 'low-power' })
+      const attributes: WebGLContextAttributes = { alpha: true, antialias: false, powerPreference: 'low-power' }
+      const gl = canvas.getContext('webgl2', attributes) ?? canvas.getContext('webgl', attributes)
       if (!gl) { canvas.dataset.renderer = 'fallback'; return }
       const shaders: WebGLShader[] = []
       const program = gl.createProgram()
@@ -83,6 +90,7 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
       if (!gl.getProgramParameter(program, gl.LINK_STATUS)) { release(); canvas.dataset.renderer = 'fallback'; return }
       canvas.dataset.renderer = 'webgl'
       const blackHole = createBlackHolePass(gl)
+      const threeStage = createThreeStage(gl, canvas)
       const budget = createRenderBudget(window.innerWidth < 700 ? 448 : 640)
       gl.useProgram(program)
       gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
@@ -119,7 +127,6 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
       let lastPan = NaN
       let lastWarp = NaN
       let lastFrame = -1
-      // Local development diagnostics; no collection or transport in production.
       let sampleStart = performance.now(), previousTick = sampleStart, frameSum = 0, frameCount = 0, frameMax = 0, drawCount = 0
       const draw = (elapsed: number) => {
         if (import.meta.env.DEV) {
@@ -142,6 +149,7 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
           if ((reducedMotion && !dirty) || (!dirty && elapsed - lastFrame < 1 / 60)) return
           const resolution = budget.resolution
           if (canvas.width !== resolution || canvas.height !== resolution) canvas.width = canvas.height = resolution
+          threeStage?.resetState()
           gl.viewport(0, 0, canvas.width, canvas.height)
           lastFrame = elapsed - Math.max(0, (elapsed - lastFrame) % (1 / 60))
           dirty = false
@@ -149,31 +157,83 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
           drawCount++
           return
         }
+
+        // Three.js Sculpture Stage in Scene 03 (Currently) & Scene 04 (Profile) when space portal is closed
+        const currentlyActive = currently?.getAttribute('data-active') === 'true'
+        const currentlyTransitioning = currently?.getAttribute('data-transitioning') === 'true'
+        const profileActive = profile?.getAttribute('data-active') === 'true'
+        const sculptureHost = threeStage && camera.visible === 0
+          ? (currentlyTransitioning || profileActive ? profileStage : currentlyActive ? currentlyStage : null)
+          : null
+
+        if (sculptureHost && threeStage) {
+          if (canvas.parentElement !== sculptureHost) {
+            sculptureHost.appendChild(canvas)
+            dirty = true
+          }
+          if (!dirty && elapsed - lastFrame < 1 / 60) return
+          const rect = sculptureHost.getBoundingClientRect()
+          const dpr = Math.min(window.devicePixelRatio || 1, 1.75)
+          const targetW = Math.max(1, Math.round((rect.width || 300) * dpr))
+          const targetH = Math.max(1, Math.round((rect.height || 300) * dpr))
+          if (canvas.width !== targetW || canvas.height !== targetH) {
+            canvas.width = targetW
+            canvas.height = targetH
+          }
+          lastFrame = elapsed - Math.max(0, (elapsed - lastFrame) % (1 / 60))
+          dirty = false
+          const sculpture = sculptureHost.closest<HTMLElement>('.chapter-sculpture')
+          const playing = sculpture?.getAttribute('data-playing') !== 'false'
+          const exploded = sculpture?.getAttribute('data-exploded') === 'true'
+          const form = Number(sculpture?.getAttribute('data-form')) || 0
+          const isProfile = sculptureHost === profileStage
+          const formIndex = (isProfile ? form : form % 3) % 4
+          const angle = parseFloat(sculpture?.style.getPropertyValue('--instrument-angle') || '20') || 20
+          const px = mainRoot ? Number(gsap.getProperty(mainRoot, '--ambient-x')) || 50 : 50
+          const py = mainRoot ? Number(gsap.getProperty(mainRoot, '--ambient-y')) || 50 : 50
+          gl.clearColor(0, 0, 0, 0)
+          gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+          threeStage.drawSculpture(reducedMotion || !playing ? 0 : elapsed, formIndex, angle, exploded, px, py)
+          drawCount++
+          return
+        }
+
         if (canvas.parentElement !== home) { home.appendChild(canvas); gl.useProgram(program); resize() }
         if (gl.isContextLost() || document.hidden || camera.visible === 0) return
         if (reducedMotion && !dirty && lastDepth === camera.depth && lastTurn === camera.turn && lastPan === camera.pan && lastWarp === camera.warp) return
         if (!dirty && elapsed - lastFrame < 1 / 60) return
         lastFrame = elapsed - Math.max(0, (elapsed - lastFrame) % (1 / 60))
         lastDepth = camera.depth; lastTurn = camera.turn; lastPan = camera.pan; lastWarp = camera.warp; dirty = false
+        const aspectVal = canvas.width / Math.max(1, canvas.height)
+        const dpr = Math.min(window.devicePixelRatio, 1.75)
+        // Three caches GL bindings; restore the native pass before sharing the canvas.
+        threeStage?.resetState()
+        gl.viewport(0, 0, canvas.width, canvas.height)
         gl.clearColor(0, 0, 0, 0)
-        gl.clear(gl.COLOR_BUFFER_BIT)
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
         gl.useProgram(program)
         gl.enable(gl.BLEND)
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE)
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+        gl.enableVertexAttribArray(position)
         gl.vertexAttribPointer(position, 3, gl.FLOAT, false, 20, 0)
+        gl.enableVertexAttribArray(style)
         gl.vertexAttribPointer(style, 2, gl.FLOAT, false, 20, 12)
+        gl.uniform1f(aspect, aspectVal)
+        gl.uniform1f(ratio, dpr)
         gl.uniform1f(depth, camera.depth)
         gl.uniform1f(turn, camera.turn)
         gl.uniform1f(pan, camera.pan)
         gl.uniform1f(warp, camera.warp)
         gl.uniform1f(time, reducedMotion ? 0 : elapsed)
         gl.drawArrays(gl.POINTS, 0, count)
+        threeStage?.drawSpace(reducedMotion ? 0 : elapsed, camera, aspectVal)
         drawCount++
       }
       resize()
       window.addEventListener('resize', resize)
       gsap.ticker.add(draw)
-      dispose = () => { gsap.ticker.remove(draw); window.removeEventListener('resize', resize); home.appendChild(canvas); blackHole.dispose(); release() }
+      dispose = () => { gsap.ticker.remove(draw); window.removeEventListener('resize', resize); home.appendChild(canvas); blackHole.dispose(); threeStage?.dispose(); release() }
     }
     const lost = (event: Event) => { event.preventDefault(); canvas.dataset.renderer = 'fallback' }
     canvas.addEventListener('webglcontextlost', lost)

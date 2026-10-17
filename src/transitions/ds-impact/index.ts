@@ -61,7 +61,7 @@ export const dsImpact: TransitionFactory = ({ from, to, reducedMotion }) => {
     // Keep the shared chapter behind the impact; only Profile's copy floats up.
     // GSAP parses 'transparent' as rgba(255, 255, 255, 0), so tweening to it drags the
     // chapter through light grey. Hold the chapter RGB and fade alpha only.
-    timeline.to(from, { backgroundColor: 'rgba(22, 32, 40, 0)', duration: 0.22 }, 1.1)
+    timeline.to(from, { backgroundColor: 'rgba(19, 9, 13, 0)', duration: 0.22 }, 1.1)
     const body = from.querySelector('.scene-body')
     if (body) timeline.to(body, { autoAlpha: 0, duration: 0.24 }, 1.1)
     timeline.fromTo(to, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, 1.1)
@@ -78,11 +78,12 @@ export const profileReturn: TransitionFactory = ({ from, to, reducedMotion }) =>
   const incoming = to.querySelectorAll('.section-number, .scene-title, .text-list > div, .chapter-detail')
   timeline.set(to.querySelectorAll('[data-impact-actor], [data-impact-ripple]'), { autoAlpha: 0 }, 0)
   timeline.set(to.querySelectorAll('[data-impact-piece]'), { x: 0, y: 0, rotation: 0 }, 0)
-  timeline.set(to, { autoAlpha: 1, backgroundColor: 'transparent' }, 0)
+  timeline.set(to, { autoAlpha: 1, backgroundColor: 'rgba(19, 9, 13, 0)' }, 0)
   timeline.set(to.querySelector('.scene-body'), { autoAlpha: 1, x: 0 }, 0)
   timeline.set(incoming, { autoAlpha: 0 }, 0)
   timeline.fromTo(from.querySelector('.scene-body'), { autoAlpha: 1, y: 0 }, { autoAlpha: 0, y: reducedMotion ? 0 : -14, duration: 0.35, ease: 'power1.inOut' }, 0)
   timeline.fromTo(incoming, { autoAlpha: 0, y: reducedMotion ? 0 : 24 }, { autoAlpha: 1, y: 0, duration: 0.55, stagger: reducedMotion ? 0 : 0.055, ease: 'power2.out' }, 0.36)
+  timeline.to(to, { backgroundColor: 'rgb(19, 9, 13)', duration: 0.1 }, 0.84)
   timeline.fromTo(from, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.1 }, 0.84)
   timeline.set(from.querySelector('.scene-body'), { y: 0, autoAlpha: 1 }, 0.94)
   return timeline

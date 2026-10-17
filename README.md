@@ -37,7 +37,7 @@ The first visit in each tab session opens with a skippable Loading sequence that
 | `src/transitions/` | Character, text, portal, content handoffs, and restart choreography. The existing TransitionFactory contract remains unchanged. |
 | `src/features/stack-composer/` | Pure unordered composition engine, graph state, React Flow nodes and controls. |
 | `src/features/text-impact/` | Progress-sampled ballistic text impulses, independent of character poses and reversible without numerical integration. |
-| `src/features/space/` | One native WebGL canvas and point buffer, seeded stars, camera choreography. One draw call per changed visible frame. |
+| `src/features/space/` | One shared canvas/context for native stars, the ray-marched black hole, and the Three.js chapter/space stages. WebGL 2 is preferred; WebGL 1 retains native effects, and CSS art remains available without WebGL. |
 | `src/components/CharacterCast.tsx` | Registry-driven ensemble and impact pose layers. |
 | `src/assets/characters/registry.ts` | Production pose URLs resolved from existing `image/` source assets. |
 | `src/data/siteContent.ts` | Currently/Profile content, future topics, destination URLs, and Goodbye labels. |

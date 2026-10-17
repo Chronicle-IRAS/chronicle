@@ -173,11 +173,17 @@ export function SceneDirector() {
         refreshing = false
         syncActive()
       }
-      window.addEventListener('resize', beginRefresh)
+      const refreshViewport = () => {
+        beginRefresh()
+        // The guard also covers small mobile resizes that ScrollTrigger normally
+        // ignores. Queue its debounced refresh so the guard always gets released.
+        ScrollTrigger.refresh(true)
+      }
+      window.addEventListener('resize', refreshViewport)
       ScrollTrigger.addEventListener('refreshInit', beginRefresh)
       ScrollTrigger.addEventListener('refresh', finishRefresh)
       removeRefreshListeners = () => {
-        window.removeEventListener('resize', beginRefresh)
+        window.removeEventListener('resize', refreshViewport)
         ScrollTrigger.removeEventListener('refreshInit', beginRefresh)
         ScrollTrigger.removeEventListener('refresh', finishRefresh)
       }
