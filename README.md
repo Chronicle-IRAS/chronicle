@@ -1,6 +1,6 @@
 # CHRONICLE — Full Journey V1
 
-A working eight-scene interactive narrative, from Prelude (0.5) through Welcome, Composer, and Goodbye to Restart. All seven scroll boundaries and the Restart loop are implemented. Profile copy and the GitHub/Source destinations are configured; Blog, Resume, and Email intentionally remain unlinked. Visual decisions marked TBD in the design documents remain reviewable.
+A working eight-scene interactive narrative, from Prelude (0.5) through Welcome, Composer, and Goodbye to Restart. All seven scroll boundaries and the Restart loop are implemented. Profile copy and the GitHub, Source, and Email destinations are configured; Blog and Resume intentionally remain unlinked. Visual decisions marked TBD in the design documents remain reviewable.
 
 ## Run
 
