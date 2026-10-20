@@ -33,7 +33,7 @@ All seven boundaries run on a fixed viewport stage. The transition factory contr
 - Welcome typography keeps its original scale and fades early alongside the scroll cue.
 - The eclipse grows toward the viewer; an expanding circular iris reveals the fixed Composer canvas behind it.
 - The background and incoming canvas overlap, then the Composer heading settles in. Duration: 4.8 seconds (accelerating accretion disk spin and iris expansion).
-- Return reverses the iris and restores the sphere and original typography; input stays locked until completion.
+- Return uses a dedicated departure: the blueprint's live 3D layer fades before the shared canvas changes host, then the board dissolves while the camera pulls back from a moderately enlarged black hole. Welcome copy settles back into place; input stays locked until completion.
 - Reduced motion uses a fully open iris, a stationary sphere, and short fades.
 
 ## 02 → 03 — AI ENSEMBLE PUSH (Stack Composer → Currently)
@@ -48,6 +48,7 @@ All seven boundaries run on a fixed viewport stage. The transition factory contr
 - Ensemble rule: `LOCKED` this must read as group comedy, not five identical sprites performing the same motion.
 - Timing and contact: `LOCKED` by user request, Composer has an extended editing interval with the ensemble fully hidden. The push begins at the left edge of the full-screen board; characters follow that edge instead of standing inside the canvas.
 - Return: `LOCKED` Scene 03 → Scene 02 uses a separately choreographed pull with DS_PULL and GROK_PULL assets, facing the returning board, repeated exertion and distinct support motions. Composer is editable only after the pull finishes.
+- The departing blueprint keeps its live shared canvas through the push. Its stage fades only as the board clears the viewport, then the incoming sculpture fades in. The pull also fades the departing sculpture before moving the canvas to the incoming board.
 - Physics feel: `DIRECTION` when scrolling starts, the characters visibly exert force first and Scene 02 does not move immediately — a beat of static friction / inertia — then the page is pushed away.
 - Reversal: `LOCKED` scrolling up restores the previous state as naturally as possible, and the Scene 02 React Flow state is still present on return.
 - Character detail: see `docs/CHARACTERS.md`.

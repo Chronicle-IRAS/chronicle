@@ -5,6 +5,7 @@ import type { SpaceCamera } from './field'
 import { createBlackHolePass } from './blackHole'
 import { createRenderBudget } from './renderBudget'
 import { createThreeStage } from './threeStage'
+import { resolveWorldStage } from './worldStage'
 
 const vertex = `
 attribute vec3 aPosition;
@@ -57,17 +58,23 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
     const home = canvas.parentElement!
     const mainRoot = home.closest('main')
     const hole = mainRoot?.querySelector<HTMLElement>('[data-enter-grid-orb]')
-    const welcome = hole?.closest('[data-scene-id]')
     const prelude = mainRoot?.querySelector('[data-scene-id="prelude"]')
+    const composer = mainRoot?.querySelector('[data-scene-id="composer"]')
     const currently = mainRoot?.querySelector('[data-scene-id="currently"]')
     const profile = mainRoot?.querySelector('[data-scene-id="profile"]')
+    const destinations = mainRoot?.querySelector('[data-scene-id="destinations"]')
+    const goodbye = mainRoot?.querySelector('[data-scene-id="goodbye"]')
+    const preludeStage = prelude?.querySelector<HTMLElement>('[data-prelude-stage]')
+    const composerStage = composer?.querySelector<HTMLElement>('[data-composer-stage]')
     const currentlyStage = currently?.querySelector<HTMLElement>('[data-sculpture-stage]')
     const profileStage = profile?.querySelector<HTMLElement>('[data-sculpture-stage]')
-    const loadingLabel = hole?.querySelector('[data-enter-grid-loading]')
+    const goodbyeStage = goodbye?.querySelector<HTMLElement>('[data-goodbye-stage]')
+    const destinationContent = destinations?.querySelector<HTMLElement>('[data-selected-orbit]')
+    const loadingLabel = hole?.querySelector<HTMLElement | SVGElement>('[data-enter-grid-loading]')
     let dispose = () => {}
     const initialize = () => {
       dispose()
-      const attributes: WebGLContextAttributes = { alpha: true, antialias: false, powerPreference: 'low-power' }
+      const attributes: WebGLContextAttributes = { alpha: true, depth: true, antialias: false, powerPreference: 'low-power' }
       const gl = canvas.getContext('webgl2', attributes) ?? canvas.getContext('webgl', attributes)
       if (!gl) { canvas.dataset.renderer = 'fallback'; return }
       const shaders: WebGLShader[] = []
@@ -112,6 +119,16 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
       const ratio = gl.getUniformLocation(program, 'uPixelRatio')
       const time = gl.getUniformLocation(program, 'uTime')
       let dirty = true
+      const hostSizes = new WeakMap<Element, { width: number; height: number }>()
+      const hostObserver = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          hostSizes.set(entry.target, { width: entry.contentRect.width, height: entry.contentRect.height })
+        }
+        dirty = true
+      })
+      for (const host of [hole, preludeStage, composerStage, currentlyStage, profileStage, goodbyeStage]) {
+        if (host) hostObserver.observe(host)
+      }
       const resize = () => {
         gl.useProgram(program)
         const dpr = Math.min(window.devicePixelRatio, 1.75)
@@ -121,6 +138,16 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
         gl.uniform1f(aspect, canvas.width / canvas.height)
         gl.uniform1f(ratio, dpr)
         dirty = true
+      }
+      const syncHostSize = (host: HTMLElement, fallbackSize: number) => {
+        const size = hostSizes.get(host)
+        const dpr = Math.min(window.devicePixelRatio || 1, 1.75)
+        const targetW = Math.max(1, Math.round((size?.width || fallbackSize) * dpr))
+        const targetH = Math.max(1, Math.round((size?.height || fallbackSize) * dpr))
+        if (canvas.width !== targetW || canvas.height !== targetH) {
+          canvas.width = targetW
+          canvas.height = targetH
+        }
       }
       let lastDepth = NaN
       let lastTurn = NaN
@@ -141,29 +168,79 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
           }
         }
         if (document.hidden || gl.isContextLost()) { budget.reset(); return }
-        const inPrelude = prelude?.getAttribute('data-transitioning') === 'true'
-        const inHole = !!hole && (inPrelude || welcome?.getAttribute('data-active') === 'true' || welcome?.getAttribute('data-transitioning') === 'true')
-        if (inHole && blackHole.valid) {
+        // GSAP already writes these inline. Computed-style reads would flush the
+        // transition's pending styles across the entire scene tree every frame.
+        const px = Number(mainRoot?.style.getPropertyValue('--ambient-x') || 50)
+        const py = Number(mainRoot?.style.getPropertyValue('--ambient-y') || 50)
+
+        const stage = resolveWorldStage({
+          active: mainRoot?.querySelector<HTMLElement>('[data-scene-id][data-active="true"]')?.dataset.sceneId,
+          boundary: mainRoot?.dataset.transitionFrom,
+          direction: mainRoot?.dataset.transitionDirection,
+          composerVisible: Number(composerStage?.style.opacity || 1) > .001,
+          currentlyVisible: Number(currentlyStage?.style.opacity || 1) > .001,
+        })
+        const inHole = !!hole && stage === 'black-hole'
+        if (inHole && (threeStage || blackHole.valid)) {
           if (canvas.parentElement !== hole) { hole.appendChild(canvas); dirty = true; budget.reset() }
-          if (!reducedMotion) budget.sample(performance.now())
           if ((reducedMotion && !dirty) || (!dirty && elapsed - lastFrame < 1 / 60)) return
-          const resolution = budget.resolution
-          if (canvas.width !== resolution || canvas.height !== resolution) canvas.width = canvas.height = resolution
-          threeStage?.resetState()
-          gl.viewport(0, 0, canvas.width, canvas.height)
           lastFrame = elapsed - Math.max(0, (elapsed - lastFrame) % (1 / 60))
           dirty = false
-          blackHole.draw(reducedMotion ? 0 : elapsed, loadingLabel ? Number(gsap.getProperty(loadingLabel, 'opacity')) : 0, reducedMotion ? 0 : Number(gsap.getProperty(hole, '--hole-spin')) || 0)
+          const loadingProgress = Number(loadingLabel?.style.opacity || 0)
+          const holeSpin = reducedMotion ? 0 : Number(hole.style.getPropertyValue('--hole-spin') || 0)
+          if (threeStage) {
+            syncHostSize(hole, 760)
+            gl.colorMask(true, true, true, true)
+            gl.clearColor(0, 0, 0, 0)
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+            threeStage.drawBlackHole(reducedMotion ? 0 : elapsed, loadingProgress, holeSpin, px, py)
+          } else {
+            if (!reducedMotion) budget.sample(performance.now())
+            const resolution = budget.resolution
+            if (canvas.width !== resolution || canvas.height !== resolution) canvas.width = canvas.height = resolution
+            gl.viewport(0, 0, canvas.width, canvas.height)
+            blackHole.draw(reducedMotion ? 0 : elapsed, loadingProgress, holeSpin)
+          }
           drawCount++
           return
         }
 
-        // Three.js Sculpture Stage in Scene 03 (Currently) & Scene 04 (Profile) when space portal is closed
-        const currentlyActive = currently?.getAttribute('data-active') === 'true'
-        const currentlyTransitioning = currently?.getAttribute('data-transitioning') === 'true'
-        const profileActive = profile?.getAttribute('data-active') === 'true'
+        // Scene 00 (Prelude): 3D Architectural Armillary Sphere before threshold transition
+        const preludeActive = stage === 'prelude'
+        if (preludeActive && preludeStage && threeStage && camera.visible === 0) {
+          if (canvas.parentElement !== preludeStage) { preludeStage.appendChild(canvas); dirty = true }
+          if (!dirty && elapsed - lastFrame < 1 / 60) return
+          syncHostSize(preludeStage, 260)
+          lastFrame = elapsed - Math.max(0, (elapsed - lastFrame) % (1 / 60))
+          dirty = false
+          gl.colorMask(true, true, true, true)
+          gl.clearColor(0, 0, 0, 0)
+          gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+          threeStage.drawPrelude(reducedMotion ? 0 : elapsed, px, py)
+          drawCount++
+          return
+        }
+
+        // Scene 02 (Stack Composer): 3D Cybernetic Lattice behind the React Flow graph
+        const composerActive = stage === 'composer'
+        if (composerActive && composerStage && threeStage && camera.visible === 0) {
+          if (canvas.parentElement !== composerStage) { composerStage.appendChild(canvas); dirty = true }
+          if (!dirty && elapsed - lastFrame < 1 / 60) return
+          syncHostSize(composerStage, 640)
+          lastFrame = elapsed - Math.max(0, (elapsed - lastFrame) % (1 / 60))
+          dirty = false
+          const nodeCount = composer?.querySelectorAll('.react-flow__node').length ?? 0
+          gl.colorMask(true, true, true, true)
+          gl.clearColor(0, 0, 0, 0)
+          gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+          threeStage.drawComposer(reducedMotion ? 0 : elapsed, nodeCount, px, py)
+          drawCount++
+          return
+        }
+
+        // Scenes 03 & 04 (Currently & Profile): Three.js Sculpture Stage when space portal is closed
         const sculptureHost = threeStage && camera.visible === 0
-          ? (currentlyTransitioning || profileActive ? profileStage : currentlyActive ? currentlyStage : null)
+          ? (stage === 'profile' ? profileStage : stage === 'currently' ? currentlyStage : null)
           : null
 
         if (sculptureHost && threeStage) {
@@ -172,14 +249,7 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
             dirty = true
           }
           if (!dirty && elapsed - lastFrame < 1 / 60) return
-          const rect = sculptureHost.getBoundingClientRect()
-          const dpr = Math.min(window.devicePixelRatio || 1, 1.75)
-          const targetW = Math.max(1, Math.round((rect.width || 300) * dpr))
-          const targetH = Math.max(1, Math.round((rect.height || 300) * dpr))
-          if (canvas.width !== targetW || canvas.height !== targetH) {
-            canvas.width = targetW
-            canvas.height = targetH
-          }
+          syncHostSize(sculptureHost, 300)
           lastFrame = elapsed - Math.max(0, (elapsed - lastFrame) % (1 / 60))
           dirty = false
           const sculpture = sculptureHost.closest<HTMLElement>('.chapter-sculpture')
@@ -189,11 +259,26 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
           const isProfile = sculptureHost === profileStage
           const formIndex = (isProfile ? form : form % 3) % 4
           const angle = parseFloat(sculpture?.style.getPropertyValue('--instrument-angle') || '20') || 20
-          const px = mainRoot ? Number(gsap.getProperty(mainRoot, '--ambient-x')) || 50 : 50
-          const py = mainRoot ? Number(gsap.getProperty(mainRoot, '--ambient-y')) || 50 : 50
+          gl.colorMask(true, true, true, true)
           gl.clearColor(0, 0, 0, 0)
           gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
           threeStage.drawSculpture(reducedMotion || !playing ? 0 : elapsed, formIndex, angle, exploded, px, py)
+          drawCount++
+          return
+        }
+
+        // Scene 07 (Goodbye): 3D Origami Fleet & Geodesic Compass behind typographic playground
+        const goodbyeActive = stage === 'goodbye'
+        if (goodbyeActive && goodbyeStage && threeStage && camera.visible === 0) {
+          if (canvas.parentElement !== goodbyeStage) { goodbyeStage.appendChild(canvas); dirty = true }
+          if (!dirty && elapsed - lastFrame < 1 / 60) return
+          syncHostSize(goodbyeStage, 640)
+          lastFrame = elapsed - Math.max(0, (elapsed - lastFrame) % (1 / 60))
+          dirty = false
+          gl.colorMask(true, true, true, true)
+          gl.clearColor(0, 0, 0, 0)
+          gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+          threeStage.drawGoodbye(reducedMotion ? 0 : elapsed, px, py)
           drawCount++
           return
         }
@@ -209,8 +294,11 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
         // Three caches GL bindings; restore the native pass before sharing the canvas.
         threeStage?.resetState()
         gl.viewport(0, 0, canvas.width, canvas.height)
+        gl.colorMask(true, true, true, true)
         gl.clearColor(0, 0, 0, 0)
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+        gl.disable(gl.DEPTH_TEST)
+        gl.disable(gl.CULL_FACE)
         gl.useProgram(program)
         gl.enable(gl.BLEND)
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE)
@@ -227,13 +315,14 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
         gl.uniform1f(warp, camera.warp)
         gl.uniform1f(time, reducedMotion ? 0 : elapsed)
         gl.drawArrays(gl.POINTS, 0, count)
-        threeStage?.drawSpace(reducedMotion ? 0 : elapsed, camera, aspectVal)
+        const selectedOrbit = Number(destinationContent?.getAttribute('data-selected-orbit') ?? -1)
+        threeStage?.drawSpace(reducedMotion ? 0 : elapsed, camera, aspectVal, selectedOrbit)
         drawCount++
       }
       resize()
       window.addEventListener('resize', resize)
       gsap.ticker.add(draw)
-      dispose = () => { gsap.ticker.remove(draw); window.removeEventListener('resize', resize); home.appendChild(canvas); blackHole.dispose(); threeStage?.dispose(); release() }
+      dispose = () => { gsap.ticker.remove(draw); window.removeEventListener('resize', resize); hostObserver.disconnect(); home.appendChild(canvas); blackHole.dispose(); threeStage?.dispose(); release() }
     }
     const lost = (event: Event) => { event.preventDefault(); canvas.dataset.renderer = 'fallback' }
     canvas.addEventListener('webglcontextlost', lost)

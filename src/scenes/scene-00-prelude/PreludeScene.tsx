@@ -18,6 +18,7 @@ export function PreludeScene() {
       <span className="prelude-crosshair prelude-ch-br">+</span>
       <span className="prelude-rail-left">SYS // 01000011 · ARCHIVE EDITION 2026</span>
       <span className="prelude-rail-right">48°51&apos;24&quot;N · 02°21&apos;08&quot;E // WODNIACK-INSPIRED</span>
+      <div className="prelude-three-stage" data-prelude-stage aria-hidden="true" />
       <svg className="prelude-seal" viewBox="0 0 140 140">
         <defs>
           <path id="prelude-seal-path" d="M70,70 m-52,0 a52,52 0 1,1 104,0 a52,52 0 1,1 -104,0" />

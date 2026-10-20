@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { gsap } from '../../lib/gsap'
-import { welcomeToComposer } from './index'
+import { composerToWelcome, welcomeToComposer } from './index'
 
 function fixture() {
   const title = { autoAlpha: 1, scale: 1 }
@@ -17,6 +17,33 @@ function fixture() {
 }
 afterEach(() => gsap.globalTimeline.clear())
 describe('Eclipse iris transition', () => {
+  for (const reducedMotion of [false, true]) {
+    it(`returns through a faded stage handoff and settles Welcome (reduced motion: ${reducedMotion})`, () => {
+      const f = fixture()
+      const stage = { autoAlpha: 1 }
+      const from = { autoAlpha: 1, querySelector: () => stage }
+      const to = { autoAlpha: 0, querySelector: f.root.querySelector }
+      const timeline = composerToWelcome({ from: from as unknown as HTMLElement, to: to as unknown as HTMLElement, reducedMotion })
+      timeline.time(.1)
+      expect(stage.autoAlpha).toBeGreaterThan(0)
+      expect(to.autoAlpha).toBe(0)
+      timeline.time(.2)
+      expect(stage.autoAlpha).toBe(0)
+      expect(to.autoAlpha).toBe(0)
+      timeline.time(.5)
+      expect(to.autoAlpha).toBeGreaterThan(0)
+      expect(from.autoAlpha).toBeLessThan(1)
+      expect(f.orb.scale).toBeLessThanOrEqual(1.65)
+      if (reducedMotion) expect(f.orb.scale).toBe(1)
+      timeline.progress(1)
+      expect(from.autoAlpha).toBe(0)
+      expect(to.autoAlpha).toBe(1)
+      expect(f.orb.scale).toBe(1)
+      expect(f.orb.rotation).toBe(0)
+      expect(f.orb['--hole-spin']).toBe(0)
+      expect(f.title.autoAlpha).toBe(1)
+    })
+  }
   it('passes through the sphere without scaling text and restores the start on return', () => {
     const f = fixture()
     const timeline = welcomeToComposer({ from: f.root, to: f.root, reducedMotion: false })

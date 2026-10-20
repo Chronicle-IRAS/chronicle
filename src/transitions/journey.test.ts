@@ -15,15 +15,19 @@ describe('Remaining scene boundaries', () => {
     const cast = { autoAlpha: 0, xPercent: 105 }
     const push = { autoAlpha: 1 }
     const pull = { autoAlpha: 0 }
+    const outgoingStage = { autoAlpha: 1 }
+    const composerStage = { autoAlpha: 0 }
     const actor = { x: 0, y: 0, rotation: 0 }
     const to = {
       autoAlpha: 0,
-      querySelector: (s: string) => s === '[data-composer-board]' ? board : s === '.character-cast' ? cast : s === '[data-cast="deepseek"]' ? actor : null,
+      querySelector: (s: string) => s === '[data-composer-board]' ? board : s === '.character-cast' ? cast : s === '[data-cast="deepseek"]' ? actor : s === '[data-composer-stage]' ? composerStage : null,
       querySelectorAll: (s: string) => s.includes('hard') ? [push] : [pull],
     }
-    const from = { autoAlpha: 1 }
+    const from = { autoAlpha: 1, querySelector: () => outgoingStage }
     const timeline = aiPull({ from: from as unknown as HTMLElement, to: to as unknown as HTMLElement, reducedMotion: false })
     timeline.time(0.3)
+    expect(outgoingStage.autoAlpha).toBe(0)
+    expect(composerStage.autoAlpha).toBeGreaterThan(0)
     expect(push.autoAlpha).toBe(0)
     expect(pull.autoAlpha).toBe(1)
     expect(cast.xPercent).toBeCloseTo(board.xPercent)
@@ -67,16 +71,22 @@ describe('Remaining scene boundaries', () => {
   it('holds the board for exertion, then keeps the ensemble at the moving board edge', () => {
     const board = { autoAlpha: 1, xPercent: 0 }
     const cast = { autoAlpha: 0, xPercent: 0 }
-    const from = { autoAlpha: 1, querySelectorAll: () => [], querySelector: (selector: string) => selector === '[data-composer-board]' ? board : selector === '.character-cast' ? cast : null }
-    const to = { autoAlpha: 0 }
+    const composerStage = { autoAlpha: 1 }
+    const incomingStage = { autoAlpha: 0 }
+    const from = { autoAlpha: 1, querySelectorAll: () => [], querySelector: (selector: string) => selector === '[data-composer-board]' ? board : selector === '.character-cast' ? cast : selector === '[data-composer-stage]' ? composerStage : null }
+    const to = { autoAlpha: 0, querySelector: () => incomingStage }
     const timeline = aiPush({ from: from as unknown as HTMLElement, to: to as unknown as HTMLElement, reducedMotion: false })
     timeline.progress(0.2)
     expect(board.xPercent).toBe(0)
     expect(cast.autoAlpha).toBe(1)
     timeline.progress(0.6)
+    expect(composerStage.autoAlpha).toBe(1)
+    expect(incomingStage.autoAlpha).toBe(0)
     expect(board.xPercent).toBeGreaterThan(0)
     expect(cast.xPercent).toBeCloseTo(board.xPercent)
     timeline.progress(1)
+    expect(composerStage.autoAlpha).toBe(0)
+    expect(incomingStage.autoAlpha).toBe(1)
     expect(board.xPercent).toBe(105)
     expect(from.autoAlpha).toBe(0)
     timeline.progress(0.65)

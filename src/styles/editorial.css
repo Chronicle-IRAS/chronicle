@@ -31,7 +31,10 @@
 .chapter-sculpture { width: 100%; height: clamp(185px,29svh,330px); max-width: none; margin: -3svh 0 12px; grid-column: 1/-1; perspective: 950px; transform: none; cursor: pointer; }
 .sculpture-reticle { position: absolute; left: 50%; top: 50%; width: min(29vw, 340px); aspect-ratio: 1; translate: -50% -50%; pointer-events: none; overflow: visible; opacity: .7; }
 .sculpture-three-stage { position: absolute; left: 50%; top: 50%; width: min(30vw, 350px); aspect-ratio: 1; translate: -50% -50%; pointer-events: none; z-index: 2; mix-blend-mode: screen; }
-.sculpture-three-stage > canvas { width: 100%; height: 100%; display: block; pointer-events: none; }
+.prelude-three-stage { position: absolute; left: 50%; top: 47%; width: min(56vmin, 500px); aspect-ratio: 1; translate: -50% -50%; pointer-events: none; z-index: 1; opacity: .88; }
+.composer-three-stage { position: absolute; inset: 0; pointer-events: none; z-index: 0; opacity: .82; mix-blend-mode: screen; }
+.goodbye-three-stage { position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: .76; }
+:is(.sculpture-three-stage, .prelude-three-stage, .composer-three-stage, .goodbye-three-stage) > canvas { width: 100%; height: 100%; display: block; pointer-events: none; }
 .reticle-ring-outer { fill: none; stroke: #f40c3f44; stroke-width: 1; stroke-dasharray: 4 8; transform-origin: center; animation: aw-star-spin 36s linear infinite; }
 .reticle-ring-inner { fill: none; stroke: #f2c97d38; stroke-width: 1; stroke-dasharray: 2 12; transform-origin: center; animation: aw-star-spin 24s linear infinite reverse; }
 .reticle-axis { stroke: #fdfaf518; stroke-width: 1; }
@@ -84,9 +87,9 @@
 .chapter-detail h3 { font-size: 25px; letter-spacing: -.04em; margin: 9px 0; }.chapter-detail p { font-size: 12px; max-width: 450px; margin-bottom: 18px; }
 .instrument-control { align-self: center; }.instrument-control input { width: 100px; accent-color: #f40c3f; }
 .sculpture-toggle { background: none; border: 0; border-bottom: 1px solid #f2c97d88; padding: 9px 0; color: #f2c97d; font: 700 8px ui-monospace,monospace; letter-spacing: .1em; cursor: pointer; }.sculpture-toggle span { margin-left: 10px; color: #f40c3f; }.sculpture-toggle:hover, .sculpture-toggle[aria-pressed="true"] { color: #fdfaf5; border-color: #f40c3f; }
-.composer-workbench { border-radius: 4px; border-top: 2px solid #f40c3f; background: #140b0eee; padding: 17px 22px; }
-.workbench-title strong { font-weight: 700; letter-spacing: .2em; }.workbench-techs button { border-radius: 2px; }.workbench-action > button { border-radius: 2px; transition: background .2s, color .2s, translate .2s, box-shadow .2s; }.workbench-action > button:hover:not(:disabled) { translate: -2px -2px; background: #f40c3f; color: #fdfaf5; box-shadow: 4px 4px 0 #fdfaf544; }
-.flow-node { border-radius: 4px; }.result-node { animation: result-materialize .65s cubic-bezier(.2,.8,.2,1) both; }
+.composer-workbench { border-radius: 24px; border-top: 2px solid #f40c3f; background: #140b0eee; padding: 17px 22px; }
+.workbench-title strong { font-weight: 700; letter-spacing: .2em; }.workbench-techs button { border-radius: 999px; }.workbench-action > button { border-radius: 999px; transition: background .2s, color .2s, translate .2s, box-shadow .2s; }.workbench-action > button:hover:not(:disabled) { translate: -1px -1px; background: #f40c3f; color: #fdfaf5; box-shadow: 0 8px 20px #f40c3f4d; }
+.flow-node { border-radius: 22px; }.result-node { animation: result-materialize .65s cubic-bezier(.2,.8,.2,1) both; }
 @keyframes result-materialize { from { opacity: 0; clip-path: inset(0 100% 0 0); } to { opacity: 1; clip-path: inset(0); } }
 .scene-space .star-atlas .scene-title { font-weight: 700; letter-spacing: -.065em; }.atlas-instruction { font-family: Georgia,serif; font-style: italic; font-size: 16px; color: #f2c97d; }
 .constellation-map::before { content: ''; position: absolute; inset: 4% 12%; border: 1px solid #f40c3f26; border-radius: 50%; transform: rotate(-13deg); pointer-events: none; }

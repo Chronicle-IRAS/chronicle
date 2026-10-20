@@ -7,6 +7,7 @@ export function ComposerScene() {
     <div className="scene-content composer-content" data-scene-content>
       <div className="composer-board" data-composer-board>
         <SceneAtmosphere />
+        <div className="composer-three-stage" data-composer-stage aria-hidden="true" />
         <div className="scene-body composer-layout">
           <div className="composer-heading" data-enter-grid-heading>
             <h2 className="composer-label">02 / STACK COMPOSER</h2>

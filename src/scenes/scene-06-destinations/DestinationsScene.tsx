@@ -11,7 +11,7 @@ export function DestinationsScene() {
   const buttons = useRef<(HTMLButtonElement | null)[]>([])
   const closeDetails = () => { if (selected !== null) buttons.current[selected]?.focus(); setSelected(null) }
   const target = selected === null ? null : siteContent.destinations[selected]
-  return <div className="scene-content space-content destination-content" data-scene-content data-orbits-held={held}>
+  return <div className="scene-content space-content destination-content" data-scene-content data-orbits-held={held} data-selected-orbit={selected === null ? -1 : selected}>
     <SceneAtmosphere />
     <div className="scene-body content-column">
       <p className="section-number">06 / DESTINATIONS // ORBITAL INDEX</p>

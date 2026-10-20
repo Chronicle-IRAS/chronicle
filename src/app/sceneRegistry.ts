@@ -14,7 +14,7 @@ import { portalEnter } from '../transitions/portal-enter'
 import { portalExit } from '../transitions/portal-exit'
 import { spaceTransition } from '../transitions/space-transition'
 import type { TransitionFactory } from '../transitions/types'
-import { welcomeToComposer } from '../transitions/welcome-to-composer'
+import { composerToWelcome, welcomeToComposer } from '../transitions/welcome-to-composer'
 import type { SceneId } from '../types/scene'
 
 type SceneDefinition = {
@@ -30,7 +30,7 @@ type SceneDefinition = {
 
 export const sceneRegistry: readonly SceneDefinition[] = [
   { id: 'prelude', Component: PreludeScene, transitionToNext: preludeToWelcome, transitionBack: welcomeToPrelude, scrollScreens: 1.5, holdFraction: 0.15, transitionSeconds: 5.2, returnSeconds: 3.3 },
-  { id: 'welcome', Component: WelcomeScene, transitionToNext: welcomeToComposer, scrollScreens: 1.5, holdFraction: 0.12, transitionSeconds: 4.8 },
+  { id: 'welcome', Component: WelcomeScene, transitionToNext: welcomeToComposer, transitionBack: composerToWelcome, scrollScreens: 1.5, holdFraction: 0.12, transitionSeconds: 4.8 },
   { id: 'composer', Component: ComposerScene, transitionToNext: aiPush, transitionBack: aiPull, scrollScreens: 2, holdFraction: 0.25, transitionSeconds: 3.6 },
   { id: 'currently', Component: CurrentlyScene, transitionToNext: dsImpact, transitionBack: profileReturn, returnSeconds: 1.8, scrollScreens: 1.5, holdFraction: 0.2, transitionSeconds: 5.6 },
   { id: 'profile', Component: ProfileScene, transitionToNext: portalEnter, scrollScreens: 1.5, holdFraction: 0.2, transitionSeconds: 1.25 },

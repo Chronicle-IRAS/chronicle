@@ -1,4 +1,8 @@
 /* Shared finish: Antoine Wodniack perspective wireframe grids, Syne/Instrument Serif editorial typography, Nod Coding offset shadows & In Pieces facets. */
+/* These animation channels belong to their own element, not its entire subtree. */
+@property --transition-progress { syntax: '<number>'; inherits: false; initial-value: 0; }
+@property --scene-progress { syntax: '<number>'; inherits: false; initial-value: 0; }
+@property --hole-spin { syntax: '<number>'; inherits: false; initial-value: 0; }
 :root {
   --expression-ease: cubic-bezier(.16, 1, .3, 1);
   --aw-obsidian: #12080c;
@@ -42,6 +46,7 @@
   position: absolute;
   inset: 3.5vh 4.5vw;
   border: 1px solid #16000022;
+  border-radius: 18px;
   pointer-events: none;
   z-index: 1;
 }
@@ -99,13 +104,33 @@
   user-select: none;
 }
 
-/* Welcome Scene Monumental Hero Lockup & SVG Astrolabe HUD */
+/* Welcome Scene Monumental Hero Lockup, Relativistic Black Hole Bloom & SVG Astrolabe HUD */
+.welcome-content .welcome-grid {
+  background: radial-gradient(circle at 50% 43%, #f40c3f1f 0%, #f2c97d12 25%, #090306 58%, #040103 100%);
+}
+.black-hole::before {
+  content: '';
+  position: absolute;
+  inset: -26%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, #f2c97d0d 18%, #f40c3f14 42%, transparent 70%);
+  pointer-events: none;
+}
+.black-hole > canvas {
+  inset: -42%;
+  width: 184%;
+  height: 184%;
+  mask-image: radial-gradient(circle, #000 52%, transparent 72%);
+  /* A live canvas must not grow a blurred offscreen surface during the 9x zoom. */
+  filter: none;
+}
 .welcome-astrolabe {
   position: absolute;
-  inset: -14%;
-  width: 128%;
-  height: 128%;
+  inset: -18%;
+  width: 136%;
+  height: 136%;
   z-index: 2;
+  opacity: .42;
   pointer-events: none;
   overflow: visible;
   animation: aw-star-spin 54s linear infinite reverse;
@@ -353,13 +378,13 @@
 .constellation-map .atlas-route-reveal { stroke: #f40c3f; stroke-width: 2.4; stroke-dasharray: 1; animation: atlas-route-draw .9s var(--expression-ease) both; }
 @keyframes atlas-route-draw { from { stroke-dashoffset: 1; opacity: 1; } to { stroke-dashoffset: 0; opacity: .62; } }
 .atlas-star-core {
-  border-radius: 2px;
-  transform: rotate(45deg);
+  border-radius: 50%;
+  transform: none;
   background: #fdfaf5;
   box-shadow: 0 0 16px #f40c3f88, 0 0 40px #f2c97d44;
   transition: scale .45s var(--expression-ease), background .3s, box-shadow .3s;
 }
-.atlas-star-core::after { width: 62px; height: 62px; translate: -24px -24px; border-radius: 4px; border-color: #f2c97d45; }
+.atlas-star-core::after { width: 62px; height: 62px; translate: -24px -24px; border-radius: 50%; border-color: #f2c97d45; }
 .atlas-star[aria-pressed="true"] .atlas-star-core { background: #f40c3f; box-shadow: 0 0 28px #f40c3f; }
 .atlas-star[aria-pressed="true"] .atlas-star-core::after { border-color: #f40c3f; scale: 1.3; }
 .atlas-star[aria-pressed="true"] strong { color: #f2c97d; }
@@ -565,19 +590,19 @@
   width: 44px;
   height: 44px;
   margin: -22px 0 0 -22px;
-  border-radius: 3px;
+  border-radius: 16px;
   border-color: #f40c3f;
   background: #f40c3f14;
 }
 .reticle-diamond {
   width: 5px;
   height: 5px;
+  border-radius: 50%;
   background: #f40c3f;
-  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
   transition: transform .22s var(--expression-ease), background-color .22s;
 }
 .cursor-reticle[data-engaged="true"] .reticle-diamond {
-  transform: scale(1.6) rotate(45deg);
+  transform: scale(1.6);
   background: #f2c97d;
 }
 .interaction-echo {
@@ -585,7 +610,7 @@
   width: 64px;
   height: 64px;
   border: 1.5px solid #f40c3f;
-  border-radius: 4px;
+  border-radius: 50%;
   pointer-events: none;
 }
 .interaction-echo[data-paper="true"] { border-color: #160000; }

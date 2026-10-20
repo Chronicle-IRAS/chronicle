@@ -2,6 +2,28 @@ import { describe, expect, it } from 'vitest'
 import { createRenderBudget } from './renderBudget'
 
 describe('black hole render budget', () => {
+  it('lowers resolution when consecutive visible frames stall for over 200ms', () => {
+    const budget = createRenderBudget(640)
+    budget.sample(1)
+    budget.sample(301)
+    expect(budget.resolution).toBe(640)
+    budget.sample(601)
+    expect(budget.resolution).toBeLessThan(640)
+    for (let now = 901; now < 6000; now += 300) budget.sample(now)
+    expect(budget.resolution).toBe(320)
+  })
+  it('does not mistake separate pauses or a resumed scene for sustained pressure', () => {
+    const budget = createRenderBudget(640)
+    budget.sample(1)
+    budget.sample(501)
+    budget.sample(517)
+    budget.sample(1017)
+    expect(budget.resolution).toBe(640)
+    budget.reset()
+    budget.sample(2001)
+    budget.sample(2017)
+    expect(budget.resolution).toBe(640)
+  })
   it('reduces resolution under sustained pressure and keeps its minimum', () => {
     const budget = createRenderBudget(640)
     for (let now = 1; now < 15000; now += 34) budget.sample(now)

@@ -6,10 +6,16 @@ export const aiPush: TransitionFactory = ({ from, to, reducedMotion }) => {
   const timeline = gsap.timeline({ paused: true, defaults: { ease: 'sine.inOut', immediateRender: false } })
   const board = from.querySelector('[data-composer-board]') ?? from
   const cast = from.querySelector('.character-cast')
+  const composerStage = from.querySelector('[data-composer-stage]')
+  const incomingStage = to.querySelector('[data-sculpture-stage]')
+  if (composerStage) timeline.set(composerStage, { autoAlpha: 1 }, 0)
+  if (incomingStage) timeline.set(incomingStage, { autoAlpha: 0 }, 0)
   timeline.set(from.querySelectorAll('[data-pose="pull"], [data-pose="hard"]'), { autoAlpha: 0 }, 0)
   timeline.set(from.querySelectorAll('[data-pose="push"]'), { autoAlpha: 1 }, 0)
   timeline.fromTo(to, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 }, 0.05)
   if (reducedMotion) {
+    if (composerStage) timeline.to(composerStage, { autoAlpha: 0, duration: .25 }, .2)
+    if (incomingStage) timeline.to(incomingStage, { autoAlpha: 1, duration: .25 }, .5)
     timeline.fromTo(board, { autoAlpha: 1, xPercent: 0 }, { autoAlpha: 0, duration: 0.5 }, 0.2)
     timeline.fromTo(from, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.2 }, 0.7)
     return timeline
@@ -44,6 +50,10 @@ export const aiPush: TransitionFactory = ({ from, to, reducedMotion }) => {
   timeline.to(carriers, { xPercent: 105, duration: 0.65, ease: 'power2.inOut' }, 0.64)
   timeline.fromTo(board, { autoAlpha: 1, scale: 1 }, { scale: 0.985, duration: 0.25 }, 0.3)
   timeline.to(board, { scale: 1, duration: 0.3 }, 0.99)
+  // Keep the live lattice attached to the board until it is off screen, then
+  // fade the incoming sculpture in after the shared canvas changes host.
+  if (composerStage) timeline.to(composerStage, { autoAlpha: 0, duration: .13 }, .99)
+  if (incomingStage) timeline.to(incomingStage, { autoAlpha: 1, duration: .27 }, 1.12)
   const wake = from.querySelector('[data-cast-wake]')
   if (wake) {
     timeline.fromTo(wake, { autoAlpha: 0, scaleX: 0.3 }, { autoAlpha: 0.7, scaleX: 1, duration: 0.22 }, 0.65)
@@ -58,6 +68,10 @@ export const aiPull: TransitionFactory = ({ from, to, reducedMotion }) => {
   const timeline = gsap.timeline({ paused: true, defaults: { immediateRender: false } })
   const board = to.querySelector('[data-composer-board]') ?? to
   const cast = to.querySelector('.character-cast')
+  const outgoingStage = from.querySelector('[data-sculpture-stage]')
+  const composerStage = to.querySelector('[data-composer-stage]')
+  if (outgoingStage) timeline.fromTo(outgoingStage, { autoAlpha: 1 }, { autoAlpha: 0, duration: .12 }, 0)
+  if (composerStage) timeline.fromTo(composerStage, { autoAlpha: 0 }, { autoAlpha: 1, duration: .2 }, .12)
   timeline.fromTo(to, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.05 }, 0)
   timeline.fromTo(board, { xPercent: reducedMotion ? 0 : 105, autoAlpha: reducedMotion ? 0 : 1 }, { xPercent: 0, autoAlpha: 1, duration: 0.95, ease: 'power2.inOut' }, 0.12)
   if (cast && !reducedMotion) {

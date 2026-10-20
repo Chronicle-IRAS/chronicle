@@ -1,4 +1,9 @@
-/** A ray-marched volume: tilted disk emission, crimson-gold photon ring, horizon occlusion and bent view rays. */
+/**
+ * Gargantua-inspired relativistic black hole:
+ * - Analytical closest-approach (minR) Einstein photon ring & secondary lensed sub-ring (zero step banding)
+ * - Seam-free Cartesian spiral FBM accretion disk with double-arched gravitational lensing (upper + lower halo)
+ * - Relativistic Doppler beaming (incandescent white-gold approaching side -> solar crimson-amber receding side)
+ */
 export function createBlackHolePass(gl: WebGLRenderingContext) {
   const program = gl.createProgram()!
   const shaders: WebGLShader[] = []
@@ -7,75 +12,145 @@ export function createBlackHolePass(gl: WebGLRenderingContext) {
     `precision highp float;
     varying vec2 uv; uniform float time; uniform float loading; uniform float spin;
     uniform sampler2D lettering;
-    float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
-    float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
+
+    float hash(vec2 p){
+      return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453123);
+    }
+    float noise(vec2 p){
+      vec2 i=floor(p), f=fract(p);
+      f=f*f*(3.-2.*f);
+      return mix(
+        mix(hash(i),hash(i+vec2(1.,0.)),f.x),
+        mix(hash(i+vec2(0.,1.)),hash(i+vec2(1.,1.)),f.x),
+        f.y
+      );
+    }
+    float fbm(vec2 p){
+      float v=0., a=.5;
+      mat2 m=mat2(.8,-.6,.6,.8);
+      for(int i=0;i<4;i++){
+        v+=a*noise(p);
+        p=m*p*2.03+vec2(17.1,31.7);
+        a*=.5;
+      }
+      return v;
+    }
+    mat2 rot2(float a){
+      float c=cos(a), s=sin(a);
+      return mat2(c,-s,s,c);
+    }
+
+    // Blackbody-inspired relativistic plasma palette:
+    // t=0: deep burgundy-crimson -> t=0.45: fiery crimson-orange -> t=0.75: molten gold -> t=1.0: blinding ivory-white
+    vec3 plasmaColor(float t){
+      t=clamp(t,0.,1.35);
+      vec3 c0=vec3(.18,.01,.05);
+      vec3 c1=vec3(.96,.06,.24);
+      vec3 c2=vec3(.99,.68,.28);
+      vec3 c3=vec3(1.,.98,.92);
+      vec3 col=mix(c0,c1,smoothstep(0.,.38,t));
+      col=mix(col,c2,smoothstep(.32,.76,t));
+      col=mix(col,c3,smoothstep(.68,1.15,t));
+      return col;
+    }
+
     void main(){
-      vec3 ro=vec3(sin(time*.18)*1.05,1.8+sin(time*.23)*.28,7.5+sin(time*.16)*.16);
+      // Low grazing elevation (~8.8 deg) produces the iconic Gargantua double-arched Einstein lensing
+      vec3 ro=vec3(sin(time*.16)*.72, 1.16+sin(time*.21)*.18, 7.45+cos(time*.14)*.15);
       vec3 forward=normalize(-ro), right=normalize(cross(forward,vec3(0.,1.,0.))), up=cross(right,forward);
-      float roll=.13+sin(time*.21)*.055; mat2 rot=mat2(cos(roll),-sin(roll),sin(roll),cos(roll));
-      // Roll the image plane around the optical axis, keeping the horizon centered.
-      vec2 screen=rot*uv;
+      float roll=.18+sin(time*.19)*.045;
+      vec2 screen=rot2(roll)*uv;
       vec3 rd=normalize(forward+screen.x*right*.72+screen.y*up*.72);
-      vec3 pos=ro, col=vec3(0.), photonCol=vec3(0.); float trans=1.;
+
+      vec3 pos=ro, col=vec3(0.);
+      float trans=1., minR=100.;
       bool captured=false;
-      for(int i=0;i<180;i++){
+
+      for(int i=0;i<185;i++){
         float r=length(pos);
-        if(r<.88){captured=true;break;}
-        float stepSize=clamp(r*.025,.025,.15);
-        rd=normalize(rd-normalize(pos)*(.9/(r*r))*stepSize);
+        minR=min(minR,r);
+        if(r<.90){
+          captured=true;
+          break;
+        }
+        float stepSize=clamp(r*.024,.022,.14);
+        // Relativistic geodesic deflection (stronger near the photon sphere r ~ 1.05)
+        float bend=1.02/(r*r+.015);
+        rd=normalize(rd-normalize(pos)*bend*stepSize);
         vec3 previous=pos;
         pos+=rd*stepSize;
-        // Keep ring emission separate: captured rays must leave a dark horizon.
-        float photon=exp(-pow((r-1.08)/.055,2.))*stepSize*1.85;
-        photonCol+=trans*photon*mix(vec3(.96,.05,.25),vec3(1.,.92,.76),clamp(1.-pos.x*.35,0.,1.));
+
+        // Subtle volumetric corona around the equatorial plane
         float radial=length(pos.xz);
-        float disk=0.;
-        // Density beyond this band is below exp(-9): skip invisible volume noise.
-        if(abs(pos.y)<.5 && radial>1.22 && radial<4.4){
-          disk=exp(-abs(pos.y)*18.)*smoothstep(1.22,1.62,radial)*(1.-smoothstep(3.15,4.4,radial));
-          float angle=atan(pos.z,pos.x);
-          float turbulence=noise(vec2(radial*9.,angle*7.-time*.5))+ .5*noise(vec2(radial*23.,angle*13.-time*.8));
-          float flow=.55+.45*turbulence;
-          float filaments=.83+.17*sin(radial*62.+turbulence*4.);
-          float doppler=clamp(1.-pos.x*.22,.45,1.95);
-          vec3 outerCrimson=vec3(.96,.05,.25);
-          vec3 midGold=vec3(.96,.76,.42);
-          vec3 coreIvory=vec3(1.,.97,.90);
-          float heatFactor=exp(-(radial-1.28)*.62);
-          vec3 heat=mix(outerCrimson,mix(midGold,coreIvory,smoothstep(.45,1.,heatFactor)),heatFactor);
-          col+=trans*disk*heat*flow*filaments*doppler*stepSize*.72;
+        if(abs(pos.y)<.32 && radial>1.15 && radial<4.5){
+          float vertical=exp(-abs(pos.y)*16.);
+          float radialMask=smoothstep(1.15,1.48,radial)*(1.-smoothstep(3.3,4.5,radial));
+          float kepler=time*1.9/pow(max(radial,1.1),1.4)+spin;
+          vec2 spiralPos=rot2(kepler-radial*2.1)*pos.xz;
+          float turb=fbm(spiralPos*2.6);
+          float doppler=clamp(1.-pos.x*.28,.38,1.95);
+          float heat=exp(-(radial-1.22)*.58)*(0.65+0.55*turb)*doppler;
+          vec3 emission=plasmaColor(heat)*vertical*radialMask*doppler;
+          col+=trans*emission*stepSize*.85;
+          trans*=exp(-vertical*radialMask*stepSize*.42);
         }
-        if(previous.y*pos.y<0.) {
+
+        // Exact analytical equatorial plane intersection (renders both front disk AND bent upper/lower Einstein arches)
+        if(previous.y*pos.y<=0.){
           vec3 surface=mix(previous,pos,previous.y/(previous.y-pos.y));
-          float sr=length(surface.xz), sa=atan(surface.z,surface.x);
-          if(sr>1.22 && sr<4.4){
-          float orbit=sa-time*2.6/pow(max(sr,1.),1.5)-spin;
-          float inflow=sr+.035*sin(orbit*3.+sr*5.-time*.8);
-          vec2 turbulenceUV=vec2(inflow*15.,sin(orbit)*4.);
-          float coarse=noise(turbulenceUV+vec2(cos(orbit)*3.,sr*.3));
-          float fine=noise(vec2(sr*65.+coarse*3.,sin(orbit*3.)*9.));
-          float thread=pow(.5+.5*sin(sr*115.+coarse*7.+fine*2.),3.);
-          float spiral=pow(.5+.5*sin(orbit*3.+sr*5.),6.);
-          float hotSpot=pow(.5+.5*cos(sa-time*.9-spin),24.)*exp(-pow((sr-1.9)/.3,2.));
-          float outerSpot=pow(.5+.5*cos(sa-time*.48-spin+2.),18.)*exp(-pow((sr-3.)/.4,2.));
-          float density=(.14+coarse*.52+fine*.26+thread*.48+spiral*.52+hotSpot*1.3+outerSpot*.75);
-          float rim=smoothstep(1.22,1.48,sr)*(1.-smoothstep(3.15,4.4,sr));
-          float brightness=pow(clamp(1.-surface.x*.24,.35,2.0),2.);
-          float tempFactor=exp(-max(sr-1.45,0.)*.72);
-          vec3 temperature=mix(vec3(.78,.04,.20),mix(vec3(.96,.78,.46),vec3(1.,.96,.88),smoothstep(.4,1.,tempFactor)),tempFactor);
-          col+=trans*temperature*density*rim*brightness*(1.72+.14*sin(time*.85));
-          float ringV=(sr-2.45)/.55;
-          if(loading>.001 && ringV>0. && ringV<1.) {
-            float ink=texture2D(lettering,vec2(fract((atan(surface.z,surface.x)-spin)/6.283185-time*.035),ringV)).r;
-            col+=trans*ink*vec3(1.,.97,.88)*loading*2.6;
-          }
+          float sr=length(surface.xz);
+          if(sr>1.16 && sr<4.45){
+            // Seam-free Cartesian spiral coordinates (zero atan seam, zero trig pinching)
+            float omega=time*2.35/pow(max(sr,1.08),1.45)+spin;
+            vec2 sp1=rot2(omega-sr*2.35)*surface.xz;
+            vec2 sp2=rot2(omega*1.35-sr*3.8)*surface.xz;
+            float n1=fbm(sp1*2.8);
+            float n2=fbm(sp2*6.2+vec2(n1*1.8));
+            float rings=.5+.5*sin(sr*46.-time*1.8+n1*6.5);
+            float streaks=smoothstep(.22,.86,n1*.62+n2*.38);
+            float filaments=mix(streaks,streaks*rings,.48);
+
+            // Relativistic beaming (approaching left side is fiercely bright & blue/white-hot)
+            float doppler=pow(clamp(1.-surface.x*.25,.35,2.05),1.85);
+            float innerRim=smoothstep(1.16,1.42,sr)*(1.-smoothstep(3.15,4.45,sr));
+            float temp=exp(-max(sr-1.24,0.)*.62)*(.75+.55*filaments)*clamp(doppler*.78,.45,1.65);
+            float density=(.28+filaments*1.45)*innerRim;
+
+            col+=trans*plasmaColor(temp)*density*doppler*1.42;
+            trans*=.28;
+
+            float sa=atan(surface.z,surface.x);
+            float ringV=(sr-2.38)/.55;
+            if(loading>.001 && ringV>0. && ringV<1.){
+              float ink=texture2D(lettering,vec2(fract((sa-spin)/6.283185-time*.035),ringV)).r;
+              col+=trans*ink*vec3(1.,.97,.88)*loading*2.8;
+            }
           }
         }
-        if(disk>0.) trans*=exp(-disk*stepSize*.55);
-        if(length(pos)>12.)break;
+        if(r>12.5) break;
       }
-      if(!captured) col+=photonCol;
-      col=1.-exp(-col*1.32);
+
+      // Analytical closest-approach Einstein Photon Ring (100% smooth, zero ray-step banding)
+      if(!captured){
+        float dopplerRim=clamp(1.12-screen.x*.42,.45,1.85);
+        float primaryRing=exp(-pow((minR-.935)/.026,2.))*1.85*dopplerRim;
+        float secondaryHalo=exp(-pow((minR-1.02)/.095,2.))*.62*dopplerRim;
+        float outerGlow=exp(-max(minR-.92,0.)*1.65)*.22;
+        col+=plasmaColor(.95)*primaryRing + plasmaColor(.68)*secondaryHalo + vec3(.96,.08,.28)*outerGlow;
+      } else {
+        // Subtle gravitationally lensed rim glow right at the horizon boundary
+        float edgeGlow=exp(-pow((minR-.90)/.018,2.))*.35;
+        col+=plasmaColor(.85)*edgeGlow;
+      }
+
+      // Subtle background ambient blend so the orb never cuts a harsh black box against the scene
+      float vignette=smoothstep(1.38,.35,length(uv));
+      vec3 bg=vec3(.025,.010,.018)*(1.- (captured ? 1. : 0.))*vignette;
+      col+=bg*.35;
+
+      // Filmic exponential tone-mapping with warm highlight desaturation
+      col=1.-exp(-col*1.28);
+      col=pow(max(col,vec3(0.)),vec3(.94));
       gl_FragColor=vec4(col,1.);
     }`
   ]
@@ -104,7 +179,7 @@ export function createBlackHolePass(gl: WebGLRenderingContext) {
   const spin=gl.getUniformLocation(program,'spin')
   return {
     valid: !!gl.getProgramParameter(program,gl.LINK_STATUS),
-    draw(elapsed:number, progress:number, rotation:number){gl.useProgram(program);gl.disable(gl.BLEND);gl.bindTexture(gl.TEXTURE_2D,texture);gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.enableVertexAttribArray(position);gl.vertexAttribPointer(position,2,gl.FLOAT,false,0,0);gl.uniform1f(time,elapsed);gl.uniform1f(loading,progress);gl.uniform1f(spin,rotation);gl.drawArrays(gl.TRIANGLES,0,6)},
+    draw(elapsed:number, progress:number, rotation:number){gl.useProgram(program);gl.disable(gl.BLEND);gl.disable(gl.DEPTH_TEST);gl.disable(gl.CULL_FACE);gl.colorMask(true,true,true,true);gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,texture);gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.enableVertexAttribArray(position);gl.vertexAttribPointer(position,2,gl.FLOAT,false,0,0);gl.uniform1f(time,elapsed);gl.uniform1f(loading,progress);gl.uniform1f(spin,rotation);gl.drawArrays(gl.TRIANGLES,0,6)},
     dispose(){gl.deleteTexture(texture);gl.deleteBuffer(buffer);gl.deleteProgram(program);shaders.forEach(shader=>gl.deleteShader(shader))}
   }
 }

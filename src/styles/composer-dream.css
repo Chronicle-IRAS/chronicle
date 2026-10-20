@@ -1,4 +1,4 @@
-/* Bauhaus / Wodniack architectural cards & In Pieces polygon facets, with stable geometry for dragging and connecting. */
+/* Rounded architectural blueprint nodes & soft radial halos, with stable geometry for dragging and connecting. */
 .scene-composer .composer-board {
   background:
     radial-gradient(ellipse at 22% 24%, #f40c3f18, transparent 46%),
@@ -14,28 +14,35 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 5px;
-  border: 1.5px solid color-mix(in srgb, var(--node-accent) 58%, #ffffff18);
-  border-radius: 3px;
+  border: 1.5px solid color-mix(in srgb, var(--node-accent) 58%, #ffffff22);
+  border-radius: 22px;
+  overflow: hidden;
   background:
-    linear-gradient(145deg, color-mix(in srgb, var(--node-accent) 12%, #1d1217), #120b0ef2);
-  box-shadow: 6px 6px 0 #050204, inset 0 1px 0 #ffffff1f;
+    linear-gradient(145deg, color-mix(in srgb, var(--node-accent) 14%, #1f1218), #120b0ef2);
+  box-shadow:
+    0 14px 34px #040103a6,
+    0 0 20px color-mix(in srgb, var(--node-accent) 12%, transparent),
+    inset 0 1px 0 #ffffff28;
   color: #fdfaf5;
   animation: none;
-  transition: border-color .22s, background-color .22s, box-shadow .22s;
+  transition: border-color .24s, background-color .24s, box-shadow .24s, transform .24s;
 }
 .scene-composer .flow-node::before {
-  inset: auto 0 0 0;
+  inset: auto 18px 0 18px;
   height: 3px;
-  width: 100%;
-  border-radius: 0;
-  background: linear-gradient(90deg, var(--node-accent), transparent 85%);
+  width: auto;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, var(--node-accent), transparent);
   transform: none;
   pointer-events: none;
   animation: dream-halo 4s ease-in-out infinite alternate;
 }
 .scene-composer .flow-node:hover, .scene-composer .react-flow__node.selected .flow-node {
   border-color: var(--node-accent);
-  box-shadow: 8px 8px 0 color-mix(in srgb, var(--node-accent) 42%, #050204), 0 0 26px color-mix(in srgb, var(--node-accent) 22%, transparent);
+  box-shadow:
+    0 18px 42px color-mix(in srgb, var(--node-accent) 26%, #040103),
+    0 0 30px color-mix(in srgb, var(--node-accent) 26%, transparent),
+    inset 0 1px 0 #ffffff40;
 }
 .scene-composer .node-topline {
   width: 100%;
@@ -46,29 +53,33 @@
 .scene-composer .tech-node strong { font: 600 24px/1.1 Inter, ui-sans-serif, system-ui, sans-serif; letter-spacing: -.045em; color: #fdfaf5; }
 .scene-composer .node-caption { color: #cbbec2; font: 700 8px/1.4 ui-monospace, monospace; letter-spacing: .16em; text-transform: uppercase; }
 .scene-composer .node-spark { position: relative; left: auto; top: auto; font: 700 9px/1.2 ui-monospace, monospace; letter-spacing: .12em; color: var(--node-accent); opacity: .9; }
-.scene-composer .node-decoration { inset: 0; }
+.scene-composer .node-decoration { inset: 0; border-radius: inherit; overflow: hidden; }
 .scene-composer .node-shard {
   position: absolute;
-  top: 0;
-  right: 0;
-  width: 58px;
-  height: 58px;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--node-accent) 34%, transparent), transparent 75%);
-  clip-path: polygon(100% 0, 0 0, 100% 100%);
+  top: -22px;
+  right: -22px;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--node-accent) 38%, transparent), transparent 70%);
+  clip-path: none;
   pointer-events: none;
 }
 .scene-composer .result-node .node-shard {
-  width: 84px;
-  height: 84px;
-  clip-path: polygon(100% 0, 18% 0, 100% 82%);
-  background: linear-gradient(135deg, color-mix(in srgb, var(--node-accent) 42%, transparent), transparent 78%);
+  top: -28px;
+  right: -28px;
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  clip-path: none;
+  background: radial-gradient(circle, color-mix(in srgb, var(--node-accent) 44%, transparent), transparent 72%);
 }
 .scene-composer .node-orbit {
-  inset: 8px;
+  inset: 7px;
   width: auto;
   height: auto;
-  border: 1px dashed color-mix(in srgb, var(--node-accent) 20%, transparent);
-  border-radius: 2px;
+  border: 1px dashed color-mix(in srgb, var(--node-accent) 22%, transparent);
+  border-radius: 15px;
   opacity: 1;
   transform: none;
   animation: none;
@@ -81,51 +92,56 @@
 .scene-composer .tech-node[data-tech="nodejs"] { --node-accent: #7fdac2; }
 .scene-composer .tech-node[data-tech="ai"] { --node-accent: #f40c3f; }
 .scene-composer .react-flow__handle {
-  width: 13px;
-  height: 13px;
-  border-radius: 2px;
-  border: 2px solid #12090d;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 2.5px solid #12090d;
   background: var(--node-accent);
-  box-shadow: 2px 2px 0 #050204, 0 0 10px color-mix(in srgb, var(--node-accent) 45%, transparent);
+  box-shadow: 0 2px 8px #050204, 0 0 12px color-mix(in srgb, var(--node-accent) 55%, transparent);
   transition: box-shadow .2s, scale .2s;
 }
-.scene-composer .react-flow__handle:hover { scale: 1.2; box-shadow: 0 0 0 5px #f40c3f33, 0 0 16px var(--node-accent); }
+.scene-composer .react-flow__handle:hover { scale: 1.25; box-shadow: 0 0 0 5px #f40c3f33, 0 0 16px var(--node-accent); }
 .scene-composer .react-flow__edge-path { stroke: #f40c3f; stroke-width: 1.8px; }
 .scene-composer .react-flow__edge.selected .react-flow__edge-path { stroke: #f2c97d; stroke-width: 2.6px; }
 .scene-composer .result-node {
   --node-accent: #f40c3f;
   width: 260px;
   height: 176px;
-  border-radius: 4px;
+  border-radius: 26px;
+  overflow: hidden;
   padding: 20px 22px;
   align-items: flex-start;
   justify-content: space-between;
   text-align: left;
   background: linear-gradient(145deg, color-mix(in srgb, var(--node-accent) 18%, #210e15), #13090df5);
-  box-shadow: 7px 7px 0 #050204, 0 0 30px color-mix(in srgb, var(--node-accent) 20%, transparent);
+  box-shadow:
+    0 18px 42px #040103b8,
+    0 0 32px color-mix(in srgb, var(--node-accent) 22%, transparent),
+    inset 0 1px 0 #ffffff2e;
   animation: dream-arrive .6s cubic-bezier(.16, 1, .3, 1) both;
 }
 .scene-composer .concept-node { --node-accent: #f2c97d; }
 .scene-composer .result-node strong { display: block; font: 600 21px/1.14 Georgia, serif; letter-spacing: -.025em; color: #fdfaf5; }
 .scene-composer .flow-node-kind { color: var(--node-accent); font: 700 8px/1.4 ui-monospace, monospace; letter-spacing: .14em; }
 .scene-composer .result-node small { font: 9px/1.45 ui-monospace, monospace; color: #d8ccd0; }
-.project-link { display: flex; flex-direction: column; justify-content: center; flex: 1; width: 100%; gap: 8px; color: inherit; text-decoration: none; border-radius: 2px; }
-.project-link-action { display: inline-flex; align-self: flex-start; align-items: center; gap: 12px; padding: 3px 8px; border: 1px solid color-mix(in srgb, var(--node-accent) 60%, transparent); background: #0c050888; color: var(--node-accent); font: 700 9px/1.4 ui-monospace, monospace; letter-spacing: .12em; }
+.project-link { display: flex; flex-direction: column; justify-content: center; flex: 1; width: 100%; gap: 8px; color: inherit; text-decoration: none; border-radius: 14px; }
+.project-link-action { display: inline-flex; align-self: flex-start; align-items: center; gap: 12px; padding: 4px 12px; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--node-accent) 60%, transparent); background: #0c050888; color: var(--node-accent); font: 700 9px/1.4 ui-monospace, monospace; letter-spacing: .12em; }
 .project-link-action > span { transition: transform .2s; }
 .project-link:hover .project-link-action { background: var(--node-accent); color: #12080c; }
 .project-link:hover .project-link-action > span { transform: translate(2px, -2px); }
 .project-link:hover strong { color: #f2c97d; }
 .project-link:focus-visible { outline: 2px solid #f2c97d; outline-offset: 6px; }
-.scene-composer .react-flow__node:focus-visible { border-radius: 4px; outline-color: #f40c3f; }
+.scene-composer .react-flow__node:focus-visible { border-radius: 24px; outline-color: #f40c3f; }
 .scene-composer .composer-workbench {
   background: #14090df2;
   border: 1.5px solid #f40c3f55;
-  border-top: 3px solid #f40c3f;
-  border-radius: 4px;
-  box-shadow: 8px 8px 0 #050204;
+  border-top: 2.5px solid #f40c3f;
+  border-radius: 24px;
+  box-shadow: 0 18px 46px #040103c4, inset 0 1px 0 #ffffff1f;
 }
 .scene-composer .workbench-techs button {
-  border-radius: 2px;
+  border-radius: 999px;
+  padding-inline: 13px;
   border-color: #fdfaf524;
   background: #fdfaf508;
   color: #fdfaf5;
@@ -135,14 +151,14 @@
   background: #f40c3f;
   color: #fdfaf5;
   border-color: #fdfaf5;
-  box-shadow: 3px 3px 0 #050204;
+  box-shadow: 0 6px 18px #f40c3f4d;
 }
-.scene-composer .workbench-toggle, .scene-composer .workbench-action > button { border-radius: 2px; }
+.scene-composer .workbench-toggle, .scene-composer .workbench-action > button { border-radius: 999px; padding-inline: 16px; }
 .scene-composer .workbench-action > button {
   background: #f2c97d;
   color: #160000;
   border: 1px solid #fdfaf5;
-  box-shadow: 3px 3px 0 #050204;
+  box-shadow: 0 6px 18px #05020488;
 }
 .scene-composer .workbench-summary { color: #d5c7cb; }
 .workbench-project-link {
@@ -152,8 +168,8 @@
   gap: 16px;
   min-height: 40px;
   margin-top: 8px;
-  padding: 8px 12px;
-  border-radius: 2px;
+  padding: 8px 14px;
+  border-radius: 14px;
   border: 1px solid #f2c97d55;
   background: #f2c97d14;
   color: #f2c97d;
