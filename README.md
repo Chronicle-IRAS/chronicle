@@ -11,6 +11,16 @@ npm run dev
 
 Verify with `npm run typecheck`, `npm test`, and `npm run build`.
 
+## Deploy to GitHub Pages
+
+`.github/workflows/deploy.yml` builds the site and publishes `dist/` with GitHub Actions. `vite.config.ts` sets `base: './'`, so the same build works at the domain root and under a project subpath; no repository name is hardcoded.
+
+1. Push the repository to GitHub.
+2. In the repository: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+3. Push to `main`, or run **Deploy to GitHub Pages** manually (`workflow_dispatch`).
+
+The site is served at `https://<owner>.github.io/<repository>/`.
+
 ## Journey
 
 | Scene / boundary | Implemented behavior |
@@ -79,7 +89,7 @@ Latest visual verification: desktop 1440×900 and mobile 390×844 checks cover c
 
 ## Remaining review items
 
-Final palette, typography, precise timing, portal/starfield art direction, and character asset delivery optimization remain design/performance review items. Original PNG poses are large (~31MB total in assets). Vite also reports the main bundle size warning (>500 kB). Pretext is the sole dependency added for the user-requested typographic outro; no backend, database, remote Git repository, deployment, push, or merge was introduced.
+Final palette, typography, precise timing, portal/starfield art direction, and character asset delivery optimization remain design/performance review items. Original PNG poses are large (~31MB total in assets). Vite also reports the main bundle size warning (>500 kB). Pretext is the sole dependency added for the user-requested typographic outro; no backend, database, remote Git repository, push, or merge was introduced. GitHub Pages deployment is configured through `.github/workflows/deploy.yml` and the relative `base` in `vite.config.ts`.
 
 ## Feature architecture and implementation notes
 
