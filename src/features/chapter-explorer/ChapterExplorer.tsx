@@ -1,6 +1,6 @@
 import { useState, type CSSProperties } from 'react'
 
-type Entry = { label: string; value: string }
+type Entry = { label: string; value: string; detail?: string }
 type Shard = { p: string; c: string; z: number; dx: number; dy: number }
 
 // Inspired by Bryan James' "Species in Pieces": every form is built from the exact same 18 triangles,
@@ -100,9 +100,6 @@ export function ChapterExplorer({ entries, chapter }: { entries: Entry[]; chapte
   const [angle, setAngle] = useState(20)
   const [playing, setPlaying] = useState(true)
   const [exploded, setExploded] = useState(false)
-  const details = chapter === 'currently'
-    ? ['A visual blueprint editor for Qt 6 projects. Connect C++ + Qt in the previous chapter to discover its public repository.', 'A space to explore how tools, context and decisions come together in an agent.', 'An open page for the next thing to learn. This entry is intentionally unwritten.']
-    : ['A space for projects shared with others. Personal details will be added here.', 'The story behind the work. This chapter is still being written.', 'A place for the questions that deserve more time. Details are coming later.', 'The tools behind the ideas. Explore the interactive stack in chapter 02.']
   const formIndex = (chapter === 'profile' ? selected : selected % 3) % POLYGON_FORMS.length
   const shards = POLYGON_FORMS[formIndex]
 
@@ -148,7 +145,7 @@ export function ChapterExplorer({ entries, chapter }: { entries: Entry[]; chapte
           IN PIECES // 18 SHARDS · {FORM_NAMES[formIndex]} · {exploded ? 'EXPLODED VIEW' : `FORM 0${selected + 1}`}
         </div>
       </div>
-      <div className="chapter-detail-copy" key={selected} aria-live="polite"><small>SELECTED / 0{selected + 1} · #IP-000{selected + 1}</small><h3>{entries[selected].value || entries[selected].label}</h3><p>{details[selected]}</p></div>
+      <div className="chapter-detail-copy" key={selected} aria-live="polite"><small>SELECTED / 0{selected + 1} · #IP-000{selected + 1}</small><h3>{entries[selected].value || entries[selected].label}</h3><p>{entries[selected].detail}</p></div>
       <label className="instrument-control">ROTATE THE IDEA <input aria-label="Rotate the chapter sculpture" type="range" min="0" max="360" value={angle} onChange={(event) => setAngle(Number(event.target.value))} /></label>
       <div className="sculpture-actions">
         <button className="sculpture-toggle" type="button" aria-pressed={exploded} onClick={() => setExploded(!exploded)}>{exploded ? '◈ ASSEMBLE SHARDS' : '◇ SHATTER SHARDS'}</button>
