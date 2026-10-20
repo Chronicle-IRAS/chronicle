@@ -11,7 +11,7 @@ export const siteContent = {
     { label: 'Tools', value: 'Qt · C++ · TypeScript · React · ESP32', detail: 'Qt and C++ for desktop tools, TypeScript and React for the web, Vue and ESP32 for hardware-facing experiments, plus GSAP and Three.js in this site.' },
   ],
   future: ['AI Agents', 'Developer Tools', 'Open Source', 'Embedded Systems'],
-  destinations: [{ label: 'Blog', href: '' }, { label: 'GitHub', href: 'https://github.com/Chronicle-IRAS' }, { label: 'Resume', href: '' }, { label: 'Email', href: 'mailto:19917752669@163.com' }, { label: 'Source', href: 'https://github.com/Chronicle-IRAS/chronicle' }],
+  destinations: [{ label: 'Blog', href: '' }, { label: 'GitHub', href: 'https://github.com/Chronicle-IRAS' }, { label: 'Resume', href: '' }, { label: 'Email', href: '' }, { label: 'Source', href: 'https://github.com/Chronicle-IRAS/chronicle' }],
   thanks: ['Friends', 'Blogroll', 'Special Thanks'],
   goodbye: {
     intro: 'Every ending leaves room for another beginning.',
