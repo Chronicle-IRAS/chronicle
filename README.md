@@ -19,7 +19,7 @@ Verify with `npm run typecheck`, `npm test`, and `npm run build`.
 2. In the repository: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
 3. Push to `main`, or run **Deploy to GitHub Pages** manually (`workflow_dispatch`).
 
-The site is served at `https://<owner>.github.io/<repository>/`.
+The site is served at `https://<owner>.github.io/<repository>/`; this repository deploys to **https://chronicle-iras.github.io/chronicle/**.
 
 ## Journey
 
