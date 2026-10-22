@@ -6,6 +6,7 @@ import { createBlackHolePass } from './blackHole'
 import { createRenderBudget } from './renderBudget'
 import { createThreeStage } from './threeStage'
 import { resolveWorldStage } from './worldStage'
+import { resizeDrawingBuffer } from './canvasSize'
 
 const vertex = `
 attribute vec3 aPosition;
@@ -126,28 +127,18 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
         }
         dirty = true
       })
-      for (const host of [hole, preludeStage, composerStage, currentlyStage, profileStage, goodbyeStage]) {
+      for (const host of [home, hole, preludeStage, composerStage, currentlyStage, profileStage, goodbyeStage]) {
         if (host) hostObserver.observe(host)
       }
-      const resize = () => {
-        gl.useProgram(program)
-        const dpr = Math.min(window.devicePixelRatio, 1.75)
-        canvas.width = Math.round(window.innerWidth * dpr)
-        canvas.height = Math.round(window.innerHeight * dpr)
-        gl.viewport(0, 0, canvas.width, canvas.height)
-        gl.uniform1f(aspect, canvas.width / canvas.height)
-        gl.uniform1f(ratio, dpr)
-        dirty = true
-      }
+      // A resize event can arrive between paint and the next ticker frame on
+      // mobile Chrome. Never clear the live framebuffer from that event.
+      const resize = () => { dirty = true }
       const syncHostSize = (host: HTMLElement, fallbackSize: number) => {
         const size = hostSizes.get(host)
         const dpr = Math.min(window.devicePixelRatio || 1, 1.75)
         const targetW = Math.max(1, Math.round((size?.width || fallbackSize) * dpr))
         const targetH = Math.max(1, Math.round((size?.height || fallbackSize) * dpr))
-        if (canvas.width !== targetW || canvas.height !== targetH) {
-          canvas.width = targetW
-          canvas.height = targetH
-        }
+        resizeDrawingBuffer(canvas, targetW, targetH)
       }
       let lastDepth = NaN
       let lastTurn = NaN
@@ -197,7 +188,7 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
           } else {
             if (!reducedMotion) budget.sample(performance.now())
             const resolution = budget.resolution
-            if (canvas.width !== resolution || canvas.height !== resolution) canvas.width = canvas.height = resolution
+            resizeDrawingBuffer(canvas, resolution, resolution)
             gl.viewport(0, 0, canvas.width, canvas.height)
             blackHole.draw(reducedMotion ? 0 : elapsed, loadingProgress, holeSpin)
           }
@@ -283,10 +274,11 @@ export function SpaceWorld({ camera, reducedMotion }: { camera: SpaceCamera; red
           return
         }
 
-        if (canvas.parentElement !== home) { home.appendChild(canvas); gl.useProgram(program); resize() }
+        if (canvas.parentElement !== home) { home.appendChild(canvas); dirty = true }
         if (gl.isContextLost() || document.hidden || camera.visible === 0) return
         if (reducedMotion && !dirty && lastDepth === camera.depth && lastTurn === camera.turn && lastPan === camera.pan && lastWarp === camera.warp) return
         if (!dirty && elapsed - lastFrame < 1 / 60) return
+        syncHostSize(home, window.innerWidth)
         lastFrame = elapsed - Math.max(0, (elapsed - lastFrame) % (1 / 60))
         lastDepth = camera.depth; lastTurn = camera.turn; lastPan = camera.pan; lastWarp = camera.warp; dirty = false
         const aspectVal = canvas.width / Math.max(1, canvas.height)

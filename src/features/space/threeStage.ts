@@ -252,7 +252,7 @@ export function createThreeStage(gl: WebGLRenderingContext, canvas: HTMLCanvasEl
         // 3D spiral magneto-rotational vertical wave displacement
         float spiralWave = sin(r * 9.5 - uTime * 3.2 - angle * 2.0 - uSpin) * 0.045 * smoothstep(1.1, 2.2, r);
         // Rear half of disk bends upward in 3D space (gravitational lensing warp)
-        float rearWarp = smoothstep(-0.1, -1.8, pos.z) * pow(max(0.0, 3.6 - r), 1.45) * 0.24;
+        float rearWarp = (1.0 - smoothstep(-1.8, -0.1, pos.z)) * pow(max(0.0, 3.6 - r), 1.45) * 0.24;
         pos.y += spiralWave + rearWarp;
         vLocalPos = pos;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
@@ -403,11 +403,11 @@ export function createThreeStage(gl: WebGLRenderingContext, canvas: HTMLCanvasEl
           sin(angle) * r
         );
         // Rear particles lift slightly with gravitational lensing
-        pos.y += smoothstep(-0.1, -1.6, pos.z) * max(0.0, 3.2 - r) * 0.16;
+        pos.y += (1.0 - smoothstep(-1.6, -0.1, pos.z)) * max(0.0, 3.2 - r) * 0.16;
 
         float doppler = clamp(1.15 - pos.x * 0.26, 0.4, 1.9);
         vColor = aColor * doppler;
-        vAlpha = smoothstep(4.3, 2.8, r) * clamp(doppler * 0.85, 0.45, 1.0);
+        vAlpha = (1.0 - smoothstep(2.8, 4.3, r)) * clamp(doppler * 0.85, 0.45, 1.0);
 
         vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
         gl_Position = projectionMatrix * mvPosition;

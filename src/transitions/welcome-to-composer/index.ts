@@ -21,7 +21,10 @@ export const welcomeToComposer: TransitionFactory = ({ from, to, reducedMotion }
   if (loading) timeline.fromTo(loading, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.12 }, 0.08).to(loading, { autoAlpha: 0, duration: 0.25 }, 0.7)
   if (orb && !reducedMotion) {
     timeline.fromTo(orb, { '--hole-spin': 0 }, { '--hole-spin': 32, duration: 1.2, ease: 'power2.in' }, 0)
-    timeline.fromTo(orb, { scale: 1, rotation: 0 }, { scale: 9, rotation: 18, duration: 0.77, ease: 'power2.in' }, 0.48)
+    // A phone-sized hole already fills the screen at 3x. A 9x masked surface
+    // can exceed mobile compositor texture limits while it is fading out.
+    const zoom = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches ? 3 : 9
+    timeline.fromTo(orb, { scale: 1, rotation: 0 }, { scale: zoom, rotation: 18, duration: 0.77, ease: 'power2.in' }, 0.48)
   }
   if (backdrop) timeline.to(backdrop, { autoAlpha: 0, duration: 0.45 }, 0.8)
   if (canvas) timeline.fromTo(canvas,

@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { gsap } from '../../lib/gsap'
 import { composerToWelcome, welcomeToComposer } from './index'
 
@@ -15,8 +15,17 @@ function fixture() {
   const root = { querySelector: (selector: string) => targets[selector] ?? null } as unknown as HTMLElement
   return { root, title, orb, loading, backdrop, support, canvas, heading }
 }
-afterEach(() => gsap.globalTimeline.clear())
+afterEach(() => { gsap.globalTimeline.clear(); vi.unstubAllGlobals() })
 describe('Eclipse iris transition', () => {
+  it('keeps the mobile masked surface bounded while preserving the rotating zoom', () => {
+    vi.stubGlobal('window', { matchMedia: () => ({ matches: true }) })
+    const f = fixture()
+    const timeline = welcomeToComposer({ from: f.root, to: f.root, reducedMotion: false })
+    timeline.progress(1)
+    expect(f.orb.scale).toBe(3)
+    expect(f.orb.rotation).toBe(18)
+    expect(f.canvas.autoAlpha).toBe(1)
+  })
   for (const reducedMotion of [false, true]) {
     it(`returns through a faded stage handoff and settles Welcome (reduced motion: ${reducedMotion})`, () => {
       const f = fixture()

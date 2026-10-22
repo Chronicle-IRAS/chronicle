@@ -144,7 +144,7 @@ export function createBlackHolePass(gl: WebGLRenderingContext) {
       }
 
       // Subtle background ambient blend so the orb never cuts a harsh black box against the scene
-      float vignette=smoothstep(1.38,.35,length(uv));
+      float vignette=1.-smoothstep(.35,1.38,length(uv));
       vec3 bg=vec3(.025,.010,.018)*(1.- (captured ? 1. : 0.))*vignette;
       col+=bg*.35;
 
