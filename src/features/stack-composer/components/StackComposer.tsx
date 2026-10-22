@@ -36,7 +36,8 @@ export function StackComposer() {
     const flow = flowRef.current
     if (!canvas || !flow || !flow.getNodes().length) return
     const toolbar = canvas.querySelector<HTMLElement>('.composer-workbench')
-    const availableHeight = Math.max(120, canvas.clientHeight - 104 - (toolbar?.offsetHeight ?? 160) - 56)
+    const footer = window.matchMedia('(max-width: 700px), (pointer: coarse)').matches ? 92 : 56
+    const availableHeight = Math.max(120, canvas.clientHeight - 104 - (toolbar?.offsetHeight ?? 160) - footer)
     const bounds = flow.getNodesBounds(flow.getNodes().map(node => node.id))
     const view = getViewportForBounds(bounds, Math.max(120, canvas.clientWidth - 48), availableHeight, .2, 1, .12)
     void flow.setViewport({ x: view.x + 24, y: view.y + 104, zoom: view.zoom }, { duration: 0 })

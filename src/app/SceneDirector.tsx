@@ -9,6 +9,8 @@ import type { SpaceCamera } from '../features/space/field'
 import { addSpaceMotion } from '../features/space/addSpaceMotion'
 import { useAmbientPointer } from '../hooks/useAmbientPointer'
 import { lockJourneyInput } from '../lib/lockJourneyInput'
+import { isToolbarResize } from './viewport'
+import { MobileJourneyNav } from '../components/MobileJourneyNav'
 
 export function SceneDirector() {
   const rootRef = useRef<HTMLElement>(null)
@@ -29,7 +31,7 @@ export function SceneDirector() {
     const navigate = (event: MouseEvent) => {
       const button = (event.target as HTMLElement).closest('[data-journey-next], [data-journey-prev]')
       if (!button || root.dataset.traversing === 'true') return
-      const section = button.closest<HTMLElement>('[data-scene-id]')
+      const section = button.closest<HTMLElement>('[data-scene-id]') ?? root.querySelector<HTMLElement>('[data-scene-id][data-active="true"]')
       const index = section ? sections.indexOf(section) : -1
       const boundary = button.hasAttribute('data-journey-prev') ? index - 1 : index
       if (boundary < 0 || boundary >= sections.length - 1) return
@@ -56,6 +58,12 @@ export function SceneDirector() {
       let refreshScene = -1
       let viewportWidth = window.innerWidth
       let viewportHeight = window.innerHeight
+      let layoutHeight = sections[0].offsetHeight
+      const touchViewport = () => window.matchMedia('(pointer: coarse)').matches
+      const toolbarResize = () => isToolbarResize(
+        { width: viewportWidth, height: viewportHeight, layoutHeight },
+        { width: window.innerWidth, height: window.innerHeight, layoutHeight: sections[0].offsetHeight }, touchViewport(),
+      )
       const beginRefresh = () => {
         if (refreshing) return
         refreshing = true
@@ -63,7 +71,7 @@ export function SceneDirector() {
       }
       const isRefreshing = () => {
         // Some browsers deliver the resized document's scroll event before resize.
-        if (window.innerWidth !== viewportWidth || window.innerHeight !== viewportHeight) beginRefresh()
+        if ((window.innerWidth !== viewportWidth || window.innerHeight !== viewportHeight) && !toolbarResize()) beginRefresh()
         return refreshing
       }
       let flight: gsap.core.Tween | undefined
@@ -82,6 +90,7 @@ export function SceneDirector() {
         const id = sceneRegistry[activeIndex].id
         if (activeScene !== id) {
           activeScene = id
+          root.dataset.currentScene = id
           sections.forEach((section, i) => {
             section.inert = i !== activeIndex
             section.dataset.active = String(i === activeIndex)
@@ -98,6 +107,10 @@ export function SceneDirector() {
         if (traversing) return
         traversing = true
         releaseInput = lockJourneyInput(root)
+        // Stop touch momentum at this boundary before it can cross later scenes.
+        window.scrollTo(0, forward
+          ? sections[index].offsetTop + sections[index].offsetHeight * sceneRegistry[index].holdFraction + 1
+          : sections[index + 1].offsetTop - 1)
         root.dataset.transitionFrom = sceneRegistry[index].id
         root.dataset.transitionDirection = forward ? 'forward' : 'backward'
         sections[index].dataset.transitioning = 'true'
@@ -149,12 +162,12 @@ export function SceneDirector() {
           end: 'bottom top',
           onEnter: (self) => {
             if (traversing || isRefreshing()) return
-            if (window.scrollY >= self.end) animation.progress(1)
+            if (activeScene !== id && window.scrollY >= self.end) animation.progress(1)
             else traverse(animation, true, index)
           },
           onEnterBack: (self) => {
             if (traversing || isRefreshing()) return
-            if (window.scrollY <= self.start) animation.progress(0)
+            if (activeScene !== sceneRegistry[index + 1].id && window.scrollY <= self.start) animation.progress(0)
             else traverse(animation, false, index, returnAnimation)
           },
           onLeave: () => { if (!traversing && !isRefreshing()) animation.progress(1) },
@@ -170,10 +183,12 @@ export function SceneDirector() {
         ScrollTrigger.update()
         viewportWidth = window.innerWidth
         viewportHeight = window.innerHeight
+        layoutHeight = sections[0].offsetHeight
         refreshing = false
         syncActive()
       }
       const refreshViewport = () => {
+        if (toolbarResize()) return
         beginRefresh()
         // The guard also covers small mobile resizes that ScrollTrigger normally
         // ignores. Queue its debounced refresh so the guard always gets released.
@@ -207,6 +222,7 @@ export function SceneDirector() {
           <Component />
         </section>
       ))}
+      <MobileJourneyNav />
     </main>
   )
 }

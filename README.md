@@ -38,6 +38,8 @@ Every boundary uses a native scroll threshold, GSAP ScrollTrigger, and a forward
 
 The first visit in each tab session opens with a skippable Loading sequence that warms fonts and the two primary character poses. It completes after resource readiness and a short minimum presentation, with a six-second timeout fallback. Journey input is locked while the overlay is visible. Reduced motion shortens the sequence. Welcome letters enter after the overlay closes; Restart retains its own existing transition.
 
+On touch devices, `MobileJourneyNav` provides previous/next chapter controls through the same director-owned boundaries. The graph background accepts vertical swipes while nodes retain drag gestures; long chapter copy and the letter scroll independently. `src/styles/mobile.css` reserves safe-area space for navigation, the composer shelf, and short-screen controls. Toolbar-only height changes leave the chapter and its scroll position intact; rotation or actual section-size changes still refresh the layout. WebGL drawing-buffer sizes change only inside the next draw, with no intermediate window-sized clear, and the mobile eclipse zoom is capped at 3x to avoid oversized masked surfaces. Shader smoothstep edges use defined ascending bounds across GPU drivers.
+
 ## Ownership
 
 | Path | Responsibility |
@@ -81,7 +83,7 @@ Edit `src/data/siteContent.ts` to add real profile text or destination URLs. Emp
 
 ## Verification
 
-Type checking, 45 unit tests, and production build pass. In-app browser checks cover desktop 1280×800 and mobile 390×844: opening, character push, impact, portal entry, continuous space, disabled destinations, exit, restart, reverse navigation, graph connection/drag/state retention, and resize. Reduced-motion timelines are covered by unit tests; OS media preference and WebGL context loss have not been exercised in the browser.
+Verification scripts cover type checking, 61 unit tests, and the production build. Chrome mobile emulation at 320×568 and 390×844 covers the complete journey, reverse boundaries, graph composition/state retention, readable letter scrolling, and restart. Resize checks include portrait/landscape changes and toolbar-only height events; the latter no longer reset the black-hole buffer or scroll position. Emulated reduced motion covers all seven boundaries and restart. Physical Android/iOS hardware and WebGL context loss have not been exercised.
 
 Entry now always begins at Prelude (Scene 0.5). The entry bootstrap disables automatic scroll restoration, clears any chapter fragment while retaining query parameters and history state, and resets scroll to the top. `mountJourneyAtEntry` mounts the app after load and two animation frames, resetting scroll once more after embedded-browser restoration has settled. This applies to first visits and reloads; the first-visit loader still runs once per tab session.
 

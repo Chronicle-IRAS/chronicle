@@ -22,9 +22,12 @@ export function useNodeDrift(
     let held: string | undefined
     let connecting = false
     let lastTime = 0
-    let width = canvas.clientWidth, height = canvas.clientHeight, toolbarHeight = 160
+    let width = canvas.clientWidth, height = canvas.clientHeight, toolbarHeight = 160, footerHeight = 42
     const toolbar = canvas.querySelector<HTMLElement>('.composer-workbench')
-    const measure = () => { width = canvas.clientWidth; height = canvas.clientHeight; toolbarHeight = toolbar?.offsetHeight ?? 160 }
+    const measure = () => {
+      width = canvas.clientWidth; height = canvas.clientHeight; toolbarHeight = toolbar?.offsetHeight ?? 160
+      footerHeight = window.matchMedia('(max-width: 700px), (pointer: coarse)').matches ? 92 : 42
+    }
     measure()
     const resize = new ResizeObserver(measure)
     resize.observe(canvas)
@@ -146,7 +149,7 @@ export function useNodeDrift(
       const node = held ? latest.current.nodes.find(item => item.id === held) : undefined
       stepDrift([...bodies.values()], dt, {
         left: (18 - view.x) / view.zoom, right: (width - 18 - view.x) / view.zoom,
-        top: (112 - view.y) / view.zoom, bottom: (height - toolbarHeight - 42 - view.y) / view.zoom,
+        top: (112 - view.y) / view.zoom, bottom: (height - toolbarHeight - footerHeight - view.y) / view.zoom,
       }, body && node ? { body, x: node.position.x + body.rx, y: node.position.y + body.ry } : undefined)
       render()
     }

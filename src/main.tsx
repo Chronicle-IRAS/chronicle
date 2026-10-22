@@ -11,6 +11,7 @@ import './styles/ink.css'
 import './styles/polish.css'
 import './styles/composer-dream.css'
 import './styles/expression.css'
+import './styles/mobile.css'
 
 mountJourneyAtEntry(window, () => {
   ReactDOM.createRoot(document.getElementById('root')!).render(
