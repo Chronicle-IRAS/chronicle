@@ -1,3 +1,5 @@
+> Legacy reference: the October 2026 user-authorized one-page redesign supersedes this journey specification. The current entry is `src/app/OnePage.tsx`; see DESIGN_VISION.md.
+
 # Transitions
 
 The seven scene boundaries of CHRONICLE (0.5→01, 01→02, 02→03, 03→04, 04→05, 05→06, 06→07) plus the restart loop, described as intent.

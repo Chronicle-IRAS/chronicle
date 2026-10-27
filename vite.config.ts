@@ -13,7 +13,6 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (id.includes('node_modules/three')) return 'vendor-three'
-          if (id.includes('node_modules/@xyflow')) return 'vendor-xyflow'
           if (id.includes('node_modules/gsap')) return 'vendor-gsap'
           if (id.includes('node_modules/react') || id.includes('node_modules/zustand')) return 'vendor-react'
         },

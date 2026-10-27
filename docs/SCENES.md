@@ -1,3 +1,5 @@
+> Legacy reference: the October 2026 user-authorized one-page redesign supersedes this journey specification. The current entry is `src/app/OnePage.tsx`; see DESIGN_VISION.md.
+
 # Scenes
 
 The scenes of CHRONICLE (Scene 0.5 Prelude + Scenes 01–07), in fixed order. This file records design intent, not implementation detail.

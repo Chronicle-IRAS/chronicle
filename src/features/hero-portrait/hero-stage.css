@@ -1,0 +1,131 @@
+/* Chapter 00 — an optical chamber. Scoped to the hero; subsequent scenes are unchanged. */
+.portrait-sequence { height: 180svh; }
+.portrait-sequence .portrait-hero {
+  min-height: 780px;
+  max-height: none;
+  mask-image: none;
+  -webkit-mask-image: none;
+  --orb-size: min(78svh, 64vw);
+  --orb-x: 68%;
+  --orb-y: 48svh;
+}
+.portrait-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(90deg, #070709b0, transparent 55%), linear-gradient(0deg, #070709 0, transparent 18%);
+}
+.portrait-hero .portrait-intro {
+  position: absolute;
+  top: 20%;
+  left: 5%;
+  bottom: auto;
+  right: auto;
+  width: 55%;
+  z-index: 3;
+}
+.portrait-hero .portrait-intro::before { display: none; }
+.hero-edition { display: flex; align-items: center; gap: 12px; font: 9px 'JetBrains Mono', monospace; letter-spacing: .16em; color: #c3a69b; margin: 0 0 26px; }
+.hero-edition>span { display: block; width: 5px; height: 5px; background: #ff6149; border-radius: 50%; box-shadow: 0 0 16px #ff503e; }
+.portrait-intro h1.hero-statement { display: block; font: 500 clamp(82px, 9vw, 165px)/.85 'Syne', sans-serif; letter-spacing: -.075em; color: #f2e9dd; margin: 0; }
+.hero-title-line { display: block; width: fit-content; transform-origin: left bottom; }
+.hero-title-line:nth-child(2) { padding-left: .43em; }
+.hero-title-line em { font: italic 1.19em/.83 'Instrument Serif', Georgia, serif; color: #f3543b; letter-spacing: -.055em; }
+.hero-title-line i { display: inline-block; font: normal .36em/1 'Instrument Serif', serif; color: #f85f46; vertical-align: middle; margin-left: .35em; }
+.hero-story { display: flex; gap: 18px; align-items: flex-start; margin-top: 34px; color: #d5c4b9; }
+.hero-story-rule { height: 1px; width: 35px; background: #a56150; margin-top: 12px; }
+.hero-story p { margin: 0; font-size: 13px; line-height: 1.85; letter-spacing: .06em; }
+.hero-story small { display: block; margin-top: 12px; font: 8px 'JetBrains Mono', monospace; color: #a78d80; letter-spacing: .12em; }
+.hero-entry-links { display: flex; align-items: center; gap: 28px; margin-top: 27px; pointer-events: auto; width: fit-content; }
+.hero-explore { display: flex; align-items: center; gap: 28px; padding: 7px 7px 7px 23px; border: 1px solid #f0705866; border-radius: 40px; color: #f4e3d7; background: #22120fb8; font-size: 12px; text-decoration: none; transition: background .2s, border-color .2s; }
+.hero-explore b { display: grid; place-items: center; width: 38px; height: 38px; font-size: 22px; background: #ed533b; color: #1b0b07; border-radius: 50%; font-weight: 400; transition: transform .2s; }
+.hero-explore:hover { background: #3a1913; border-color: #ed7960; }
+.hero-explore:hover b { transform: rotate(45deg); }
+.hero-lab-link { font-size: 10px; color: #c8b2a6; text-decoration: none; padding: 14px 0; }
+.hero-lab-link span { padding-left: 8px; color: #ff8463; }
+.hero-edge-note { position: absolute; left: 5%; bottom: 28px; right: 5%; display: flex; justify-content: space-between; font: 8px monospace; letter-spacing: .18em; color: #9a8074; z-index: 3; opacity: calc(1 - var(--portrait-progress, 0) * 2); pointer-events: none; }
+.hero-orbital-frame { position: absolute; width: var(--orb-size); height: var(--orb-size); left: var(--orb-x); top: var(--orb-y); transform: translate(-50%, -50%); pointer-events: none; opacity: var(--portal-fade, 1); }
+.hero-orbit-ring { position: absolute; border-radius: 50%; border: 1px solid #db745652; inset: -18px; transition: transform 1s cubic-bezier(.16,1,.3,1), border-color .4s; }
+.hero-orbit-outer { transform: rotate(-24deg); border-left-color: #ff9774; border-bottom-color: #ff765a88; box-shadow: -9px 7px 35px -20px #fb422a; }
+.hero-orbit-outer>span { position: absolute; left: 14.4%; top: 14.4%; transform: translate(-50%,-50%); color: #ffd0a0; font-size: 26px; text-shadow: 0 0 16px #ff4e31; }
+.hero-orbit-inner { inset: 18px; border-color: #a94c3533; }
+.hero-orbit-halo { position: absolute; inset: -12%; border-radius: 50%; background: radial-gradient(circle, transparent 59%, #e3452414 61%, transparent 70%); }
+.hero-orbit-ticks { position: absolute; inset: -36px; width: calc(100% + 72px); height: calc(100% + 72px); fill: none; stroke: #b8795959; stroke-width: .5; }
+.hero-orbit-caption { position: absolute; top: 9%; right: -2%; font: 8px 'JetBrains Mono',monospace; letter-spacing: .14em; color: #e4b49b; display: flex; align-items: center; gap: 14px; transform: rotate(19deg); }
+.hero-orbit-caption i { height: 1px; width: 65px; background: #ac5a42; }
+.hero-orbit-coordinates { position: absolute; bottom: 8%; right: 0; font: 8px/1.8 monospace; letter-spacing: .14em; color: #bb8e77; text-align: right; }
+.cinematic-portrait[data-exploded='true'] .hero-orbit-outer { transform: rotate(55deg) scale(1.12); border-color: #fc835b; }
+.cinematic-portrait[data-exploded='true'] .hero-orbit-inner { transform: scale(.85); }
+.cinematic-portrait[data-illuminated='true'] .hero-orbit-outer { box-shadow: 0 0 60px #ff4c242a; border-color: #ffb48b; }
+.portrait-hero .portrait-texture-fallback { clip-path: circle(calc(var(--orb-size) / 2) at var(--orb-x) var(--orb-y)); }
+.portrait-hero .portrait-telemetry { display: none; }
+.portrait-hero .portrait-interaction-label { display: flex; position: absolute; left: 68%; top: 83%; bottom: auto; transform: translateX(-50%); align-items: center; gap: 10px; color: #d4b8a4; font-size: 10px; letter-spacing: .05em; white-space: nowrap; opacity: var(--portal-fade, 1); }
+.portrait-interaction-label>span { color: #fe8b66; font-size: 24px; }
+.portrait-interaction-label p { margin: 0; }
+.portrait-hero .portrait-actions { left: auto; right: 5%; bottom: 65px; gap: 18px; padding: 12px 18px; border: 1px solid #a2604238; border-radius: 50px; background: #110e0bd9; backdrop-filter: blur(12px); }
+.portrait-hero .shader-mode-group, .portrait-hero .portrait-action-buttons { gap: 15px; }
+.portrait-hero .shader-mode-btn, .portrait-hero .portrait-action-buttons button { min-height: 32px; font-size: 9px; color: #d2b6a7; }
+.portrait-hero .shader-mode-btn[aria-pressed='true'] { color: #ffad88; }
+.portrait-hero .portrait-transition-copy strong { font: italic clamp(90px, 15vw, 240px)/.9 'Instrument Serif',serif; color: #ee7853; }
+.portrait-hero .portrait-transition-copy p { color: #d5b6a0; }
+.folio[data-entered='false'] .hero-title-line { opacity: 0; transform: translateY(38px) rotate(3deg); }
+.folio[data-entered='false'] .hero-edition, .folio[data-entered='false'] .hero-story, .folio[data-entered='false'] .hero-entry-links { opacity: 0; transform: translateY(14px); }
+.hero-title-line { transition: transform 1s cubic-bezier(.16,1,.3,1), opacity .8s ease; }
+.hero-title-line:nth-child(2) { transition-delay: .12s; }
+.hero-title-line:nth-child(3) { transition-delay: .22s; }
+.hero-edition, .hero-story, .hero-entry-links { transition: opacity .8s ease .35s, transform .8s cubic-bezier(.16,1,.3,1) .35s; }
+.folio[data-theme='light'] .portrait-hero .hero-statement { color: #f2e9dd; }
+.folio[data-theme='light'] .portrait-hero::after { background: linear-gradient(90deg,#070709e6,transparent 75%), linear-gradient(0deg,#070709,transparent 20%); }
+@media(min-width:760px) and (max-height:850px) {
+  .portrait-sequence .portrait-hero { min-height: 650px; }
+  .portrait-hero .portrait-intro { top: 19%; }
+  .portrait-intro h1.hero-statement { font-size: clamp(76px, 13svh, 125px); }
+  .hero-story { margin-top: 22px; }
+  .hero-entry-links { margin-top: 18px; }
+  .hero-edition { margin-bottom: 18px; }
+}
+@media(max-width:1050px) and (min-width:760px) {
+  .hero-entry-links { flex-direction: column; align-items: flex-start; gap: 0; }
+  .hero-orbit-caption { right: 3%; font-size: 7px; }
+  .portrait-hero .portrait-actions { padding: 9px 12px; gap: 10px; }
+  .portrait-hero .shader-mode-group, .portrait-hero .portrait-action-buttons { gap: 8px; }
+}
+@media(max-width:759px) {
+  .portrait-sequence { height: 160svh; }
+  .portrait-sequence .portrait-hero { --orb-size: min(62svh, 90vw); --orb-x: 50%; --orb-y: 36svh; min-height: 740px; height: 100svh; }
+  .portrait-hero .portrait-intro { top: auto; bottom: 155px; left: 7%; right: 7%; width: auto; }
+  .portrait-intro h1.hero-statement { font-size: clamp(64px, 15vw, 108px); line-height: .85; }
+  .hero-title-line { display: inline; }
+  .hero-title-line:nth-child(2) { padding-left: .12em; }
+  .hero-title-line:nth-child(3) { display: block; }
+  .hero-title-line i { display: none; }
+  .hero-edition { font-size: 7px; letter-spacing: .08em; margin-bottom: 18px; }
+  .hero-story { margin-top: 20px; gap: 12px; }
+  .hero-story-rule { width: 22px; }
+  .hero-story p { font-size: 11px; }
+  .hero-story small { display: none; }
+  .hero-entry-links { gap: 17px; margin-top: 18px; }
+  .hero-explore { padding-left: 15px; gap: 16px; font-size: 11px; }
+  .hero-explore b { width: 30px; height: 30px; }
+  .hero-lab-link { font-size: 9px; }
+  .hero-orbit-ring { inset: -8px; }
+  .hero-orbit-inner { inset: 12px; }
+  .hero-orbit-ticks { inset: -17px; width: calc(100% + 34px); height: calc(100% + 34px); }
+  .hero-orbit-caption { font-size: 6px; right: 2%; top: 4%; transform: rotate(15deg); }
+  .hero-orbit-caption i { width: 20px; }
+  .hero-orbit-coordinates { display: none; }
+  .portrait-hero::after { background: linear-gradient(0deg,#070709 0%,#070709df 21%,transparent 65%); }
+  .portrait-hero .portrait-actions { left: 5%; right: 5%; bottom: 57px; justify-content: center; border-radius: 18px; padding: 8px; flex-wrap: wrap; gap: 5px 14px; }
+  .portrait-hero .shader-mode-group, .portrait-hero .portrait-action-buttons { gap: 14px; }
+  .portrait-hero .shader-mode-btn, .portrait-hero .portrait-action-buttons button { min-height: 36px; font-size: 9px; }
+  .portrait-action-sep { display: none; }
+  .portrait-hero .portrait-interaction-label { display: none; }
+  .hero-edge-note { font-size: 6px; bottom: 25px; left: 7%; right: 7%; letter-spacing: .07em; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .portrait-sequence { height: auto; }
+  .portrait-sequence .portrait-hero { position: relative; }
+  .hero-title-line, .hero-edition, .hero-story, .hero-entry-links, .hero-orbit-ring { transition: none; }
+}

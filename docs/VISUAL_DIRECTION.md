@@ -1,72 +1,32 @@
-# Visual Direction
+# Visual Direction — One Page
 
-Visual intent for CHRONICLE, split into what is decided and what is still open.
+Current user-approved scope: a complete redesign; old scene layouts and cinematic boundaries are no longer constraints. Red/black theme, no terminal aesthetic, more intentional design and useful interactive content.
 
-Status tags: `LOCKED` (decided, do not change unilaterally) · `DIRECTION` (strong intent, reviewable) · `TBD` (not decided — propose, do not invent).
+## Visual system
 
-The current Skeleton styling is a placeholder. It is not the final visual language.
+- Charcoal `#101010`, warm white `#eeeae5`, red `#f04437`, muted warm-gray text, thin low-contrast separators.
+- Syne for English display type, Instrument Serif for expressive accents, Noto Sans SC for Chinese reading text; system fallbacks are required.
+- Full-height dark portrait cover, left-aligned serif title, red/black low-poly human silhouette with star rings, asymmetric conceptual project covers, light playground section and solid-red closing section.
+- Natural document flow, sticky compact navigation and responsive layouts. The mobile version stacks content without removing the interactions.
 
-## Locked / Strong Direction
+## Motion
 
-Avoid (`LOCKED` — not the intended look):
+Apply Emil Kowalski's design-engineering principles: short, interruptible control feedback; 160–220ms UI transitions; restrained GSAP section reveals; transform/opacity animation; no per-frame React state. Portrait hover uses a bounded local radius and settles when the pointer leaves. Reduced motion disables fragment movement. A pressed-state button provides illumination feedback for touch and keyboard users. The original static artwork remains visible without a GPU context. Hover transformations only apply to fine pointers.
 
-- generic SaaS layout,
-- bento dashboard composition,
-- a portfolio card wall,
-- masses of rounded cards,
-- the same section layout repeated scene after scene,
-- an obvious AI-generated template feel.
+## Content and accessibility
 
-Target (`DIRECTION`):
+Use real project URLs and explicitly identify unknown technology pairings as concepts. Controls expose selected/expanded states, offer keyboard focus indicators, and remain usable on touch screens. The fusion lab is lazy loaded and visible in the page. Its result panel is separate from the ball field. Selecting two balls and pressing the fusion button is the keyboard/touch alternative to dragging.
 
-- a clear scene rhythm — each scene has a distinct register while the whole stays coherent,
-- cinematic feeling,
-- spatial layering and depth,
-- transitions treated as the visual core,
-- information hierarchy kept intact; never sacrifice readability for showmanship.
+## Cinematic interaction pass — October 27
 
-Per-scene register (`DIRECTION`):
+The user requested substantially stronger interactions, referencing [Shader](https://www.shader.se/), [Son Daven](https://sondaven.com/en), [Units](https://units.gr/en/homepage/) and [Shelby](https://shelby.ashfall.studio/). Shader and Shelby were inspected visually, Son Daven loaded but its screenshot capture was inconsistent; Units remained behind site verification. These are interaction references, not sources of copied code or assets.
 
-- Scene 01 — quiet, restrained, negative space.
-- Scene 02 — node-first and canvas-led. Visual hierarchy (`LOCKED`): (1) nodes / edges / compositions, (2) canvas / spatial structure / interaction feedback, (3) minimal supporting text / UI chrome.
-  - Forbidden (`LOCKED`): a large centered Scene 02 hero title, a large subtitle, a paragraph-led introduction, text occupying the visual center, or a SaaS-like "hero + app preview" composition.
-  - Allowed, but never the visual focus (`LOCKED`): a small "STACK COMPOSER" label, one short interaction hint, restrained peripheral UI. Exact position, font size, typography, and control layout remain `TBD`.
-- Scene 03 / 04 — relatively quiet, text-led.
-- Scene 05 / 06 — 3D, space, depth.
-- Scene 07 — quiet ending.
+The active hero now uses original generated artwork plus a single WebGL fragment field, superseding the earlier coarse SVG portrait. It features pointer refraction trails, hold-to-scatter/release-to-reassemble, button alternatives, and a native-scroll deconstruction sequence. Project artworks respond with restrained perspective tilt. Original concept artwork remains unchanged. Reduced motion uses a short, static composition with illumination controls, and WebGL failure falls back to the same artwork.
 
-Whole-site rhythm (`LOCKED` as the intended shape):
+## Tactile content pass
 
-```text
-quiet → interactive → quiet → impact → portal → expansive → return → quiet ending
-```
+Dark orbital experiment field inside the warm playground section; red polished spheres, magnetic proximity bridge, converging fusion and a central result sphere. Desktop uses an ellipse and mobile a spacious two-column field. Motion runs only during interaction. Project covers now have usable controls and clearly disclose simulation. The closing SVG line elastically follows the pointer without interfering with native scrolling. Reduced motion removes spring and travel effects.
 
-## Open / Not Locked
+## Hero optical chamber — current cover
 
-The following must not be fixed by an agent. Each needs a later design review:
-
-- `TBD` final color palette
-- `TBD` final typography and fonts
-- `TBD` exact gradients
-- `TBD` exact glow intensity
-- `TBD` exact layout spacing scale
-- `TBD` final Scene 03 copy
-- `TBD` final Scene 04 copy
-- `TBD` final Scene 05 concepts
-- `TBD` final Scene 06 links
-- `TBD` final Goodbye copy
-- `TBD` mobile / responsive adaptation
-- `TBD` exact portal appearance
-- `TBD` exact starfield art direction
-
-## Implementation Principles
-
-### Global expression refinement
-
-The current user-authorized refinement keeps the existing scene layouts and their narrative roles. Loading, Prelude and Goodbye share fine paper texture and rust-colored interaction accents. Currently and Profile share a deep blue surface, muted contour ribbons, and grounded sculptural details. Composer remains node-led, with light travelling along real connections; Space/Destinations retain the single star world with route drawing and clearer planet selection. Utility buttons use small magnetic offsets and transient click echoes. Decorative layers pause off-scene, and reduced motion disables added spatial feedback. Personal content and unconfigured destinations remain as supplied.
-
-- `LOCKED` Never break readability for the sake of a complex effect.
-- `LOCKED` A "technological feel" does not default to neon everywhere, excessive glow, a cyberpunk HUD, heavy scanlines, heavy glitch, or meaningless glass cards. None of these are confirmed directions.
-- `LOCKED` If an agent has no design basis for a visual decision, do not invent a visual language. Propose options and wait for user / design review.
-- `LOCKED` Placeholder styling copied from the Skeleton must never be treated as the final design.
-- `DIRECTION` Visual work should be replaceable module by module, so a scene's look can change without destabilizing the scene director, the transitions, or the composition rules.
+The user authorized a substantial redesign of the homepage only. The new cover pairs oversized staggered “Ideas / take / shape.” typography and Chinese introductory copy with the original portrait inside a glowing circular optical chamber. An outlined orbital frame responds to shatter and illumination; the existing GPU mesh opens beyond its aperture when held or scrolled. Shader controls and direct work/lab links are visible. The mobile composition places the portrait above a two-line title, with compact navigation labels. The portrait scroll range begins at the actual top of its section, so the resting portrait stays assembled. Reduced motion and the clipped original-image fallback remain supported. Other chapters, the synthesis lab and companion dialogue behavior are unchanged by this cover pass.

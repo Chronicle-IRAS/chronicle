@@ -1,5 +1,4 @@
-import { addEdge, applyEdgeChanges, applyNodeChanges } from '@xyflow/react'
-import type { Connection, EdgeChange, NodeChange, XYPosition } from '@xyflow/react'
+import type { Connection, EdgeChange, NodeChange, XYPosition } from '../types'
 import { create } from 'zustand'
 import { createInitialTechNodes } from '../data/initialNodes'
 import { normalizeComposition } from '../engine/composition'
@@ -25,7 +24,18 @@ export const useComposerStore = create<ComposerState>((set) => ({
     const techChanges = changes.filter((change) =>
       techIds.has(change.type === 'add' ? change.item.id : change.id),
     ) as NodeChange<TechNode>[]
-    const techNodes = techChanges.length ? applyNodeChanges(techChanges, state.techNodes) : state.techNodes
+    let techNodes = state.techNodes
+    for (const change of techChanges) {
+      if (change.type === 'add') { techNodes = [...techNodes, change.item]; continue }
+      if (change.type === 'remove') { techNodes = techNodes.filter(node => node.id !== change.id); continue }
+      techNodes = techNodes.map(node => {
+        if (node.id !== change.id) return node
+        if (change.type === 'select') return { ...node, selected: change.selected }
+        if (change.type === 'position' && change.position) return { ...node, position: change.position }
+        if (change.type === 'dimensions' && change.dimensions) return { ...node, measured: change.dimensions }
+        return node
+      })
+    }
     let resultPositions = state.resultPositions
     let resultMeasurements = state.resultMeasurements
     for (const change of changes) {
@@ -38,7 +48,7 @@ export const useComposerStore = create<ComposerState>((set) => ({
     }
     return { techNodes, resultPositions, resultMeasurements }
   }),
-  onEdgesChange: (changes) => set((state) => ({ edges: applyEdgeChanges(changes, state.edges) })),
+  onEdgesChange: (changes) => set((state) => ({ edges: changes.reduce((edges, change) => change.type === 'remove' ? edges.filter(edge => edge.id !== change.id) : [...edges, change.item], state.edges) })),
   connect: (connection) => set((state) => {
     const source = state.techNodes.find((node) => node.id === connection.source)
     const target = state.techNodes.find((node) => node.id === connection.target)
@@ -50,6 +60,6 @@ export const useComposerStore = create<ComposerState>((set) => ({
       return a && b && normalizeComposition([a.data.techId, b.data.techId]) === key
     })
     if (exists) return state
-    return { edges: addEdge({ ...connection, id: `composition:${key}`, type: 'default', animated: false }, state.edges) }
+    return { edges: [...state.edges, { ...connection, id: `composition:${key}`, type: 'default', animated: false }] }
   }),
 }))
