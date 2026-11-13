@@ -69,7 +69,7 @@ main > .whisper {
   width: 114%;
   height: 114%;
   overflow: visible;
-  rotate: calc(var(--bp, 0) * 140deg);
+  rotate: none;
 }
 .bd__orbit circle {
   fill: none;
@@ -86,8 +86,8 @@ main > .whisper {
   height: 7px;
   margin: -3.5px;
   background: var(--accent);
-  rotate: calc(-90deg + var(--bp, 0) * 320deg);
-  transform: translateX(calc(var(--s) * 0.57));
+  rotate: none;
+  transform: rotate(-90deg) translateX(calc(var(--s) * 0.57));
   transform-origin: 3.5px 3.5px;
 }
 
@@ -97,7 +97,7 @@ main > .whisper {
   left: 50%;
   top: 50%;
   margin: 0;
-  translate: -50% calc(-50% + var(--bp, 0) * -14vh);
+  translate: -50% -50%;
   font-family: var(--f-display);
   font-weight: 700;
   font-size: clamp(90px, 17vw, 300px);
@@ -247,6 +247,9 @@ main > :not(.links) {
   .bd__orbit,
   .bd__node {
     rotate: none;
+  }
+  .bd__node {
+    transform: translateX(calc(var(--s) * 0.57));
   }
 }
 

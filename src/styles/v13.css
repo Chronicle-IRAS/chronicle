@@ -8,10 +8,10 @@
 /* ---------- 球体：大、偏右、常驻 ---------- */
 .bd__orb {
   --s: min(104vh, 1120px, 104vw);
-  left: calc(64% + var(--hv, 0) * 8%);
+  left: 64%;
   top: 50%;
-  translate: calc(-50% + var(--px) * 18px) calc(-50% + var(--py) * 12px + var(--bp, 0) * -4vh);
-  scale: calc(1 - var(--hv, 0) * 0.06 + var(--bp, 0) * 0.08);
+  translate: -50% -50%;
+  scale: 1;
 }
 .bd__disc > * {
   opacity: 1 !important;
@@ -126,11 +126,12 @@
 }
 /* 晶片：大、亮、带辉光，并且缓慢浮动 */
 .bd__shards polygon {
-  opacity: 0.85;
+  opacity: 1;
   stroke: #fff;
   stroke-width: 0.22;
   filter: drop-shadow(0 0 0.8px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 2px rgba(180, 150, 255, 0.8));
-  transform-box: fill-box;
+}
+.bd__shard {
   transform-origin: center;
   animation:
     glint 4s ease-in-out infinite,
@@ -148,7 +149,7 @@
 }
 @keyframes drift {
   50% {
-    transform: translateY(-1.2px) rotate(8deg);
+    transform: translateY(calc(var(--s) * -0.01344)) rotate(8deg);
   }
 }
 .bd__ticks path {
@@ -172,18 +173,17 @@
   transform-origin: 5.5px 5.5px;
 }
 /* 球后的大片辉光：首屏像一张全幅画面 */
-.bd::before {
-  content: '';
+.bd__glow {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(48vmax 40vmax at calc(64% + var(--hv, 0) * 8%) 50%, rgba(140, 200, 255, 0.45), transparent 70%),
-    radial-gradient(36vmax 26vmax at calc(70% + var(--hv, 0) * 8%) 72%, rgba(255, 140, 200, 0.35), transparent 70%);
+    radial-gradient(48vmax 40vmax at 64% 50%, rgba(140, 200, 255, 0.45), transparent 70%),
+    radial-gradient(36vmax 26vmax at 70% 72%, rgba(255, 140, 200, 0.35), transparent 70%);
 }
-[data-theme='dark'] .bd::before {
+[data-theme='dark'] .bd__glow {
   background:
-    radial-gradient(48vmax 40vmax at calc(64% + var(--hv, 0) * 8%) 50%, rgba(90, 80, 255, 0.35), transparent 70%),
-    radial-gradient(36vmax 26vmax at calc(70% + var(--hv, 0) * 8%) 72%, rgba(255, 60, 150, 0.25), transparent 70%);
+    radial-gradient(48vmax 40vmax at 64% 50%, rgba(90, 80, 255, 0.35), transparent 70%),
+    radial-gradient(36vmax 26vmax at 70% 72%, rgba(255, 60, 150, 0.25), transparent 70%);
 }
 /* 可读性：左侧一层纸色遮罩（正文多在左侧），不淡化画面本身 */
 .bd::after {
@@ -459,7 +459,7 @@
   [data-theme='dark'] .bd::after {
     background: linear-gradient(180deg, transparent 0, transparent 30%, rgba(7, 10, 20, 0.55) 70%, rgba(7, 10, 20, 0.78));
   }
-  .bd::before {
+  .bd__glow {
     background:
       radial-gradient(90vw 70vw at 58% 34%, rgba(140, 200, 255, 0.5), transparent 70%),
       radial-gradient(70vw 50vw at 66% 52%, rgba(255, 140, 200, 0.35), transparent 70%);
@@ -486,7 +486,7 @@
   .fx {
     display: none;
   }
-  .bd__shards polygon {
+  .bd__shard {
     animation: none !important;
   }
 }

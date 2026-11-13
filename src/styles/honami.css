@@ -41,7 +41,8 @@
   overflow: hidden;
   background: none;
 }
-.bd__city {
+.bd__city,
+.bd__city-motion {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -238,6 +239,10 @@
   opacity: 0.55;
   stroke: rgba(255, 255, 255, 0.7);
   stroke-width: 0.12;
+}
+.bd__shard {
+  position: absolute;
+  overflow: visible;
   animation: glint 5s ease-in-out infinite;
   animation-delay: calc(var(--i) * -0.55s);
 }
@@ -287,14 +292,14 @@
 .bd__cross--x {
   left: 0;
   right: 0;
-  top: calc(52% + var(--py, 0) * 10px);
+  top: 52%;
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--line-2) 20%, var(--line-2) 80%, transparent);
 }
 .bd__cross--y {
   top: 0;
   bottom: 0;
-  left: calc(50% + var(--px, 0) * 14px);
+  left: 50%;
   width: 1px;
   background: linear-gradient(transparent, var(--line-2) 20%, var(--line-2) 80%, transparent);
 }
@@ -307,7 +312,7 @@
   bottom: 0;
   width: 100%;
   height: 70%;
-  translate: 0 calc(var(--bp, 0) * 8vh);
+  translate: none;
 }
 .bd__waves path {
   fill: none;
@@ -324,10 +329,10 @@
   height: 100%;
 }
 .bd__layer--0 {
-  translate: 0 calc(var(--bp, 0) * -60px);
+  translate: none;
 }
 .bd__layer--1 {
-  translate: 0 calc(var(--bp, 0) * -140px);
+  translate: none;
 }
 .bd__cl {
   opacity: 0.5;

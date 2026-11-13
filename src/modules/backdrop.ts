@@ -2,6 +2,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { env, qs, qsa } from '../lib/env'
 import { scrambleFrame } from '../lib/scramble'
+import { backdropTransforms } from '../lib/backdropMotion'
 
 /**
  * v11 · 背景（借鉴 lanrhyme.top 的分层，重新实现成瓷白 / 钴蓝）：
@@ -61,9 +62,10 @@ function city(): string {
     }
     return `<path class="bd__win" d="${d}"/>`
   })()
-  const tower = `<g class="bd__tower"><path d="M49.2 ${H}L49.6 16H50.4L50.8 ${H}Z"/><path d="M48 ${H}L49.4 36H50.6L52 ${H}Z"/><path class="bd__mast" d="M50 16V7"/><ellipse cx="50" cy="22" rx="3.2" ry="0.8"/><ellipse cx="50" cy="29" rx="4.4" ry="1.1"/><circle class="bd__beacon" cx="50" cy="7" r="0.7"/></g>`
+  const tower = `<g class="bd__tower"><path d="M49.2 ${H}L49.6 16H50.4L50.8 ${H}Z"/><path d="M48 ${H}L49.4 36H50.6L52 ${H}Z"/><path class="bd__mast" d="M50 16V7"/><ellipse cx="50" cy="22" rx="3.2" ry="0.8"/><ellipse cx="50" cy="29" rx="4.4" ry="1.1"/></g>`
   const sky = `${layer(0, 6, 14, 'bd__far')}${layer(1, 4, 22, 'bd__mid')}${tower}${layer(2, 2, 10, 'bd__near')}${windows}`
-  return `<svg class="bd__city" viewBox="0 0 100 100" preserveAspectRatio="none"><defs><linearGradient id="bd-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="s0"/><stop offset=".45" class="s1"/><stop offset=".64" class="s2"/><stop offset=".64" class="s3"/><stop offset="1" class="s4"/></linearGradient></defs><rect width="100" height="100" fill="url(#bd-sky)"/><g class="bd__sky">${sky}</g><g class="bd__reflect" transform="translate(0 ${H * 2}) scale(1 -1)">${sky}</g><path class="bd__ripple" d="${ripples(H, r)}"/><g class="bd__pulse"><circle cx="50" cy="7" r="3"/><circle cx="50" cy="7" r="3"/><circle cx="50" cy="7" r="3"/></g></svg>`
+  // The moving beacon/rings must not invalidate the detailed city on every frame.
+  return `<svg class="bd__city" viewBox="0 0 100 100" preserveAspectRatio="none"><defs><linearGradient id="bd-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="s0"/><stop offset=".45" class="s1"/><stop offset=".64" class="s2"/><stop offset=".64" class="s3"/><stop offset="1" class="s4"/></linearGradient></defs><rect width="100" height="100" fill="url(#bd-sky)"/><g class="bd__sky">${sky}</g><g class="bd__reflect" transform="translate(0 ${H * 2}) scale(1 -1)">${sky}</g><path class="bd__ripple" d="${ripples(H, r)}"/></svg><svg class="bd__city-motion" viewBox="0 0 100 100" preserveAspectRatio="none"><circle class="bd__beacon" cx="50" cy="7" r="0.7"/><g class="bd__pulse"><circle cx="50" cy="7" r="3"/><circle cx="50" cy="7" r="3"/><circle cx="50" cy="7" r="3"/></g></svg>`
 }
 function ripples(H: number, r: () => number) {
   let d = ''
@@ -108,9 +110,15 @@ function shards(): string {
     ]
       .map(([x, y]) => `${(cx + x!).toFixed(2)},${(cy + y!).toFixed(2)}`)
       .join(' ')
-    g += `<polygon points="${pts}" style="--i:${i}"/>`
+    // Each crystal animates as a small SVG layer, not a polygon inside one
+    // viewport-sized SVG that would have to be rasterized again every frame.
+    const x0 = cx - s * 0.6
+    const y0 = cy - s * 1.6
+    const w = s * 1.3
+    const h = s * 2.8
+    g += `<svg class="bd__shard" viewBox="${x0} ${y0} ${w} ${h}" style="left:${x0}%;top:${y0}%;width:${w}%;height:${h}%;--i:${i}"><polygon points="${pts}"/></svg>`
   }
-  return `<svg class="bd__shards" viewBox="0 0 100 100"><defs><linearGradient id="bd-irid" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8fe9ff"/><stop offset=".35" stop-color="#b9a8ff"/><stop offset=".65" stop-color="#ff9fd0"/><stop offset="1" stop-color="#ffe6a8"/></linearGradient></defs>${g}</svg>`
+  return `<div class="bd__shards"><svg width="0" height="0" style="position:absolute"><defs><linearGradient id="bd-irid" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8fe9ff"/><stop offset=".35" stop-color="#b9a8ff"/><stop offset=".65" stop-color="#ff9fd0"/><stop offset="1" stop-color="#ffe6a8"/></linearGradient></defs></svg>${g}</div>`
 }
 
 /** 刻度环：120 道刻度，每 10 道一根长的 */
@@ -191,6 +199,7 @@ export function initBackdrop(animate: boolean) {
   bd.className = 'bd'
   bd.setAttribute('aria-hidden', 'true')
   bd.innerHTML = `
+    <div class="bd__glow"></div>
     <div class="bd__grid"></div>
     ${waves()}
     ${graph()}
@@ -276,8 +285,16 @@ export function initBackdrop(animate: boolean) {
     })
   })
 
-  // 整页进度 → 圆的缩放、轨道转角、节点位置；章节内进度 → 空心字的视差
-  // 只写在背景层自己身上，且只在数值变化时写：写到 :root 会让整页重算样式
+  // Each transform belongs to its own layer. Updating inherited variables on
+  // .bd would invalidate the complete SVG subtree and repaint the gradients.
+  const targets = {
+    orb: qs('.bd__orb', bd), glow: qs('.bd__glow', bd),
+    orbit: qs('.bd__orbit', bd), node: qs('.bd__node', bd),
+    ghost, waves: qs('.bd__waves', bd),
+    near: qs('.bd__layer--0', bd), far: qs('.bd__layer--1', bd),
+    crossX: qs('.bd__cross--x', bd), crossY: qs('.bd__cross--y', bd),
+  }
+  const pointer = { x: 0, y: 0 }
   let max = 1
   const measure = () => (max = Math.max(1, document.documentElement.scrollHeight - innerHeight))
   measure()
@@ -285,18 +302,22 @@ export function initBackdrop(animate: boolean) {
   let last = ''
   gsap.ticker.add(() => {
     const p = Math.min(1, Math.max(0, scrollY / max)).toFixed(4)
-    if (p === last) return
-    last = p
-    bd.style.setProperty('--bp', p)
-    // 离开首屏后球体向右侧让位（不再淡出），正文靠左侧的纸色遮罩和面板保证可读
-    bd.style.setProperty('--hv', Math.min(1, scrollY / (innerHeight * 0.9)).toFixed(3))
+    const hero = Math.min(1, scrollY / (innerHeight * 0.9))
+    const key = `${p}|${hero.toFixed(3)}|${pointer.x.toFixed(4)}|${pointer.y.toFixed(4)}|${innerWidth}|${innerHeight}`
+    if (key === last) return
+    last = key
+    const transforms = backdropTransforms(Number(p), hero, pointer.x, pointer.y, innerWidth, innerHeight)
+    for (const name of Object.keys(targets) as Array<keyof typeof targets>) {
+      const target = targets[name]
+      if (target) target.style.transform = transforms[name]
+    }
     fill.style.transform = `scaleY(${p})`
   })
 
   // 指针让圆轻轻偏一点（只在精确指针上）
   if (env.finePointer) {
-    const xTo = gsap.quickTo(bd, '--px', { duration: 1.6, ease: 'expo.out' })
-    const yTo = gsap.quickTo(bd, '--py', { duration: 1.6, ease: 'expo.out' })
+    const xTo = gsap.quickTo(pointer, 'x', { duration: 1.6, ease: 'expo.out' })
+    const yTo = gsap.quickTo(pointer, 'y', { duration: 1.6, ease: 'expo.out' })
     window.addEventListener(
       'pointermove',
       e => {
