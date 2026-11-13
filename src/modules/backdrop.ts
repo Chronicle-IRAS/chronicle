@@ -249,6 +249,10 @@ export function initBackdrop(animate: boolean) {
     current = i
     transition()
     const target = (words[i] ?? '').toUpperCase()
+    if (!env.finePointer) {
+      ghost.textContent = target
+      return
+    }
     cancelAnimationFrame(raf)
     const t0 = performance.now()
     const tick = (now: number) => {
@@ -270,6 +274,7 @@ export function initBackdrop(animate: boolean) {
       fx.style.setProperty('--fx', `${(b.left + b.width / 2).toFixed(0)}px`)
       fx.style.setProperty('--fy', `${(b.top + b.height / 2).toFixed(0)}px`)
     }
+    if (!env.finePointer) return
     fx.classList.remove('is-on')
     void fx.offsetWidth
     fx.classList.add('is-on')

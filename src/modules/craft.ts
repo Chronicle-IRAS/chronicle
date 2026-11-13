@@ -1,6 +1,6 @@
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { qs, qsa } from '../lib/env'
+import { env, qs, qsa } from '../lib/env'
 
 /**
  * v7 的“手感”层：只做排版节奏与微交互，不新增任何文案。
@@ -12,7 +12,8 @@ export function initCraft(animate: boolean) {
   if (!animate) return
   const root = document.documentElement
   root.classList.add('has-craft')
-  letter()
+  if (env.finePointer) letter()
+  else qs('.letter__close')?.classList.add('is-signed')
 }
 
 function filterPill(animate: boolean) {

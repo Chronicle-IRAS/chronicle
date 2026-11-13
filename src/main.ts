@@ -25,12 +25,15 @@ import { initPetals } from './modules/petals'
 const languageScroll = initSiteLanguage()
 
 gsap.registerPlugin(ScrollTrigger)
+// Mobile browser toolbars resize the viewport while scrolling. Rebuilding all
+// scroll timelines for those small height changes makes content jump and flash.
+ScrollTrigger.config({ ignoreMobileResize: true })
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual'
 
 const animate = !env.reducedMotion
 
 initSmoothScroll(animate)
-initScramble(animate)
+initScramble(animate && env.finePointer)
 initMenu(animate)
 // 液态玻璃：先探测能力（折射 / 磨砂 / 实色），再挂到各个玻璃件上
 const glass = initGlass()

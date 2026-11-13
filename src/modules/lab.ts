@@ -78,7 +78,7 @@ export function initLab(animate: boolean) {
   const size = () => {
     w = field.clientWidth
     h = field.clientHeight
-    r = Math.max(28, Math.min(50, w * 0.04))
+    r = Math.max(32, Math.min(50, w * 0.04))
     // Keep layout sizes fixed; depth and attraction are compositor transforms.
     for (const drop of drops) {
       for (const node of [drop.blob, drop.btn]) {
@@ -94,7 +94,7 @@ export function initLab(animate: boolean) {
     const cx = w / 2
     const cy = h / 2
     if (d.mode === 'ring') {
-      const rx = Math.min(w * (h / w > 1 ? 0.42 : 0.4), 520)
+      const rx = Math.max(0, Math.min(w * (h / w > 1 ? 0.42 : 0.4), w / 2 - r * 1.35 - 12, 520))
       const p = orbitPoint(orbit.angle + d.phase, rx, orbit.pitch, orbit.roll)
       return { x: cx + p.x, y: cy + p.y, s: p.scale, z: p.z }
     }
@@ -114,7 +114,7 @@ export function initLab(animate: boolean) {
       d.y += (t.y - d.y) * k
       d.s += (t.s - d.s) * k
       d.z = t.z
-      const scale = d.s * (d.tech.label.length > 6 ? 1.14 : 1)
+      const scale = d.s * (d.tech.label.length > 6 ? 1.35 : 1)
       const R = r * scale
       const tr = `translate3d(${(d.x - R).toFixed(1)}px, ${(d.y - R).toFixed(1)}px, 0) scale(${scale.toFixed(4)})`
       d.blob.style.transform = tr
@@ -127,7 +127,7 @@ export function initLab(animate: boolean) {
       d.label.style.transform = `scale(${((11 + 3 * Math.min(1, d.s)) / (14 * scale)).toFixed(4)})`
     })
     if (ring) {
-      const rx = Math.min(w * (h / w > 1 ? 0.42 : 0.4), 520)
+      const rx = Math.max(0, Math.min(w * (h / w > 1 ? 0.42 : 0.4), w / 2 - r * 1.35 - 12, 520))
       const ry = (rx * Math.sin(orbit.pitch)).toFixed(1)
       const rotation = ((orbit.roll * 180) / Math.PI).toFixed(2)
       const key = `${w},${h},${rx},${ry},${rotation}`

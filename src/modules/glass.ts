@@ -1,4 +1,5 @@
 import { buildLensMap, type LensSpec } from '../lib/lens'
+import { env } from '../lib/env'
 
 /**
  * 液态玻璃（参考 muyudada《液态玻璃导航栏》的做法并加以改造）：
@@ -19,7 +20,7 @@ export function detectGlass(): GlassMode {
   const chromium = !!brands?.some(b => /Chromium|Google Chrome|Microsoft Edge/.test(b.brand))
   const q = new URLSearchParams(location.search).get('glass')
   if (q === 'frost' || q === 'solid') return q
-  return chromium ? 'refract' : 'frost'
+  return chromium && env.finePointer ? 'refract' : 'frost'
 }
 
 export interface GlassOptions {

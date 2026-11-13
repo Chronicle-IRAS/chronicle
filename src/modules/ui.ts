@@ -137,11 +137,13 @@ export function initMenu(animate: boolean) {
   if (!btn || !menu) return
   const label = qs('.sr', btn)
   const links = qsa('a', menu)
+  const main = qs('main')
   const set = (open: boolean) => {
     btn.setAttribute('aria-expanded', String(open))
     if (label) label.textContent = localize(open ? '关闭菜单' : '打开菜单')
     document.documentElement.classList.toggle('menu-open', open)
     menu.toggleAttribute('inert', !open)
+    main?.toggleAttribute('inert', open)
     lockScroll(open)
     if (open) {
       if (animate) gsap.fromTo(links, { yPercent: 60, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.7, stagger: 0.05, ease: 'expo.out', delay: 0.12 })
@@ -151,6 +153,13 @@ export function initMenu(animate: boolean) {
   btn.addEventListener('click', () => set(btn.getAttribute('aria-expanded') !== 'true'))
   links.forEach(a => a.addEventListener('click', () => set(false)))
   document.addEventListener('keydown', e => {
+    if (e.key === 'Tab' && btn.getAttribute('aria-expanded') === 'true') {
+      const stops: HTMLElement[] = [btn, ...links]
+      const index = stops.findIndex(stop => stop === document.activeElement)
+      const next = (index + (e.shiftKey ? -1 : 1) + stops.length) % stops.length
+      e.preventDefault()
+      stops[next]?.focus()
+    }
     if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') {
       set(false)
       btn.focus()

@@ -1,6 +1,7 @@
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { qs, qsa } from '../lib/env'
+import { env, qs, qsa } from '../lib/env'
+import { textSegments } from '../lib/textSegments'
 
 /** 把标题拆成逐词遮罩（保留 em / br），用于“从下方升起”的揭示 */
 export function splitWords(el: HTMLElement) {
@@ -11,7 +12,7 @@ export function splitWords(el: HTMLElement) {
   const walk = (node: Node, into: Node) => {
     node.childNodes.forEach(child => {
       if (child.nodeType === Node.TEXT_NODE) {
-        const parts = (child.textContent ?? '').split(/(\s+)/)
+        const parts = textSegments(child.textContent ?? '')
         parts.forEach(part => {
           if (!part) return
           if (/^\s+$/.test(part)) return into.appendChild(document.createTextNode(' '))
@@ -59,10 +60,12 @@ export function initReveals(animate: boolean) {
         shown = true
         gsap.to(words, { yPercent: 0, duration: 1.8, ease: 'expo.out', stagger: 0.07, overwrite: true })
         // v12 · 入场瞬间的色散闪烁（像官网开屏标志那样的 RGB 错位），0.7s 后收起
-        t.classList.remove('is-glitch')
-        void t.offsetWidth
-        t.classList.add('is-glitch')
-        setTimeout(() => t.classList.remove('is-glitch'), 760)
+        if (env.finePointer) {
+          t.classList.remove('is-glitch')
+          void t.offsetWidth
+          t.classList.add('is-glitch')
+          setTimeout(() => t.classList.remove('is-glitch'), 760)
+        }
       },
     })
     // v13.1 · bug 修复：原来入场线（86%）就是复位线，停在附近轻微滚动会让标题反复沉下 / 升起、色散反复重放。
@@ -71,6 +74,7 @@ export function initReveals(animate: boolean) {
       trigger: t,
       start: 'top bottom+=60',
       onLeaveBack: () => {
+        if (!env.finePointer) return
         shown = false
         gsap.set(words, { yPercent: 110, overwrite: true })
       },
@@ -128,6 +132,12 @@ export function initFragment(animate: boolean) {
     scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: 0.3, invalidateOnRefresh: true },
   })
   const h = () => hero.offsetHeight
+  if (!env.finePointer) {
+    // Touch scrolling keeps text geometry stable: no scale/blur raster churn.
+    out.to('.hero__title', { y: 24, opacity: 0 }, 0)
+    out.to('.hero__story, .hero__cta, .hero__edition, .hero__note', { '--hero-exit-alpha': 0 }, 0)
+    return
+  }
   out.fromTo(
     '.hero__title',
     { y: 0, scale: 1, opacity: 1, filter: 'blur(0px)' },

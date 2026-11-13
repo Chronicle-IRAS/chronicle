@@ -1,4 +1,4 @@
-import { qsa } from '../lib/env'
+import { env, qsa } from '../lib/env'
 import { scramble } from './scramble'
 
 /**
@@ -64,11 +64,12 @@ export function initScrollReveal(animate: boolean) {
         if (isIntersecting) {
           if (el.classList.contains('is-in')) return
           el.classList.add('is-in')
-          if (el.classList.contains('sec-top')) decode(el)
+          if (!env.finePointer) io.unobserve(target)
+          if (env.finePointer && el.classList.contains('sec-top')) decode(el)
         }
       })
     },
-    { threshold: 0.1, rootMargin: '0px 0px -50px 0px' },
+    { threshold: env.finePointer ? 0.1 : 0.01, rootMargin: env.finePointer ? '0px 0px -50px 0px' : '0px 0px 60px 0px' },
   )
   // v13.1 · 迟滞：入场线在视口底部上方 50px，复位线在视口底部下方 60px——中间隔着 110px 的“死区”，
   // 滚动抖动不会让元素反复复位 / 重播；复位只发生在元素完全看不见的时候，所以也不会有一闪而空。
@@ -86,7 +87,7 @@ export function initScrollReveal(animate: boolean) {
     const watch = el.dataset.rv === 'cut' && el.parentElement ? el.parentElement : el
     owner.set(watch, el)
     io.observe(watch)
-    out.observe(watch)
+    if (env.finePointer) out.observe(watch)
   })
   // 键盘跳到尚未入场的内容：立刻显示，不等动画
   document.addEventListener('focusin', e => {
