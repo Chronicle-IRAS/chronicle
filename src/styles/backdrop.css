@@ -43,6 +43,9 @@ main > .whisper {
   top: 52%;
   width: var(--s);
   height: var(--s);
+  /* This detailed surface scales continuously. Keep its raster cache instead
+     of asking Chromium to re-rasterize the city for each new scale. */
+  will-change: transform;
   translate: calc(-50% + var(--px) * 14px) calc(-50% + var(--py) * 10px + var(--bp, 0) * -6vh);
   scale: calc(0.9 + var(--bp, 0) * 0.18);
 }
@@ -239,6 +242,9 @@ main > :not(.links) {
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  .bd__orb {
+    will-change: auto;
+  }
   .bd__orb,
   .bd__ghost {
     translate: -50% -50%;

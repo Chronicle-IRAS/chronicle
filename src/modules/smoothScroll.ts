@@ -4,13 +4,14 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 let lenis: Lenis | null = null
 
-/** Lenis 与 GSAP ticker 共用一个时钟，避免两套 rAF 互相抖动 */
+/** Native wheel/touch scrolling stays responsive; animated anchor navigation
+ * shares GSAP's clock rather than introducing another animation loop. */
 export function initSmoothScroll(enabled: boolean) {
   if (enabled) {
     lenis = new Lenis({
       lerp: 0.085,
       wheelMultiplier: 1,
-      smoothWheel: true,
+      smoothWheel: false,
       syncTouch: false,
     })
     lenis.on('scroll', ScrollTrigger.update)
