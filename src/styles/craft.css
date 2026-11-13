@@ -1,0 +1,197 @@
+/* ==========================================================
+   v7 · 手感层：筛选液滴、列表悬停、章节分隔线、信笺书写、按压反馈（v11 精简）
+   ========================================================== */
+
+/* ---------- 项目强调色：v11 起三个项目统一用钴蓝 ---------- */
+[data-key='blueprint'],
+[data-panel='blueprint'],
+[data-active='blueprint'] {
+  --pc: var(--accent);
+  --pc-deep: var(--gl-deep);
+}
+.project::before {
+  background: var(--pc, var(--accent));
+}
+.project.is-active .project__no,
+.project__stack {
+  color: var(--pc, var(--accent));
+}
+.showcase__wave {
+  /* v11：平涂的钴蓝，不再用渐变 */
+  background: var(--accent);
+}
+.showcase__stage .project__cover i {
+  color: var(--pc, var(--accent));
+}
+.showcase__hint.lg {
+  display: inline-flex;
+  gap: 8px;
+}
+
+/* ---------- 列表悬停：只让标题让一步（v11 去掉了悬停玻璃卡） ---------- */
+.project__title a > span {
+  display: inline-block;
+  transition: transform 0.6s var(--ease);
+}
+@media (hover: hover) {
+  /* 只平移内层文字：链接自身若带 transform，会成为整卡点击层 ::after 的包含块 */
+  .project:hover .project__title a > span {
+    transform: translateX(6px);
+  }
+}
+
+/* ---------- 筛选：墨色液滴 ---------- */
+.filters {
+  position: relative;
+  isolation: isolate;
+}
+.filters__pill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  width: 0;
+  height: 44px;
+  border-radius: 999px;
+  background: var(--ink);
+  transform-origin: 50% 50%;
+  pointer-events: none;
+}
+.filters.has-pill button[aria-pressed='true'] {
+  background: transparent;
+  border-color: transparent;
+}
+.filters button {
+  transition:
+    color 0.45s var(--ease),
+    border-color 0.4s,
+    transform 0.3s var(--ease);
+}
+
+/* ---------- 章节开场：分隔线画出、眉题升起 ---------- */
+.has-craft .sec-top {
+  position: relative;
+  border-bottom-color: transparent;
+}
+.has-craft .sec-top::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--line);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+.has-craft .sec-top.is-in::after {
+  transform: none;
+}
+
+/* ---------- 信笺：逐词写出 + 落款一笔 ---------- */
+.letter.is-writing .ink {
+  color: color-mix(in srgb, var(--ink-2) 22%, transparent);
+  transition: color 0.5s var(--ease);
+}
+.letter.is-writing .ink.is-on {
+  color: var(--ink-2);
+}
+.letter.is-writing blockquote p::first-letter {
+  color: var(--accent);
+}
+.letter__close em {
+  position: relative;
+  display: inline-block;
+}
+.letter__stroke {
+  position: absolute;
+  left: -2%;
+  bottom: -0.32em;
+  width: 104%;
+  height: 0.5em;
+  overflow: visible;
+  pointer-events: none;
+}
+.letter__stroke path {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+.has-craft .letter__stroke path {
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1.6s cubic-bezier(0.65, 0, 0.35, 1) 0.2s;
+}
+.has-craft .letter__close.is-signed .letter__stroke path {
+  stroke-dashoffset: 0;
+}
+
+/* ---------- 联系：平涂钴蓝圆，悬停时墨色升起 ---------- */
+.connect__arrow {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--accent);
+}
+.connect__arrow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 50%;
+  background: var(--ink);
+  transform: translateY(101%);
+  transition: transform 0.8s var(--ease);
+}
+.connect__main:hover .connect__arrow::after,
+.connect__main:focus-visible .connect__arrow::after {
+  transform: translateY(0);
+}
+.connect__title em {
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 2px no-repeat;
+  transition: background-size 0.9s var(--ease);
+}
+.connect__main:hover .connect__title em,
+.connect__main:focus-visible .connect__title em {
+  background-size: 100% 2px;
+}
+
+/* ---------- 统一的按压反馈：所有可点元素被按下时都轻轻“陷”一下 ---------- */
+:where(.filters button, .chip, .lab button, .theme, .menu-btn):active {
+  transform: scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sec-top::after,
+  .letter__stroke path,
+  .connect__arrow::after,
+  .filters__pill {
+    transition: none !important;
+  }
+}
+
+/* 展台玻璃签：.lg 的 position:relative 在后加载，这里把绝对定位找回来 */
+.showcase__count.lg,
+.showcase__hint.lg {
+  position: absolute;
+  z-index: 4;
+}
+@media (max-width: 899px) {
+  .showcase__stage.is-stuck {
+    box-shadow:
+      0 -72px 0 0 var(--paper),
+      0 18px 30px -24px rgba(0, 0, 0, 0.35);
+  }
+}
+@media (max-width: 520px) {
+  .filters {
+    gap: 6px;
+  }
+  .filters button {
+    padding: 0 13px;
+    height: 40px;
+  }
+}
