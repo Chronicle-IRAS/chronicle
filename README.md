@@ -1,34 +1,381 @@
-# CHRONICLE — One Page
+# CHRONICLE — Chronicle-IRAS 的个人网站（v13.1）
 
-A red-and-black personal website rebuilt as a naturally scrolling page. The current entry is `src/app/OnePage.tsx`; the old eight-scene journey is retained as inactive source, not mounted or imported by the application entry.
+> Ideas take shape. · 在代码与想象之间，让每一个念头，有形可见。
 
-## Run and verify
+线上地址：<https://xlyxh.github.io/chronicle-site/>
 
-- `npm install`
-- `npm run dev`
-- `npm run typecheck`
-- `npm test`
-- `npm run build`
+v4 推翻了 v3 的「IRAS.OS」终端 / HUD 风格，重新设计成一套**自己的视觉语言**；内容**只取自原仓库 [Chronicle-IRAS/chronicle](https://github.com/Chronicle-IRAS/chronicle)**，不额外添加。
 
-## Current experience
+## 流畅度优先补充（仅本地，待确认）
 
-- Optical-chamber hero: oversized editorial typography beside an orbital red/black portrait. The original generated artwork becomes a circularly masked WebGL triangle field with three switchable shader passes (`棱镜折光`, `晶格切面`, `星璇引力`). Pointer motion leaves refraction trails; hold/release or use the button to scatter/reassemble the figure. Native scrolling deconstructs the portrait and introduces the next chapter.
-- Selected open-source projects with category filters, real repository links, and interactive concept studies: switch three blueprint routing topologies, adjust a simulated device signal, and send an idea through a local edge-relay demonstration. These are not live hardware or AI integrations.
-- A visible, lazy-loaded hydro-magnetic liquid droplet laboratory. Spheres naturally emerge with concentric water ripples when scrolled into view, deform along drag velocity, and form a viscous metaball capillary bridge when approaching another sphere. Fusion occurs in-place at the collision site rather than a fixed center; fused composite spheres remain draggable to combine with additional spheres. Left-clicking a fused sphere that resolves to a verified project opens its repository; right-clicking any composite sphere randomly ejects one constituent technology sphere back into the field.
-- An interactive poker-fan blueprint deck and rotating interest selector synchronized with expandable descriptions, a pointer-responsive elastic connection thread, a right-side chapter telemetry rail, GitHub links and native anchor navigation.
-- Responsive desktop/mobile layouts, visible keyboard focus, a skip link, and reduced-motion support. No scroll locks or scene-boundary playback.
+`codex/chronicle-fluid-rendering` 基于上一轮优化 `a9999b9`。对照生产构建确认，城市球体在连续缩放时仍有重复栅格化开销；仅给这个持续变换的复杂表面设置 `will-change: transform`，让合成层复用已绘制内容，减少动态效果时恢复为 `auto`。没有给所有元素添加图层，也没有移除城市、晶片、透镜或花瓣。原理参考 [Chrome 对缩放与栅格缓存的说明](https://developer.chrome.com/blog/re-rastering-composite)。
 
-UI interactions use short CSS transitions. GSAP handles section reveals, scroll-linked portrait choreography, the dual-track typography strip, magnetic buttons and perspective project-cover feedback; per-frame values remain outside React and Zustand. Fusion pointer positions, ripple pools and animation timelines live in refs, with React updates only for discrete selection, fusion, ejection and discovery events.
+普通滚轮改由浏览器处理，避免额外的 JavaScript 阻尼；触摸仍沿用原生滚动，导航平滑跳转和菜单滚动锁定保留。浏览器事件检查确认滚轮不再被取消，并验证滚轮可以中断导航跳转。
 
-## Ownership
+以下对照两边均使用生产构建、同机硬件加速 Chromium，前后交替各 3 轮，每轮 3.5 秒相同往返滚动，取中位数。手机为视口和像素密度模拟，不代表真机性能。
 
-| Path | Responsibility |
+| 场景 | 帧率（上一轮 → 本轮） | P95 帧耗时（前 → 后） |
+| --- | --- | --- |
+| 桌面 1440×900，DPR 1.25 | 34.3 → 74.8 fps | 37 → 18 ms |
+| 手机模拟 390×844，DPR 2 | 33.6 → 93.9 fps | 37 → 18 ms |
+
+另外检查了 1920×1080/DPR 1.25 和桌面 DPR 2：复用图层后分别约 61 和 78 fps。4 倍 CPU 限速下的强制逐帧滚动仍约 20 fps，弱 CPU 的主线程瓶颈和真实低端手机尚未解决/验证，不将这些桌面模拟数据当作所有设备的流畅度保证。类型检查、23 项单元测试、构建，以及生产页面的菜单锁定/解锁、导航中断、融合/拆分、拖拽、主题和首屏透明度回归均通过。本地生产预览仍在 `http://127.0.0.1:5177/`，未推送、合并或部署。
+
+## 性能优化（仅本地，待确认）
+
+`codex/chronicle-render-performance` 基于首屏闪烁修复 `8160f1e`，尚未推送、合并或部署。背景视差由 `src/lib/backdropMotion.ts` 计算，每个元素只更新自己的 transform；光晕单独移动，避免逐帧修改大面积渐变和向整个 SVG 子树广播继承变量。城市轮廓与灯塔/波纹分层，16 枚晶片各自使用有界 SVG 动画表面，保留原有几何、主题和动态效果。
+
+融合实验室在尺寸变化时设置球体尺寸，公转、吸引和景深使用 transform；文字反向缩放以保留原有可读字号。轨道椭圆只在几何变化时更新，不再持续重写相同属性。浏览器监测确认稳定公转期间球体宽、高和字号的布局属性变化次数为 0。
+
+以下为同机硬件加速 Chromium、Vite 开发服务上的对照数据，基线为 `8160f1e`。每个视口交替运行优化前/后各 3 轮，每轮 3.5 秒相同首屏往返滚动，取中位数；手机行是触控视口模拟，尚未做真机测量。这些数据用于比较开销，不代表所有设备的帧率。
+
+| 视口 | 帧率（前 → 后） | 样式重算耗时（前 → 后） | P95 帧耗时（前 → 后） |
+| --- | --- | --- | --- |
+| 1280×800 | 32.3 → 40.6 fps | 739 → 389 ms | 37 → 31 ms |
+| 390×844 | 28.2 → 34.0 fps | 614 → 302 ms | 43 → 37 ms |
+
+`npm run typecheck`、23 项单元测试和 `npm run build` 通过。浏览器回归覆盖桌面/移动端、深浅主题、减少动态效果、玻璃降级、首屏往返、作品筛选、融合/拆分、拖拽及重置；无脚本错误或横向溢出。未新增依赖，城市、晶片、透镜、花瓣及交互均保留。另使用 `npm run preview -- --host 127.0.0.1 --port 5177 --strictPort` 验证生产构建；本地性能体验建议访问这个预览，避免开发模式干扰。
+
+## 首屏闪烁补充修复（仅本地，待确认）
+
+基于 PR #1 的 `b8e8827`，修复分支为 `codex/chronicle-hero-flicker`，尚未推送、合并或部署。原本 `heroIntro` 与 `initFragment` 同时写入首屏文案的 `opacity`，快速下滚后开场动画会把退场的文案重新显示，随后轻微滚动又突然变淡；眉题还可能保留 `visibility: hidden`。现在两套动画分别驱动 `--hero-intro-alpha` 和 `--hero-exit-alpha`，CSS 将其相乘，保持现有入场、退场和玻璃效果。
+
+另一个原因是透镜缓存采样了正在缩放、位移的标题与间奏文字。滚动中刷新布局，再回到顶部时，复测偏差约 239px；改为读取未受动画影响的布局坐标，仅在布局变化、窗口调整和 ScrollTrigger 刷新后重测，字体延迟加载也会使缓存失效。保留透镜的指针跟随、呼吸、折射和分裂。
+
+复现与验收：页面进入后立即滚至首屏高度的 80%，等待开场结束，再滚动 1px。原版文案透明度会先回到约 1，再跳回约 0.2；修复后一直保持约 0.2。浏览器回归覆盖立即滚动、1px 微滚、ScrollTrigger 刷新、往返滚动与回到顶部，并在桌面浅色/深色、移动端、磨砂/实色降级、减少动态效果共 6 种场景通过。类型检查、20 项单元测试（含 2 项布局坐标回归测试）和构建均通过；浏览器检查使用现有 Playwright，未新增测试依赖。未扩展到其他交互功能或真实手机硬件测试。
+
+## v13.1：修掉“异常闪烁”的 bug（效果本身不变）
+
+广播波、斜切线、标题 RGB 色散、店招霓虹打火、灯塔闪烁、晶片高光都按 v13 的设计保留，只修**不该出现的重复触发**。
+
+| 根因 | 表现 | 修复 |
+| --- | --- | --- |
+| 章节转场挂在 ScrollTrigger 的 `top 55%` 分界线上，停在分界线附近时会在两章之间来回切换，每次都从头重启广播波 + 斜切线 + 空心字解码（`backdrop.ts`）；底部 HUD 的章节读数同理（`hud.ts`） | 一阵连续的圆环 / 切线叠加闪烁 | 章节要稳定 240ms 才算换章，快速划过多章也只放最后一次；刻度点仍即时更新 |
+| 滚动入场的入场线（视口底部上方 50px）和复位线（视口 80%）挨得太近，复位还发生在元素仍可见时（`scrollReveal.ts`） | 轻微滚动 / 触控板抖动时元素一闪消失又重新入场 | 复位改为单独的观察器，元素完全落到视口下方 60px 之外才复位；中间有 110px 以上的迟滞 |
+| 标题的入场线就是复位线（`top 86%`），每次越线都重放逐词升起 + RGB 色散（`fx.ts`） | 色散在同一个标题上反复闪 | 已升起的标题不再重放；完全离开视口下方 60px 后才复位 |
+| 店招离开 80% 线就熄灭，回来再“打火”（`hud.ts`） | 霓虹打火在抖动时连续重放 | 同样改为完全离开视口下方才熄灭 |
+| 指标数字越线就从 00 重新数（`hud.ts`） | 数字闪回 00 | 已数完的不重数，离开视口下方后才清零 |
+| 移动端地址栏伸缩连续触发 resize，每次给花瓣 canvas 的 width/height 赋值都会清空并重新分配画布（`petals.ts`） | 花瓣层闪一下、掉帧 | 只在宽度变化或高度变高时重设画布，重设后立刻补画一帧 |
+
+### 测量（Playwright + CDP screencast 录帧，约 11–12 帧/秒；1440×900）
+
+抖动测试：在 38 条边界（每个入场元素、四条章节分界线、每个标题与指标的入场线）上先正常入场一次，再来回 ±20/40px 抖动 10 次，统计“重复触发”的次数：
+
+| 抖动期间的重复触发 | v13 线上 | v13.1 |
+| --- | --- | --- |
+| 入场元素复位 / 重新入场 | 256 | 1 |
+| 店招熄灭 / 重新打火 | 38 | 0 |
+| 广播波 + 斜切线重启 | 50 | 0 |
+| 标题 RGB 色散重放 | 28 | 0 |
+| 移动端 390×844（同一测试，合计） | 369（入场 210 · 店招 40 · 转场 70 · 色散 49） | 4（全是首次入场） |
+
+另外：深色主题下导航当前项落在液态透镜里看不清，改为白字 + 霓虹粉光晕。
+
+逐章滚入后静止 2.5s 的录帧中，整帧平均亮度单帧跳变最大约 0.04（相对亮度），任何 6×8 网格单元都没有超过 WCAG 2.3.1 的“每秒 3 次闪烁”。
+
+## v13：让穗波市的元素站到台前
+
+v12 的反馈是“元素不是很突出”。v13 把这些签名元素从背景纹理变成了画面的主角（`src/styles/v13.css`）：
+
+- **球体城市**：直径放大到约一屏高（`min(104vh, 1120px, 104vw)`），首屏放在右侧，成为一张全幅的主视觉。天空改成更饱和的天青 → 紫 → 樱粉，楼群三层对比更强；虹音塔式高塔有金色天线环、辉光和闪烁的绯红信标；水面倒影和反光更清楚。球体外圈的虹彩边加粗加亮，球后有大片青 / 粉色的辉光。
+- **常驻**：离开首屏后球体不再淡出，而是向右侧让位并随滚动视差，全站都在。可读性靠这三样保证，画面本身不再压淡：
+  - 左侧一层纸色遮罩（移动端改为自下而上）；
+  - 右栏和正文段落放进带金色描边的半透明面板；
+  - 大标题加一圈纸色光晕。虹彩字用 drop-shadow，避免 Chromium 把 text-shadow 画在渐变之上把字洗白；浅色主题下虹彩字改用一组更深的颜色。
+- **花瓣**：数量从 34 片增加到 64 片（移动端 30 片），更大、更饱和，并且有景深：远处的小而清晰，近处的大而虚化。三种颜色 × 三档虚化预先画成贴图，帧循环里只做 drawImage，不在每帧做模糊。
+- **虹光结晶**：从 9 块增加到 16 块，绕满整圈，加白色描边和辉光，会缓慢浮动、闪光。
+- **霓虹店招**：深色底牌，双层霓虹边框，白字加多层同色辉光，四章各用一种霓虹色（粉 / 青 / 紫 / 琥珀）。移动端也显示，缩小后挂在每章右上角。
+- **章节转场**：每进入一章，从塔尖发出两圈（粉、青）放大到全屏的广播波，同时一道绯红的斜切线扫过整个屏幕。
+- **HUD 框**：屏幕四角改成 30px、2px 的金色角标，移动端也有；作品行、展台和实验场的角框改成 2px 的金色粗框；底部读数放进带金边的底牌。
+
+## v12：《鸣潮》穗波市风格
+
+用户想要的是《鸣潮》2.8 里**穗波市**（英文 Honami City，地图名为“时隙废都” Chronorift Metropolis，属于苇原 Ashinohara）的气质。v12 在保留 v11 滚动入场和液态玻璃的基础上，把这套风格重新做了一遍。**没有使用任何官方素材、标志或美术**，全部是原创的 CSS / SVG / Canvas；新增的标签只复用原仓库里已有的文字，比如 `SYS // 01000011 · ARCHIVE EDITION 2026`、`02 / STACK COMPOSER`、`06 / DESTINATIONS // ORBITAL INDEX`、`SIGNAL GAIN`、`NOT YET LINKED`、`03 / CURRENTLY`，以及仓库名、技术栈和 siteContent 里的数据。
+
+调研来源：[PlayStation Blog · Version 2.8 introduces the Chronorift Metropolis](https://blog.playstation.com/2025/11/14/wuthering-waves-version-2-8-introduces-the-chronorift-metropolis/)、[繁中版](https://blog.zh-hant.playstation.com/2025/11/19/20251119-ww/)、[灰机 wiki · 穗波市](https://wuwa.huijiwiki.com/wiki/%E7%A9%97%E6%B3%A2%E5%B8%82)、[萌娘百科 · 苇原](https://zh.moegirl.org.cn/%E8%8B%87%E5%8E%9F)、[萌娘百科 · 译名对照表](https://mzh.moegirl.org.cn/%E9%B8%A3%E6%BD%AE/%E8%AF%91%E5%90%8D%E5%AF%B9%E7%85%A7%E8%A1%A8)、[But Why Tho 的 2.8 评测](https://butwhytho.net/2025/11/wuthering-waves-2-8-review/)、[TV Tropes 第二章第十二幕](https://tvtropes.org/pmwiki/pmwiki.php/Recap/WutheringWavesCh2Act12)，以及官网 [mc.kurogames.com](https://mc.kurogames.com/main) / [wutheringwaves.kurogames.com](https://wutheringwaves.kurogames.com/en/main) 的界面观察。
+
+| 穗波市 / 官网的特征 | 本站的实现 |
 | --- | --- |
-| `src/app/OnePage.tsx` | Current page composition, project presentation, navigation and local interaction state |
-| `src/features/hero-portrait/` | Single active WebGL renderer, optical aperture and fragment shaders, scoped cover styling, pointer/scroll lifecycle and static-image fallback |
-| `src/styles/one-page.css` | Red/black architectural visual system and responsive page layouts |
-| `src/features/stack-composer/components/FusionLab.tsx` | Hydro-magnetic droplet fusion interaction, in-place merging, right-click tech ejection and discovery UI |
-| `src/styles/fusion-lab.css` | Dark crimson/obsidian liquid sphere field, metaball bridge, ripples and experiment panel |
-| `src/features/stack-composer/engine/` | Pure unordered recipe resolution, in-place fusion coordinates and random tech ejection |
-| `src/features/stack-composer/store/` | Inactive legacy graph data compatibility; local types, no graph-renderer dependency |
-| `src/app/SceneDirector.tsx`, `src/scenes/`, `src/transitions/` | Inactive previous journey implementation |
+| 城市被封存在索诺拉（Sonoro Sphere）里，反复重置 | v11 的“日蚀”圆改成一颗玻璃球，球里是程序生成的城市：三层远近不同的玻璃高楼剪影和窗灯。球面有高光，和站内的液态玻璃是同一种语言 |
+| 市中心的通讯高塔“虹音塔”（Neon Tower），向全市广播 | 球中央立着一座带天线环的高塔，塔尖信标闪烁，三圈樱粉色的广播波纹一圈接一圈向外扩散 |
+| 海水淹没低地和道路 | 地平线以下是水面：楼群倒映在水里，压淡后加了几道水面反光 |
+| 虹彩的蓝色天空 | 球内的天空从天青过渡到淡紫再到樱粉。浅色主题整体转成偏冷的“天空瓷白”，深色主题是带霓虹窗灯的夜色 |
+| 区域海蚀现象“虹光”（Irideglow），会让人结晶 | 球体外缘有一圈缓慢转动的虹彩边，边上浮着九块会闪光的虹彩晶片；章节标题里的斜体词改成虹彩字 |
+| 粉色花瓣像云一样飘过天空（樱花、紫藤） | 一张低分辨率画布上飘着樱花瓣，会三维翻滚、被滚动“吹”动、被指针拨开。页面空闲后才启动，标签页隐藏时停，减弱动效时不创建 |
+| 当代日本风格的商业街 | 每章右侧挂一块竖排的霓虹店招，字用导航里已有的“作品 / 实验 / 关于 / 联系”，进入视口时像霓虹灯一样闪几下再亮稳 |
+| 千咲的共鸣能力是“裁剪”（Clipping），红色眼睛 | 作品展台和实验场改为“剪切”入场：沿一道斜线被裁开，一道绯红的切线扫过 |
+| 官网开屏标志的 RGB 色散故障 | 章节标题入场时有约 0.7 秒的青 / 粉色散错位闪烁 |
+| 官网的香槟金细线、菱形端点、深色底上的细密波纹 | 章节分隔线换成金色渐隐线，左端加一个菱形，中间是一把带刻度的尺。背景下半部铺了一层声波等高线（Wuthering *Waves*），随滚动微微移动 |
+| 游戏 HUD 的密度 | 底部 HUD 显示版本行、当前章节（解码切换）、本地时钟和整页进度（`0.00 / 1.00`）。球外有刻度环、十字准星和沿轨道排布的系统标签。背景里有技术节点图：三个项目的技术栈各成一簇，展台当前的项目那一簇会被点亮 |
+
+**每个章节新增的元素**：
+
+- 作品：每行加了仓库路径（`REPO // Chronicle-IRAS/…`），悬停时解码；技术栈改成切角标牌；悬停或当前项目时四角金色 HUD 框扣上。展台加了刻度尺、准星和当前仓库路径。
+- 实验：四角 HUD，包括 `02 / STACK COMPOSER`、`HARMONIC RESONANCE · IN-PLACE FUSION`、随转速变化的 `SIGNAL GAIN` 条，以及实时转角读数。
+- 关于：新增 `03 / CURRENTLY` 状态面板（Building / Exploring / Learning，Learning 只有一个闪烁的光标，对应原仓库里“故意留白”的那一条），以及三项指标：公开仓库 04、方向 04、工具 05，入场时滚动计数，内容都取自原仓库的 siteContent。
+- 联系：新增 `06 / DESTINATIONS // ORBITAL INDEX` 目的地索引。没有链接的条目照原仓库标为 NOT YET LINKED。
+
+## v11：向 lanrhyme.top 学滚动与背景，同时“去 AI 味”
+
+用无头浏览器逐 300px 滚动截帧，并读了 [lanrhyme.top](https://lanrhyme.top) 打包后的 JS / CSS，笔记要点如下。手法重新实现，没有拷贝它的代码，配色仍是瓷白 / 墨色 / 钴蓝；新增的背景字样全部取自页面上已有的文字。
+
+| lanrhyme 的做法 | 本站的改法 |
+| --- | --- |
+| `.reveal / -left / -right / -scale` 四种入场，IntersectionObserver（threshold .1、底部 -50px），2.4s `cubic-bezier(.25,1,.3,1)` / 1.8s `cubic-bezier(.16,1,.3,1)`，位移 60 / -60 / 50px、缩放 .92 | `src/modules/scrollReveal.ts` + `reveal.css`：参数相同，同组元素依次错开 0.12s，作品列表的编号和正文各错开半拍。**只动 `opacity` 和独立的 `translate` / `scale` 属性**，GSAP 的 Flip、磁吸和速度拉伸照常工作；项目本身的透明度归筛选动画管，所以入场做在它内部的两列上 |
+| 入场可逆：元素回到视口下方 80% 线以下就复位 | 同样可逆。复位是瞬间完成的，下次往下滚时再慢慢入场；标题逐词升起也改成可逆的 |
+| 系统标签用随机字符解码出现 | 章节眉题在每次入场时解码出现（只作用于 `aria-hidden` 的视觉层） |
+| 首屏标题随滚动以 0.3 倍速下沉、放大、失焦（≤4px）、淡出，副文案以 0.15 倍速跟随 | 用同一组系数，换成 GSAP 的 scrub 时间线，取代原来整体上移淡出的写法 |
+| 背景：一枚巨大的暗色“日蚀”圆、外晕、暗角 | 浅色模式下是一枚比纸色略深的圆，外面一圈柔和的亮晕；深色模式下是近黑的圆，外面一圈很淡的钴蓝晕。外圈加一道虚线轨道，随整页进度缓慢放大和转动，轨道上的钴蓝小方块标出读到哪里；精确指针下圆会轻微偏向指针 |
+| 面板后面压着约 3% 透明度的超大字（ARCHIVE_NODE） | 当前章节的字样用超大空心字压在最底层：首屏 CHRONICLE、作品 OBSESSIONS、实验 CHEMISTRY……全部取自各章已有的眉题。换章节时解码切换，随滚动做视差 |
+| 节点之间的斜向虚线 | 页面级的 SVG：从每一章右侧的眉题拉一条虚线到下一章的编号，随读线一段段画出，两端的小方块走到时被填实 |
+| 左侧一列圆点做滚动进度、四角 HUD 角标、扫描线 / 噪点 | 左侧一列章节节点，节点之间的虚线随进度填色（≥1024px 时显示）。四角各有 14px 的角标，展台和实验场四角也有。扫描线换成一张极淡的静态噪点 |
+| 严格的栅格 | 版心 12 栏的发丝网格（移动端 4 栏） |
+
+**去掉或收敛的（“AI 味”的来源）**
+
+- 移除：v9 斩切开屏、百叶窗跳转、联系区波浪线、按钮描边追光（`motifs.ts` / `motifs.css` 整体删除）。
+- 移除：v8 字重场、墨滴、景深展台的倾斜和反光；变形光标保留。
+- 移除：v10 玻璃高光跟随指针（`components.ts` 删除），主按钮 3D 抬起改回平的墨块，当前专注的玻璃卡改成一块状态面板（钴蓝竖线加一个不再闪烁的方点）。
+- 移除：v5 滚动时屏幕边缘的 WebGL 漏光（发光）。速度拉伸的幅度减半，首屏标题不再参与拉伸。
+- 移除：v7 作品列表悬停时的玻璃卡，三个项目各自的色相，联系按钮玻璃球的渐变、高光和投影，展台切换时的渐变波；都改成平涂的钴蓝。
+- 收敛：大块面的圆角从 18–30px 改成 3px，加发丝描边；首屏同心圆去掉了中心光晕；标识圆点不再有光圈；等宽标签加大了字距。
+- 保留：液态玻璃只用在该用的地方，包括顶栏玻璃岛、首屏透镜、展台玻璃签、变形光标、回到顶部和主题按钮。
+
+## v10：组件手感（参考 uiverse.io，保留液态玻璃）
+
+参考 [uiverse.io](https://uiverse.io/)（开源 UI 组件社区，MIT）里开关、按钮、复选框、卡片、图案几类组件的思路，把站内每个控件都做出“材质”；液态玻璃体系（顶栏玻璃岛、透镜、玻璃签、玻璃光标）全部保留并加强。**没有照搬任何 uiverse 作品的代码**，均按本站的瓷白 / 墨色 / 钴蓝语言手写（`src/styles/components.css` + `src/modules/components.ts`）：
+
+- **玻璃被照亮**：所有玻璃件的高光层多了一个跟随指针的柔光点（`@property --glint` 过渡），像灯从指针处照过来。
+- **主题开关**（思路来自 uiverse 的 sun / moon 开关）：太阳的八道光芒旋转收起、圆面被“咬”成月牙，旁边亮起两颗小星；悬停时光芒转 45°。
+- **主按钮**（思路来自 pushable / 3D 按钮）：一块有厚度的墨块，悬停抬起、钴蓝涨满时侧面变成深钴蓝，按下时压实。
+- **次级按钮**：按下时内陷的阴影；**筛选**的数量做成一枚等宽数字的小号码牌。
+- **手风琴 ±**：展开时墨色从外圈“灌”进圆钮。
+- **拨盘**：一圈可“拨”的刻度（悬停时变成钴蓝）+ 一个凸起的旋钮，按下时下陷。
+- **当前专注**：改成一张卡片级液态玻璃，背后衬一层钴蓝点阵（思路来自 uiverse 的 pattern），折射时能看到点阵在边缘弯曲。
+- **实验区“已发现”**（思路来自复选框）：每项前面是一个小方框，发现时填满钴蓝并弹出一个勾。
+- **焦点环**：与玻璃同语言的双层光环，替代通用的直角描边。
+
+## v9：JIEJOE 教程手法
+
+灵感来自 B 站 UP 主 [JIEJOE_轻敲代码](https://space.bilibili.com/3546390319860710) 的网页交互教程及其开源仓库 [JIEJOE-WEB-Tutorial](https://github.com/JIEJOE-WEB-Tutorial)（另见视频《你的网站或许离高级，，还差一个跳转动画？》BV1Nk4y1Q7pk、《你的个人网站、应该是什么样的？》BV1XkeF6VEpT）。只借鉴手法，代码按本站的瓷白 / 墨色 / 钴蓝液态玻璃语言重写，不新增文案（`src/modules/motifs.ts` + `src/styles/motifs.css`）：
+
+| 教程 | 本站的用法 |
+| --- | --- |
+| 019 斩切开屏（slash loading） | 每个会话首次进入时，一道钴蓝刃光沿对角线斜切过墨色幕布，幕布沿切口上下分离露出首屏；没有文字，不影响 LCP；带锚点直达、减少动态效果时不出现；任意点击 / 按键可跳过；JS 失效时 2.6s 后 CSS 自动隐藏。 |
+| 006 页面跳转动画 + 020 百叶窗 | 导航 / 锚点跳转距离超过约 1.6 屏时，7 片高度按指数递增的百叶片依次合上 → 瞬移到目标并移交焦点 → 自下而上打开；近距离仍是平滑滚动。 |
+| 016 SVG 波浪线条 | 联系区背后一片钴蓝细竖线，被指针（触屏为手指）速度“拨动”，弹簧回位；离开视口或静止后停止绘制。 |
+| 011-03 SVG 描边按钮 | 主按钮、GitHub 链接、实验区按钮悬停时，一段光沿圆角轮廓追逐并闭合（`pathLength` + `stroke-dasharray` 过渡）。 |
+
+## v8：签名交互
+
+v8 在 v6 / v7 的液态玻璃 + 瓷白 / 墨色 / 钴蓝体系上加了五个“高级”交互，全部不新增文案，集中在 `src/modules/signature.ts` + `src/styles/signature.css`：
+
+1. **变形光标**（精确指针）：靠近按钮、导航、筛选、主题 / 菜单 / 回顶按钮等实体控件时，钴蓝小圆点“长”成一片贴合控件形状与圆角的玻璃框，跟着磁吸的控件走，并向指针轻微偏移；离开时缩回圆点。
+2. **字重场**：章节大标题与联系标题拆成单字，按指针距离实时调节可变字体的 `wght` 轴（Bricolage 500→780，Newsreader 斜体 300→660），平滑回落；触屏上标题入场时有一道从左到右扫过的字重波。只在标题接近视口时才拆字。
+3. **墨滴**：按下任意位置，一圈钴蓝墨环扩散，并甩出几颗受重力影响、沿速度方向拉长的小墨珠（Canvas，首次按下才创建，空闲时不绘制；实验区拖拽不触发）。触屏同样有效。
+4. **景深展台**：指针在作品舞台上时，舞台按透视倾斜，插图、封面大字、玻璃签分三层视差，一道柔光跟随指针。视差走 CSS 独立的 `translate` 属性，不干扰 v7 的筛选 / 切换动画。
+5. **液态主题切换**：View Transitions 的揭示不再是正圆，而是一团边缘起伏、逐渐抚平的墨迹从按钮处漫开；不支持的浏览器直接切换。
+
+减少动态效果时以上全部关闭；无 JS 时内容不受影响。v7 的作品区筛选回归测试（四种宽度 × 13 次组合 × 上下滚动）全部通过。
+
+## v7：作品区筛选修复 + 手感层
+
+### 修掉的 bug（作品区 · 点击 All / Tools / Hardware / AI 之后）
+
+1. **舞台显示的项目和列表对不上**：原来每个项目各有一个 `ScrollTrigger`（`onToggle`），筛选后只在一帧之后 `refresh()`，而那时 Flip（`absolute: true`）还把列表项绝对定位着，触发器量到的是动画中途的位置；`onToggle` 又只在“跨线”时触发，停在区间里就永远不会补同步。结果切回 All 时舞台常停在 Connected / Beyond，而读线上明明是 Blueprint。
+   → 改为整张列表**一个**触发器，每次更新按视口 58% 读线实时求当前项（`onUpdate / onToggle / onRefresh` 都走同一个 `sync()`），被筛掉的项不参与，结果天然被夹取在可见项里。
+2. **筛选动画和布局互相打架**：`absolute: true` 让项目脱离文档流，新进入的项从错误的位置（视口上方）飞进来、几项叠在一起，同时页面高度跳变。
+   → 改成固定顺序：旧项淡出 → 一次性切换 `hidden`（布局只变这一次）→ 以筛选栏为锚补偿滚动、并让 Lenis 重新量尺寸、对齐内部目标值（避免下一次滚轮“弹回”）→ 立刻按读线选出当前项并同步舞台、计数 → 留下的项用**不脱离文档流**的 Flip 滑到新位置、新项依次升入 → 全部落定后再 `ScrollTrigger.refresh()` 并再同步一次。连点时把上一轮快进到底再开始。
+3. **插图卡在半透明**：快速切换时，上一张插图“退场”补间（`opacity: 0.4 / scale: 0.94`）没有被杀掉，`onComplete` 里的复位被它覆盖，再切回这张时就停在 0.4 透明度。→ 每次切换先清掉所有面板上遗留的补间。
+4. **悬停锁死舞台**：滚动时内容从静止的光标下滑过，浏览器会派发 `pointerenter`，被当成“悬停”，舞台就停在光标下的项目、不再跟随滚动。→ 只认真实的指针移动（`pointermove` 且有位移），并且一旦滚动就由滚动重新接管。
+5. **CSS 过渡叠在 GSAP 上**：`.project` 自身有 `transition: opacity`，GSAP 写进去的透明度会被再“缓”一遍，筛选后项目长时间停在 0.99。→ 悬停压暗改到子元素上。
+6. 其它：吸顶的舞台不再参与滚动速度拉伸（消除吸顶时的轻微抖动）；展台玻璃签被后加载的 `.lg { position: relative }` 挤出画面，已找回；计数改为“当前 / 筛选后总数”；移动端舞台吸顶时用纸色遮住它与页眉之间的缝，列表文字不再从缝里漏出来。
+
+测试：Playwright 在 1440 / 1920 / 768 / 390 宽度下按序点完 13 次筛选组合（含反复回到 All），每次之后用小步 / 大步滚轮上下滚动，逐步比对“读线上的项目 / 列表高亮 / 舞台面板 / 插图透明度”，以及连点、筛选中途改窗口尺寸、切换深浅色、锚点跳出再跳回、减少动态效果模式，全部一致、滚动位置零跳动。
+
+### 手感层（`src/modules/craft.ts` + `src/styles/craft.css`，不新增任何文案）
+
+- **每个项目一点自己的色相**：都从钴蓝出发，Monitor 偏青、Proxy 偏紫，用在舞台液体浪头、高亮线、编号与技术栈上。
+- **展台玻璃签**：左上角显示当前项目的类别（取自项目自己的 meta），切换时上下翻动。
+- **列表悬停**：一张很淡的玻璃卡从左侧铺开，标题右移、编号上浮、衬线小字显出。
+- **筛选：墨色液滴**在按钮间滑动，途中竖向收紧、落定回弹。
+- **章节开场**：分隔线从左向右画出，眉题从遮罩中升起。
+- **信笺逐词写出**：随滚动一词一词“上墨”，落款下方一笔手写下划线画出。
+- **联系 CTA**：钴蓝玻璃球（内高光跟随指针），悬停时墨色从底部涨满，标题下划线展开。
+- 统一的按压反馈；全部在减少动态效果时关闭或瞬时完成。
+
+## v6：液态玻璃
+
+v6 把整站的“液体”换成了**液态玻璃**（Apple 式 Liquid Glass），并重做了首屏。风格与内容不变（仍只取自原仓库），v5 的签名交互全部保留。
+
+参考：
+- [《液态玻璃导航栏》（muyudada）](https://muyudada.dpdns.org/posts/liquid-glass-navbar/)：核心思路照它来——玻璃画在 `::before` 上，`backdrop-filter` 取样后再用 `filter: url(#…)` 把这层结果“折射”；元素本身不加 `backdrop-filter`，避免成为 Backdrop Root，嵌套的玻璃仍能取到背景；`clip-path` 防止滤镜漏出直角；内阴影做边缘高光。
+- [rainzt.cn（朝朝听雨）](https://rainzt.cn/)：借鉴它的完成度与几个交互点——顶栏拆成几座独立的玻璃“小岛”、圆形玻璃工具按钮与按压回弹、导航随滚动收缩、右下角带百分比的阅读进度环兼回到顶部。**没有使用**它的代码、图片、主题或品牌元素。
+
+实现：
+1. **折射引擎**（`src/lib/lens.ts` + `src/modules/glass.ts`）：教程用 `feTurbulence` 噪声当位移图；本站改为按每个元素的真实尺寸，用**圆角矩形 SDF** 在 canvas 里生成位移贴图——边缘一圈“弧面”向内取样（越靠边折射越强，像真实玻璃的倒角），透镜额外带中心放大；编码成 R/G 通道交给 `feImage → feDisplacementMap`，`ResizeObserver` 尺寸变化时重算（同尺寸缓存）。首屏透镜还做了 RGB 三通道不同位移量的**轻微色散**。纯函数有单元测试。
+2. **玻璃顶栏**：品牌、导航、主题 / 菜单按钮是几座独立的玻璃岛；当前章节由一颗**玻璃液滴**指示——在导航项之间弹性滑动，移动时沿方向拉长、到位后回弹；向下阅读时导航收起中文小字，向上翻时展开。
+3. **首屏：玻璃透镜**（取代 v5 的液体球）：一枚厚玻璃透镜压在标题的 ✳ 上，把背后的点阵、同心圆与标题折射、放大；鼠标在首屏时它带惯性追随指针并按速度拉伸（竖屏 / 触屏上轻点空白处它会漂过去）；向下滚动时透镜离开标题、漂到 “a fragment.” 上方把字放大，随后缩小并**分裂成三颗小水珠**，离开间奏后淡出。透镜下方有一团焦散投影。
+4. **其它玻璃件**：作品展台上的计数 / 提示小签、右下角进度环、移动端菜单（一整片磨砂玻璃，从按钮处圆形展开）。
+
+降级（在 `<html data-glass>` 上标记）：
+- `refract`：Chromium（Chrome / Edge / 安卓 Chrome）——完整折射。
+- `frost`：Safari、Firefox 等不能把 SVG 滤镜作用到 backdrop 结果上的浏览器——改为更柔的磨砂玻璃 + 同样的高光与边缘，透镜变成一颗磨砂玻璃珠。可用 `?glass=frost` 预览。
+- `solid` / 不支持 `backdrop-filter`：更实的半透明底。高对比度 / 强制颜色模式下直接用实色与描边。
+- 减少动态效果：透镜静止在首屏、随页面滚走，不追随、不分裂；液滴指示器瞬时到位。
+
+踩过的坑（记下来以免回归）：玻璃件内部不能有 `mix-blend-mode` 子元素，透镜不能用 3D `translate3d`，否则 Chromium 不再把 backdrop 送进滤镜；色散的三通道合成会把半透明底色预乘成灰色，所以透镜本体不着色、首屏舞台用不透明底；构建压缩会把带 `var()` 的 `backdrop-filter` 与 `-webkit-` 前缀合并掉，所以这里只写字面量、并把 `-webkit-` 写在前面。
+
+## v5：签名交互
+
+v5 在 v4 的风格与内容不变的前提下，加入几处“记得住”的交互。灵感来自 B 站视频 [《你的个人网站、应该是什么样的？》（JIEJOE）](https://www.bilibili.com/video/BV1XkeF6VEpT)：个人网站需要一个**突破点**——一处让人记住的标志性交互，并且敢用 WebGL 的纵深与扭曲。视频里提到的 siena.film（滚动速度拖影 + 漏光）、stefanvitasovic.dev（列表悬停、笔刷遮罩切换预览）、cipher.tv（随鼠标倾斜的 3D 圆柱）、justinesoulie.fr（波浪扭曲）、paolovendramini.com（拖拽 + 拖拽光标）是参考方向；**全部代码为自写**，并统一成本站的“液体”语言。
+
+1. **滚动速度的拖影与钴蓝漏光**（全页）：滚得越快，大标题与作品展台沿滚动方向拉长、斜切；一层四分之一分辨率的 WebGL 叠加在屏幕两侧泛起钴蓝漏光、掠过一道横向光斑（深色主题下用 screen 混合，像真的漏光）。（v5 时首屏液滴会被拖出尾巴；v6 起首屏改为玻璃透镜，由它自己的位移速度决定形变。）静止时叠加层完全透明并停止绘制。
+2. **液体前沿的作品切换**（01 Selected obsessions）：作品改为“粘性展台 + 项目索引”。悬停、聚焦或滚动到某个项目时，一道钴蓝浪头带着起伏、带锯齿的液面从下往上（或从上往下）涌过展台，新插图紧跟在浪头之后被“灌”进来，旧插图缩小变淡。移动端展台吸顶，随滚动自动切换。
+3. **水波扭曲**（作品展台）：每次切换时整块展台被位移滤镜扭一下；指针在展台上移动时按速度产生水波般的扭曲，停下即复原。点击展台直接打开当前项目仓库（光标显示 OPEN）。
+4. **倾斜的 3D 轨道实验室**（02 A little chemistry）：八颗技术液滴排在一条倾斜的圆环上公转，近大远小、背面变淡；指针左右移动让环侧倾、上下移动改变俯仰；横向拖动拨转圆环（带惯性，光标显示 DRAG，触屏同样可拖）；点选一颗，它飞离轨道到中心，再点一颗，两颗在中心黏连融合，命中配方即变成仓库链接。键盘可用 Tab 选择、←/→ 拨转。
+
+减少动态模式下：不拉伸、不漏光、不扭曲，切换为瞬时；轨道静止但可点选、可拖动/方向键拨转。无 WebGL 或软件渲染时，漏光退化为 CSS 渐变。
+
+## 设计方向：瓷白 × 钴蓝的「液态」
+
+主题是原站的标语 *Ideas take shape*——念头从一滴液体开始，聚合、分裂、再融合成新的东西。
+
+- **配色**：瓷白纸色 `#F2F1ED` + 墨色 `#111216` + 唯一的强调色钴蓝 `#2B3DF5`；另有深色主题（`#0D0E12` / `#ECEDF1` / `#8592FF`），跟随系统并可手动切换，选择会被记住。
+- **字体**：Bricolage Grotesque（标题，固定光学尺寸）+ Newsreader 斜体（强调词）+ Hanken Grotesk（正文）+ Spline Sans Mono（小标签）+ Noto Sans SC（中文）。全部**自托管、按页面实际用字子集化**（共约 130 KB），不请求 Google Fonts，国内可正常访问。
+- **首屏**：v6 起是一枚折射标题的玻璃透镜（见上文）；v4–v5 是一团 WebGL metaball 钴蓝液体。
+- **克制的版式**：大字号标题、细分隔线、大量留白，图形只有圆与细线。没有边框式系统栏、扫描线、取景框、角色卡之类的装饰。
+
+### 参考
+
+- [lanrhyme.top](https://lanrhyme.top)：**只参考交互点**（悬停文字解码、磁吸光标、平滑显现），视觉风格不模仿；解码在本站改为同大小写字母轮换，光标是一颗钴蓝圆点。
+- 代码、图形、图标、og 图全部原创；**未使用**原站的肖像、配色或旧视觉资产。
+
+## 内容来源（全部来自 Chronicle-IRAS/chronicle）
+
+| 本站区块 | 原仓库出处 |
+| --- | --- |
+| 标题、描述、og 文案 | `index.html` 的 title / description |
+| 首屏：CHRONICLE — A personal universe、Ideas take ✳ shape.、中文标语、DEVELOPER · BUILDER · EXPLORER、两个 CTA、Nothing starts whole… | `src/app/OnePage.tsx` 首屏 |
+| 间奏：Everything begins with a fragment. / Assembling fragments into new worlds. | 同上，过渡段 |
+| 低语跑马灯：build things ✦ break patterns ✦ stay curious ✦ explore worlds | 同上 |
+| 01 Selected obsessions：三个项目（名称、分类、短名、副标题、描述、技术栈、仓库链接）与 All/Tools/Hardware/AI 筛选 | 同上 + 各项目数据 |
+| 02 A little chemistry：8 种技术与 3 个配方（ESP32+Vue → ESP32 Monitor，C++ + Qt → Qt Blueprint Generator，AI + TypeScript → PaLM Netlify Proxy，其余为 “A new possibility”），以及 Blueprint / Monitor / PaLM Proxy 发现徽章 | `src/features/stack-composer`（`composition.ts`、`initialNodes.ts`） |
+| 03 More than one thing：自我介绍、CURRENT FOCUS、三个兴趣维度（标题、副标题、正文、标签）、01 / 03 拨盘 | `OnePage.tsx` 关于部分 |
+| 04 Let's make something matter：联系文案、github.com/Chronicle-IRAS | `OnePage.tsx` 联系部分 |
+| 结尾信：Every ending leaves room for another beginning… / Until the next idea. Keep making room for wonder. | `src/data/siteContent.ts` 的 goodbye |
+| 页脚：CHRONICLE·、Source code ↗、Back to top ↑ | `OnePage.tsx` 页脚 |
+
+取舍：原站的人物肖像（`CHRONICLE_PORTRAIT.png`）属于生成的装饰性角色图，不是本人照片，因此不使用；交互说明文字按本站的实现方式改写（拖动或点选两颗液滴融合），原意不变。v3 加入的仓库目录、终端、提交日志、时钟 / 日历、语言占比、统计数字全部移除。
+
+## 交互一览
+
+- **玻璃首屏**：入场时标题逐行从遮罩中升起，✳ 弹性旋入，透镜从一点弹性“凝结”成形；指针牵引透镜；滚动时透镜漂到间奏并分裂为水珠，首屏文字后退淡出。
+- **磁吸光标**：钴蓝圆点带阻尼跟随，悬停可点元素变成圆环，作品卡片上显示 “GitHub” 标签；按钮、品牌标、拨盘、联系箭头被指针轻轻吸附。
+- **悬停解码**：导航、品牌、项目标题、兴趣标题、页脚链接悬停 / 聚焦时字母轮换后还原。
+- **流动导航**：顶部导航里有一颗随悬停与当前章节流动的玻璃液滴；右下角进度环（悬停变成回到顶部箭头）。
+- **低语跑马灯**：缓慢横移，滚动越快推得越快；桌面端指针处出现一个“透镜”，把描边字变成钴蓝实心字。
+- **作品**：All / Tools / Hardware / AI 筛选用 FLIP 平滑重排；每个项目配一张可交互概念图——Blueprint 的 TRANSFORM 节点跟随指针、连线随之弯曲；Monitor 的遥测波形离芯片越近增益越大；Proxy 的请求光点经过 EDGE 节点，悬停时流量加快。整张卡片可点击进入仓库。
+- **A little chemistry**：八颗技术液滴（SVG goo 滤镜让它们真的“黏”在一起），拖动一颗到另一颗上、或依次点选两颗即原地融合；命中配方会变成通往对应仓库的链接并点亮徽章，否则显示 “A new possibility”；可 Split 拆回，Reset 复位。键盘可完整操作，状态通过 `role="status"` 播报。
+- **关于**：手风琴一次展开一项；✳ 拨盘每点一次旋转 120° 并切到下一个维度，两者同步。
+- **主题切换**：支持 View Transitions 的浏览器里以按钮为圆心做圆形揭示，玻璃的高光与色调同步切换。
+- **移动端菜单**：一片磨砂玻璃从按钮处圆形展开，Esc 关闭并归还焦点。
+
+## 可访问性与性能
+
+- `prefers-reduced-motion`：关闭平滑滚动、解码、光标、循环动画与入场动画；首屏透镜静止，内容直接可见。
+- 无 JS 时内容完整可读（手风琴全部展开）；语义化标题、跳到正文链接、可见焦点；解码只作用于 `aria-hidden` 的视觉层，读屏始终读到原文；拆词标题保留 `aria-label`。
+- 降级：液态玻璃按 refract / frost / solid 三档自动选择（见 v6）。v11 的入场只在 JS 可用且没有开启“减少动态效果”时启用；背景在减少动态效果时只保留静态的圆、网格和角标。
+- 作品概念图与实验区的动画只在可见时运行。
+- favicon（ico / svg / 180 / 192 / 512）、manifest、Open Graph / Twitter 卡片、JSON-LD、robots、sitemap、独立 404 页（GitHub Pages 任意深度路径都可用，跟随深浅色）。
+
+### Lighthouse
+
+| 版本 | 桌面（性能 / 无障碍 / 最佳实践 / SEO） | 移动 |
+| --- | --- | --- |
+| v3 线上 | 100 / 100 / 100 / 100 | 96 / 100 / 100 / 100 |
+| v4 线上（2026-11-13，UTC+8） | 100 / 100 / 100 / 100 | 98 / 100 / 100 / 100 |
+| v5 线上（2026-11-12，UTC-5） | 100 / 100 / 100 / 100 | 98 / 100 / 100 / 100 |
+| v6 线上（2026-11-12 21:57，UTC-5） | 100 / 100 / 100 / 100 | 97 / 100 / 100 / 100 |
+| v7 线上（2026-11-13 11:34，UTC+8） | 100 / 100 / 100 / 100 | 97–99 / 100 / 100 / 100（三次中有一次 89，TBT 波动） |
+| v8 线上（2026-11-13 11:53，UTC+8） | 100 / 100 / 100 / 100 | 98–99 / 100 / 100 / 100（三次中有一次 91，TBT 波动） |
+| v9 线上（2026-11-13 13:23，UTC+8） | 100 / 100 / 100 / 100 | 97 / 100 / 100 / 100（三次中有一次 92，TBT 波动） |
+| v10 线上（2026-11-13 13:43，UTC+8） | 100 / 100 / 100 / 100 | 96–97 / 100 / 100 / 100（三次中有一次 92，TBT 波动） |
+| v11 线上（2026-11-13 14:22，UTC+8） | 100 / 100 / 100 / 100 | 99 / 100 / 100 / 100（三次中有一次 90，TBT 波动） |
+| v12 线上（2026-11-13 14:59，UTC+8） | 100 / 100 / 100 / 100 | 97–98 / 100 / 100 / 100（三次中有一次 91，TBT 波动） |
+| v13 线上（2026-11-13 16:41，UTC+9） | 100 / 100 / 100 / 100 | 97 / 100 / 100 / 100（三次中有一次 87，TBT 波动） |
+| v13.1 本地预览（2026-11-13 17:26，UTC+9） | 100 / 100 / 100 / 100 | 96 / 100 / 100 / 100（三次一致） |
+| v13.1 线上（2026-11-13 17:43，UTC+9） | 100 / 100 / 100 / 100 | 97 / 100 / 100 / 100 |
+
+## 本地开发
+
+需要 Node.js 22（见 `.nvmrc`）。
+
+```bash
+npm ci
+npm run dev       # http://127.0.0.1:5173
+npm test          # Vitest：融合配方、解码帧、数学工具、玻璃位移贴图
+npm run build     # 类型检查 + 生产构建
+npm run preview
+```
+
+改了页面文字后重新生成字体子集（需要 Python 3 + `fonttools` + `brotli`）：
+
+```bash
+pip install fonttools brotli
+python3 scripts/fetch-fonts.py
+```
+
+## 发布与生产兼容
+
+生产规范地址：[https://www.chronicleiras.top/](https://www.chronicleiras.top/)。本轮修复保留英文默认、中文切换、博客入口及双备案链接。语言在动画初始化前应用；切换时重载并恢复滚动位置，以重建拆词、解码和动画缓存，避免每帧翻译或监听 DOM。
+
+移动兼容修复分支为 `codex/chronicle-mobile-compatibility`，基于已发布的 `codex/chronicle-fluid-rendering`。构建使用 `npm ci`、`npm run typecheck`、`npm test` 和 `npm run build`；`dist/` 作为静态站点交付。相对资源路径由 `vite.config.ts` 的 `base: './'` 保持。
+
+服务器使用版本化的静态发布目录和源码快照，通过软链接切换；旧版本、配置备份、验收记录及回滚说明保存在服务器私有文档中。凭据只保存在忽略的本地文件或服务器配置中。
+
+旧 `npm run deploy` 是 GitHub Pages 专用脚本，会强制覆盖 `gh-pages`，不用于本次服务器发布。不要用它代替版本化发布流程。
+
+## 目录
+
+```
+index.html               全部内容与结构
+src/main.ts              启动与编排
+src/lib/
+  chemistry.ts           技术与配方（来自原仓库）
+  orbit.ts               倾斜圆环投影
+  scramble.ts            解码帧
+  lens.ts                液态玻璃位移贴图（圆角矩形 SDF）
+  math.ts / motion.ts    工具与动效令牌
+src/modules/
+  glass.ts               液态玻璃：能力探测、SVG 滤镜生成与挂载
+  heroLens.ts            首屏玻璃透镜：追随、拉伸、滚动分裂
+  fx.ts                  标题拆词揭示、首屏入场、碎片间奏、跑马灯透镜
+  showcase.ts            作品展台：液体前沿切换、水波扭曲、读线同步、稳健的筛选序列
+  scrollReveal.ts        v11 可逆的滚动入场 + 眉题解码
+  backdrop.ts            v11/v12 背景：索诺拉玻璃球（城市、高塔、倒影、虹光边、晶片）、轨道与刻度环、声波线、技术节点图、空心章节字、栅格、角标、章节节点、斜向虚线
+  hud.ts                 v12 HUD：底部读数与时钟、刻度尺、竖排店招、展台 HUD、作品悬停、指标计数
+  petals.ts              v12 飘落的花瓣（Canvas 2D）
+  craft.ts               v7 手感层：筛选液滴、信笺书写
+  signature.ts           v8 变形光标
+  work.ts                三张交互概念图
+  velocity.ts            滚动速度拖影（标题轻微拉伸）
+  lab.ts                 A little chemistry 3D 轨道融合实验
+  about.ts               兴趣手风琴 + ✳ 拨盘
+  ui.ts                  玻璃顶栏、液滴导航、进度环、菜单、主题切换
+  cursor.ts              圆点光标与磁吸
+  scramble.ts            悬停解码（读屏安全）
+  smoothScroll.ts        Lenis + ScrollTrigger
+src/styles/              fonts / base / chrome / sections / showcase / glass / craft / signature / components / reveal / backdrop / restraint / rich / honami
+public/                  图标、og 图、manifest、404 与其字体
+scripts/                 字体子集化、部署
+```
+
+
+## 手机与触屏兼容
+
+窄屏导航保持 44px 触控尺寸，菜单支持短横屏滚动及焦点约束。作品插图在手机上使用正常文档流，卡片、技术名和目的地网址可换行；中文拆词动画按字符分段，避免整句被遮罩裁切。
+
+触屏使用磨砂玻璃与一次性淡入，关闭标题色散、字符解码、整屏光波和霓虹闪烁；首屏退场不再缩放、模糊文字。ScrollTrigger 忽略手机地址栏造成的小幅高度变化，宽度/横竖屏变化仍正常响应。实验区保留纵向页面滚动、横向拨动轨道和点击融合，技术球按场地宽度预留边缘空间。
+
+验证范围包括 320/360/390/430px 竖屏、844×390 横屏、中英文及真实浏览器触摸事件模拟。模拟不能替代 iOS Safari 和 Android 真机验证。

@@ -1,5 +1,12 @@
-node_modules/
-dist/
-.vite/
-*.local
-*.tsbuildinfo
+node_modules
+dist
+*.log
+.DS_Store
+
+.env
+.env.*
+!.env.example
+.local-secrets/
+*.pem
+*.key
+*.p12

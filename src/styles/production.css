@@ -1,0 +1,10 @@
+.site-language { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; font: 600 12px var(--f-body); color: var(--ink); cursor: pointer; }
+.site-language:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.footer__filings { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px 24px; flex-basis: 100%; padding-top: 8px; }
+.footer__filings a { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; max-width: 100%; color: var(--muted); font: 12px var(--f-body); }
+.footer__filings img { flex-shrink: 0; object-fit: contain; }
+.footer__filings a:hover { color: var(--ink); }
+:lang(zh-CN) .nav small, :lang(zh-CN) .menu em { display: none; }
+html[lang='zh-CN'] .hero__title { font-family: var(--f-body); font-size: clamp(60px, 10vw, 156px); line-height: 1.08; }
+html[lang='zh-CN'] .sec-title, html[lang='zh-CN'] .sec-title em, html[lang='zh-CN'] .fragment__title, html[lang='zh-CN'] .connect__title { font-family: var(--f-body); font-style: normal; }
+@media (max-width: 600px) { .footer__links { flex-wrap: wrap; gap: 14px; } .footer__filings { align-items: center; flex-direction: column; gap: 0; } }
