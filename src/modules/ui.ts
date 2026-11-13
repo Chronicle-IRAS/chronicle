@@ -1,3 +1,4 @@
+import { localize } from '../lib/siteLanguage'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { qs, qsa } from '../lib/env'
@@ -138,7 +139,7 @@ export function initMenu(animate: boolean) {
   const links = qsa('a', menu)
   const set = (open: boolean) => {
     btn.setAttribute('aria-expanded', String(open))
-    if (label) label.textContent = open ? '关闭菜单' : '打开菜单'
+    if (label) label.textContent = localize(open ? '关闭菜单' : '打开菜单')
     document.documentElement.classList.toggle('menu-open', open)
     menu.toggleAttribute('inert', !open)
     lockScroll(open)
@@ -166,7 +167,7 @@ export function initTheme(animate: boolean, onChange: () => void) {
   const sync = () => {
     const dark = root.dataset.theme === 'dark'
     btn.setAttribute('aria-pressed', String(dark))
-    btn.setAttribute('aria-label', dark ? '切换到浅色' : '切换到深色')
+    btn.setAttribute('aria-label', localize(dark ? '切换到浅色' : '切换到深色'))
   }
   sync()
   btn.addEventListener('click', () => {

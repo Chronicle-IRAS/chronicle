@@ -1,3 +1,4 @@
+import { localize } from '../lib/siteLanguage'
 import { qs, qsa } from '../lib/env'
 import { fuse, TECHS, UNKNOWN_TITLE, type Recipe, type Tech } from '../lib/chemistry'
 import { orbitPoint } from '../lib/orbit'
@@ -40,7 +41,7 @@ export function initLab(animate: boolean) {
   const ring = qs<SVGEllipseElement>('[data-lab-ring] ellipse')
   if (!field || !goo || !labels || !status) return
 
-  const say = (msg: string) => (status.textContent = msg)
+  const say = (msg: string) => (status.textContent = localize(msg))
   const drops: Drop[] = []
   let fusion: Fusion | null = null
   const held: Drop[] = []
@@ -163,11 +164,11 @@ export function initLab(animate: boolean) {
     goo.append(blob)
     const node = document.createElement('div')
     node.className = 'lab__fused' + (recipe ? ' is-match' : '')
-    const title = recipe ? recipe.title : UNKNOWN_TITLE
+    const title = recipe ? recipe.title : localize(UNKNOWN_TITLE)
     const parts = `<span class="lab__fused-k">${a.tech.label} + ${b.tech.label}</span>`
     node.innerHTML = recipe
-      ? `${parts}<a href="${recipe.href}" target="_blank" rel="noopener">${title}<svg aria-hidden="true"><use href="#arrow" /></svg></a><button type="button" class="lab__split" aria-label="Split ${title}">Split</button>`
-      : `${parts}<strong>${title}</strong><button type="button" class="lab__split" aria-label="Split">Split</button>`
+      ? `${parts}<a href="${recipe.href}" target="_blank" rel="noopener">${title}<svg aria-hidden="true"><use href="#arrow" /></svg></a><button type="button" class="lab__split" aria-label="${localize('Split')} ${title}">${localize('Split')}</button>`
+      : `${parts}<strong>${title}</strong><button type="button" class="lab__split" aria-label="${localize('Split')}">${localize('Split')}</button>`
     labels.append(node)
     fusion = { a, b, recipe, blob, node, grow: animate ? 0.15 : 1 }
     a.btn.hidden = b.btn.hidden = true

@@ -326,15 +326,15 @@ pip install fonttools brotli
 python3 scripts/fetch-fonts.py
 ```
 
-## 部署
+## 发布与生产兼容
 
-GitHub Pages，`gh-pages` 分支：
+生产规范地址：[https://www.chronicleiras.top/](https://www.chronicleiras.top/)。本轮修复保留英文默认、中文切换、博客入口及双备案链接。语言在动画初始化前应用；切换时重载并恢复滚动位置，以重建拆词、解码和动画缓存，避免每帧翻译或监听 DOM。
 
-```bash
-npm run deploy    # 构建并把 dist/ 推送到 gh-pages
-```
+当前发布分支为 `codex/chronicle-fluid-rendering`。构建使用 `npm ci`、`npm run typecheck`、`npm test` 和 `npm run build`；`dist/` 作为静态站点交付。相对资源路径由 `vite.config.ts` 的 `base: './'` 保持。
 
-可选的 Actions 工作流模板在 `docs/deploy-pages.workflow.yml`。`vite.config.ts` 使用相对 `base: './'`。
+服务器使用版本化的静态发布目录和源码快照，通过软链接切换；旧版本、配置备份、验收记录及回滚说明保存在服务器私有文档中。凭据只保存在忽略的本地文件或服务器配置中。
+
+旧 `npm run deploy` 是 GitHub Pages 专用脚本，会强制覆盖 `gh-pages`，不用于本次服务器发布。不要用它代替版本化发布流程。
 
 ## 目录
 

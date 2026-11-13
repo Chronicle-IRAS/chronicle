@@ -1,8 +1,9 @@
 import './styles/main.css'
+import { initSiteLanguage } from './lib/siteLanguage'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { env, onMotionPreferenceChange } from './lib/env'
-import { initSmoothScroll, scrollToElement } from './modules/smoothScroll'
+import { initSmoothScroll, scrollToElement, jumpBy } from './modules/smoothScroll'
 import { initScramble } from './modules/scramble'
 import { initCursor } from './modules/cursor'
 import { initHeader, initMenu, initTheme } from './modules/ui'
@@ -20,6 +21,8 @@ import { initScrollReveal } from './modules/scrollReveal'
 import { initBackdrop } from './modules/backdrop'
 import { initHud } from './modules/hud'
 import { initPetals } from './modules/petals'
+
+const languageScroll = initSiteLanguage()
 
 gsap.registerPlugin(ScrollTrigger)
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual'
@@ -60,7 +63,8 @@ Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1200))]).then
   ScrollTrigger.refresh()
   const id = location.hash.slice(1)
   const target = id ? document.getElementById(id) : null
-  if (target) requestAnimationFrame(() => scrollToElement(target))
+  if (languageScroll !== undefined) requestAnimationFrame(() => jumpBy(languageScroll - scrollY))
+  else if (target) requestAnimationFrame(() => scrollToElement(target))
 })
 
 onMotionPreferenceChange(() => location.reload())
