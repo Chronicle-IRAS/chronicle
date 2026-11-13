@@ -96,7 +96,9 @@ export function heroIntro(animate: boolean, onIntro: (v: number) => void) {
   tl.to(state, { v: 1, duration: 1.8, ease: 'elastic.out(1, 0.6)', onUpdate: () => onIntro(state.v) }, 0.7)
   tl.from('.hero__title .line__in', { yPercent: 115, duration: 1.4, stagger: 0.09 }, 0.15)
   tl.from('.hero__title .spark', { rotate: -180, scale: 0.2, duration: 1.6, ease: 'elastic.out(1, 0.55)' }, 0.45)
-  tl.from('.hero__edition, .hero__story, .hero__cta, .hero__note', { opacity: 0, y: 24, duration: 1.2, stagger: 0.08 }, 0.55)
+  // Entrance and scroll exit can run together when the visitor scrolls immediately.
+  // Each owns one alpha factor; completing the entrance cannot undo the exit.
+  tl.from('.hero__edition, .hero__story, .hero__cta, .hero__note', { '--hero-intro-alpha': 0, y: 24, duration: 1.2, stagger: 0.08 }, 0.55)
   tl.from('.header', { opacity: 0, y: -16, duration: 1.2 }, 0.4)
 }
 
@@ -132,8 +134,8 @@ export function initFragment(animate: boolean) {
     { y: () => h() * 0.3, scale: () => 1 + h() * 0.0005, opacity: 0, filter: 'blur(4px)' },
     0,
   )
-  out.fromTo('.hero__story, .hero__cta', { yPercent: 0, opacity: 1 }, { yPercent: () => h() * 0.15, opacity: 0, duration: 0.6 }, 0)
-  out.fromTo('.hero__edition, .hero__note', { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.12 }, 0)
+  out.fromTo('.hero__story, .hero__cta', { yPercent: 0, '--hero-exit-alpha': 1 }, { yPercent: () => h() * 0.15, '--hero-exit-alpha': 0, duration: 0.6 }, 0)
+  out.fromTo('.hero__edition, .hero__note', { '--hero-exit-alpha': 1 }, { '--hero-exit-alpha': 0, duration: 0.12 }, 0)
 }
 
 /** 低语跑马灯：持续缓行，滚动速度会推它一把；指针处的“透镜”显出实心的另一层 */

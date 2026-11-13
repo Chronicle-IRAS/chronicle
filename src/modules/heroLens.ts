@@ -2,6 +2,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { qs } from '../lib/env'
 import { clamp } from '../lib/math'
+import { layoutRect } from '../lib/layout'
 import { mountGlass, type GlassMode } from './glass'
 
 /**
@@ -74,26 +75,28 @@ export function initHeroLens(animate: boolean, mode: GlassMode): HeroLens | null
   // 静止位置：横屏时与标题里的 ✳ 同心、略偏右；竖屏时悬在标题上方的留白里（滚动时才掠过标题）
   const edition = qs('.hero__edition') ?? spark
   const restView = () => {
-    const r = spark.getBoundingClientRect()
     if (innerWidth < innerHeight) {
-      const t = edition.getBoundingClientRect()
-      return { x: innerWidth * 0.64, y: t.top - D * 0.46 }
+      const t = layoutRect(edition)
+      return { x: innerWidth * 0.64, y: t.top - scrollY - D * 0.46 }
     }
-    return { x: r.left + r.width / 2 + D * 0.18, y: r.top + r.height / 2 }
+    // The spark is the last item in an inline-flex title line. Measuring that
+    // HTML line avoids the SVG's rotation and every ancestor's scroll transform.
+    const line = layoutRect(spark.parentElement!)
+    return { x: line.left + line.width - spark.clientWidth / 2 + D * 0.18, y: line.top + line.height / 2 - scrollY }
   }
   // 位置缓存：避免每帧读取布局（强制回流）；按页面坐标存，使用时减去 scrollY
-  const cached = { rx: 0, ry: 0, wx: 0, wy: 0, fTop: 0, fH: 1, at: -1 }
+  const cached = { rx: 0, ry: 0, wx: 0, wy: 0, fTop: 0, fH: 1, dirty: true }
   const refresh = () => {
     const y = scrollY
     const p = restView()
     cached.rx = p.x
     cached.ry = p.y + y
     if (word && frag) {
-      const wr = word.getBoundingClientRect()
+      const wr = layoutRect(word)
       cached.wx = wr.left + wr.width * 0.62
-      cached.wy = wr.top + wr.height * 0.5 + y
-      const fr = frag.getBoundingClientRect()
-      cached.fTop = fr.top + y
+      cached.wy = wr.top + wr.height * 0.5
+      const fr = layoutRect(frag)
+      cached.fTop = fr.top
       cached.fH = fr.height
     }
   }
@@ -183,10 +186,15 @@ export function initHeroLens(animate: boolean, mode: GlassMode): HeroLens | null
   let heroHeight = hero.offsetHeight
   const onResize = () => {
     heroHeight = hero.offsetHeight
-    cached.at = -1
+    cached.dirty = true
   }
   window.addEventListener('resize', onResize)
   ScrollTrigger.addEventListener('refresh', onResize)
+  // Font loading may change layout after the entrance's 1.2s timeout.
+  const layoutObserver = new ResizeObserver(onResize)
+  layoutObserver.observe(hero)
+  layoutObserver.observe(spark.parentElement!)
+  if (word) layoutObserver.observe(word)
 
   const pos = { x: 0, y: 0 }
   let first = true
@@ -200,10 +208,11 @@ export function initHeroLens(animate: boolean, mode: GlassMode): HeroLens | null
     const dt = Math.min(0.05, dtMs / 1000)
     const t = (performance.now() - t0) / 1000
     const y0 = scrollY
-    // 入场期间（前 5 秒）标题还在动：每 10 帧重新取一次静止位，之后低频校准；resize / refresh 时立即更新
-    cached.at++
-    if (cached.at % (t < 5 ? 10 : 240) === 0) {
+    // Stable layout anchors only change after a layout/viewport refresh, not
+    // while the title is animating. Never feed transformed bounds into the cache.
+    if (cached.dirty) {
       refresh()
+      cached.dirty = false
       if (y0 < 4) syncStage()
     }
     const heroH = heroHeight

@@ -1,4 +1,13 @@
 /* ---------- 首屏 ---------- */
+.hero__edition,
+.hero__story,
+.hero__cta,
+.hero__note {
+  --hero-intro-alpha: 1;
+  --hero-exit-alpha: 1;
+  opacity: calc(var(--hero-intro-alpha) * var(--hero-exit-alpha));
+}
+
 .hero__stage {
   position: fixed;
   inset: 0;
