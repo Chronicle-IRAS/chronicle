@@ -14,6 +14,7 @@ interface Drop {
   tech: Tech
   blob: HTMLElement
   btn: HTMLButtonElement
+  label: HTMLElement
   phase: number
   mode: Mode
   x: number
@@ -54,11 +55,13 @@ export function initLab(animate: boolean) {
     const btn = document.createElement('button')
     btn.type = 'button'
     btn.className = 'lab__drop'
-    btn.textContent = tech.label
+    const label = document.createElement('span')
+    label.textContent = tech.label
+    btn.append(label)
     btn.setAttribute('aria-pressed', 'false')
     btn.dataset.cursor = 'Pick'
     labels.append(btn)
-    drops.push({ tech, blob, btn, phase: (i / TECHS.length) * Math.PI * 2, mode: 'ring', x: 0, y: 0, s: 1, z: 0 })
+    drops.push({ tech, blob, btn, label, phase: (i / TECHS.length) * Math.PI * 2, mode: 'ring', x: 0, y: 0, s: 1, z: 0 })
   })
 
   // ---- 轨道状态 ----
@@ -75,6 +78,13 @@ export function initLab(animate: boolean) {
     w = field.clientWidth
     h = field.clientHeight
     r = Math.max(28, Math.min(50, w * 0.04))
+    // Keep layout sizes fixed; depth and attraction are compositor transforms.
+    for (const drop of drops) {
+      for (const node of [drop.blob, drop.btn]) {
+        node.style.width = node.style.height = `${r * 2}px`
+        node.style.transformOrigin = '0 0'
+      }
+    }
     pitch0 = h / w > 1 ? 0.95 : 0.42
     orbit.tPitch = orbit.pitch = pitch0
   }
@@ -94,6 +104,7 @@ export function initLab(animate: boolean) {
     return { x: cx, y: cy, s: 0.4, z: 2 }
   }
 
+  let lastRing = ''
   const render = (snap: boolean) => {
     const k = snap ? 1 : 0.16
     drops.forEach(d => {
@@ -102,25 +113,31 @@ export function initLab(animate: boolean) {
       d.y += (t.y - d.y) * k
       d.s += (t.s - d.s) * k
       d.z = t.z
-      const R = r * d.s * (d.tech.label.length > 6 ? 1.14 : 1)
-      const tr = `translate3d(${(d.x - R).toFixed(1)}px, ${(d.y - R).toFixed(1)}px, 0)`
+      const scale = d.s * (d.tech.label.length > 6 ? 1.14 : 1)
+      const R = r * scale
+      const tr = `translate3d(${(d.x - R).toFixed(1)}px, ${(d.y - R).toFixed(1)}px, 0) scale(${scale.toFixed(4)})`
       d.blob.style.transform = tr
-      d.blob.style.width = d.blob.style.height = `${(R * 2).toFixed(1)}px`
       d.btn.style.transform = tr
-      d.btn.style.width = d.btn.style.height = `${(R * 2).toFixed(1)}px`
       d.btn.style.zIndex = String(Math.round((d.z + 1) * 10))
       // 背面的液滴变淡、文字缩小，前面的清晰
       const depth = (d.z + 1) / 2
       d.btn.style.opacity = d.mode === 'fused' ? '0' : String(0.35 + 0.65 * Math.min(1, depth * 1.4))
-      d.btn.style.fontSize = `${(11 + 3 * Math.min(1, d.s)).toFixed(1)}px`
+      // Counter-scale the label to retain its original readable screen size.
+      d.label.style.transform = `scale(${((11 + 3 * Math.min(1, d.s)) / (14 * scale)).toFixed(4)})`
     })
     if (ring) {
       const rx = Math.min(w * (h / w > 1 ? 0.42 : 0.4), 520)
-      ring.setAttribute('cx', String(w / 2))
-      ring.setAttribute('cy', String(h / 2))
-      ring.setAttribute('rx', rx.toFixed(1))
-      ring.setAttribute('ry', (rx * Math.sin(orbit.pitch)).toFixed(1))
-      ring.setAttribute('transform', `rotate(${((orbit.roll * 180) / Math.PI).toFixed(2)} ${w / 2} ${h / 2})`)
+      const ry = (rx * Math.sin(orbit.pitch)).toFixed(1)
+      const rotation = ((orbit.roll * 180) / Math.PI).toFixed(2)
+      const key = `${w},${h},${rx},${ry},${rotation}`
+      if (key !== lastRing) {
+        lastRing = key
+        ring.setAttribute('cx', String(w / 2))
+        ring.setAttribute('cy', String(h / 2))
+        ring.setAttribute('rx', rx.toFixed(1))
+        ring.setAttribute('ry', ry)
+        ring.setAttribute('transform', `rotate(${rotation} ${w / 2} ${h / 2})`)
+      }
     }
     if (fusion) {
       fusion.grow += ((animate ? 1 : 1) - fusion.grow) * (snap ? 1 : 0.12)
